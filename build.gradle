@@ -1,0 +1,127 @@
+plugins {
+    id 'org.springframework.boot' version '2.2.1.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
+}
+
+group = 'com.wisdom'
+//version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+//apply plugin: 'war'
+apply plugin:'application'
+mainClassName = 'com.wisdom.monitor.MonitorApplication'
+
+run {
+    main = project.getProperty('mainClassName')
+}
+
+jar{
+    manifestContentCharset 'utf-8'
+    metadataCharset 'utf-8'
+    manifest{
+        attributes 'Main-Class': project.getProperty('mainClassName')
+    }
+
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+}
+
+repositories {
+    maven {
+        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+    maven {
+        url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
+    }
+    mavenCentral()
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    compile "com.google.guava:guava:24.1-jre"
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.1.6.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+//    compile('org.springframework.boot:spring-boot-starter-test') {
+//        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+//    }
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile('javax.servlet:jstl')
+    compile('javax.servlet:javax.servlet-api')
+   // providedCompile('javax.servlet:jstl')
+   // providedCompile('javax.servlet:javax.servlet-api')
+    compile('org.apache.tomcat.embed:tomcat-embed-jasper')
+    compile('org.springframework.boot:spring-boot-starter-tomcat')
+
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.1.1.RELEASE'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE'
+
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.58'
+    // https://mvnrepository.com/artifact/commons-codec/commons-codec
+    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.2.1.RELEASE'
+    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.6.0'
+    compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: '6.0.17.Final'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.8'
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+    // https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
+    compile group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.11.RELEASE'
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.1.6.RELEASE'
+    // https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml
+    compile group: 'net.sourceforge.nekohtml', name: 'nekohtml', version: '1.9.14'
+    // https://mvnrepository.com/artifact/org.apache.poi/poi
+    compile group: 'org.apache.poi', name: 'poi', version: '3.17'
+    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on
+    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.61'
+    // https://mvnrepository.com/artifact/com.kosprov.jargon2/jargon2-api
+    compile group: 'com.kosprov.jargon2', name: 'jargon2-api', version: '1.1.1'
+    // https://mvnrepository.com/artifact/com.kosprov.jargon2/jargon2-native-ri-backend
+    compile group: 'com.kosprov.jargon2', name: 'jargon2-native-ri-backend', version: '1.1.1'
+    // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.6.1'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+    compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+    // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
+    compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.7'
+    // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb-api
+    compile group: 'org.iq80.leveldb', name: 'leveldb-api', version: '0.7'
+    // https://mvnrepository.com/artifact/org.fusesource/sigar
+    compile group: 'org.fusesource', name: 'sigar', version: '1.6.4'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
+    // https://mvnrepository.com/artifact/com.github.oshi/oshi-core
+    compile group: 'com.github.oshi', name: 'oshi-core', version: '3.5.0'
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.3.1'
+    // https://mvnrepository.com/artifact/ch.ethz.ganymed/ganymed-ssh2
+    compile group: 'ch.ethz.ganymed', name: 'ganymed-ssh2', version: 'build210'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+    compile fileTree(dir:'libs',include:['*.jar'])
+    compile group: 'org.ethereum', name: 'leveldbjni-all', version: '1.18.3'
+
+
+
+}
+
+//test {
+//    useJUnitPlatform()
+//}

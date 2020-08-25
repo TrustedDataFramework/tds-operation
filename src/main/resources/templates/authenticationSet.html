@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>鉴权设置</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="renderer" content="webkit">
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+		<link rel="stylesheet" type="text/css" href="css/pagination.css"/>
+
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/pagination.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+      
+   <body class="body_main">
+   	  <!--左边菜单-->
+      <div id="sider" class="sider"></div>
+	  <div class="wrapMain">
+	  	 <!--头部-->
+	  	 <div class="topInfo" id="topInfo">	  
+	  	 </div>
+	  	 <div class="mainBox">
+	  	 	 <div class="tabBox tabBox_authSet">
+	  	 	 	
+		  	 	 <div class="borderRadius5 bosshdow  first_div">
+					 <div class="addBtnBox"><a onclick="showModal()" class="borderRadius5 btndefault btnAdd"><span>添加新的用户</span></a></div>
+		  	 	 	<table class="t_tab">
+		  	 	 		<thead>
+		  	 	 			<tr ><th>序号</th><th>登陆账号</th><th>当前权限</th><th>最后上线时间</th><th>操作</th></tr>
+		  	 	 		</thead>
+		  	 	 		<tbody>
+		  	 	 			<tr th:each="user,userStat: ${userListPage}">
+		  	 	 				<td th:text="${userStat.index+1}"></td>
+		  	 	 				<td th:text="${user.getName()}"></td>
+								<td th:switch="${user.getRole()}">
+									<p th:case="'ROLE_ADMIN'">管理员</p>
+									<p th:case="'ROLE_EDITOR'">操作员</p>
+									<p th:case="'ROLE_REVIEWER'">仅查询</p>
+								</td>
+		  	 	 				<td th:text="${user.getLoginTime()}"></td>
+								<td><a class="abtn"><span onclick="showModal1()" class="" 	th:id="${user.getName()}">权限设置</span></a><br/>
+									<a th:if="${user.getName()} != 'admin' " th:id="${user.getName()}" class="abtn bt_delete">删除</a>
+								</td>
+		  	 	 			</tr>
+		  	 	 		</tbody>
+		  	 	 	</table>
+		  	 	 	
+		  	 	 </div>
+		  	 	 <div class="ht-page"></div>
+	  	 	 </div>
+	  	 	 <div class="space"></div>
+	  	 </div>
+	  </div>
+
+
+	  <!--新增用户弹出框-->
+
+	  <div class="modal" id="modal">
+		  <div class="modal-by-dialog">
+			  <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">新增用户</h3>
+			  <div class="form">
+				  <p class="flab">登录账号：</p>
+				  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入登录账号" id="username"/></div>
+				  <p class="flab">密码：</p>
+				  <div class="fin"><input class="borderRadius5" type="password" placeholder="请输入登录密码" id="password"/></div>
+				  <p class="flab">权限：</p>
+				  <div class="borderRadius5 fsel">
+					  <select id="role">
+						  <option th:value="ROLE_ADMIN">管理员</option>
+						  <option th:value="ROLE_EDITOR">操作员</option>
+						  <option th:value="ROLE_REVIEWER">仅查询</option>
+					  </select>
+				  </div>
+				  <div class="fbtnbox">
+					  <a class="borderRadius5 fbtn" id= "bt_submit">确定</a>
+				  </div>
+			  </div>
+		  </div>
+	  </div>
+
+	  <!--修改用户权限-->
+	  <div class="modal" id="modal1">
+		  <div class="modal-by-dialog">
+			  <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">权限设置</h3>
+			  <form class="form">
+				  <p class="flab">登录账号：</p>
+				  <div class="fin"><input class="borderRadius5" type="text" id="username1"  readonly="readonly"/></div>
+				  <p class="flab">密码：</p>
+				  <div class="fin"><input class="borderRadius5" type="password" id="password1"  readonly="readonly"/></div>
+				  <p class="flab">权限：</p>
+				  <div class="borderRadius5 fsel">
+					  <select id="role1">
+						  <option th:value="ROLE_ADMIN">管理员</option>
+						  <option th:value="ROLE_EDITOR">操作员</option>
+						  <option th:value="ROLE_REVIEWER">仅查询</option>
+					  </select>
+				  </div>
+				  <div class="fbtnbox">
+					  <a class="borderRadius5 fbtn" id= "bt_update">更新</a>
+				  </div>
+			  </form>
+		  </div>
+	  </div>
+
+   </body>
+</html>
+
+<script>
+	function showModal(){
+		$("#modal").addClass('modal_in');
+	}
+
+	function showModal1(){
+		$("#modal1").addClass('modal_in');
+		var urlData = {username: event.target.id};
+		$.get('searchUser', urlData, function (result) {
+			$("#username1").val(result.name);
+			$("#password1").val(result.password);
+			$("#role1").val(result.role);
+		}, 'json');
+	}
+
+	function hideModal(){
+		$(".modal").removeClass('modal_in');
+	}
+</script>
+
+<script type="text/javascript">
+		$(function () {
+			$('#bt_submit').click(function () {
+				var name = $('#username').val();
+				var password = $('#password').val();
+				var role = $('#role').val();
+				if (name == "" || password == "" || role == "") {
+					alert("请完善信息！");
+					return;
+				}
+				if (password.length > 20 || password.length < 6) {
+					alert("请输入密码6-20位密码！");
+					return;
+				}
+				// let date=new Date();
+				// let newdate=date.toLocaleString('chinese', { hour12: false });
+				var urlData = {name: $('#username').val(), password: $('#password').val(), role: $('#role').val(),loginTime:""};
+				$.get('adduser', urlData, function (result) {
+					$("#modal").css("display", "none");
+					console.log(result);
+					alert(result.message);
+					//location.href = "[[@{/authenticationSet}]]";
+					window.location.reload();
+				}, 'json');
+			});
+			$(' .bt_delete').click(function () {
+				var r = confirm("是否删除该用户");
+				if (r == true) {
+					var urlData = {name: $(this).attr('id')};
+					$.get('deleteuser', urlData, function (result) {
+						alert(result.message);
+						console.log(result);
+						// location.href = "[[@{../authenticationSet}]]";
+						window.location.reload();
+					}, 'json');
+				}
+			});
+			});
+			// $(document).ready(function () {
+			// 	var role = [[${role}]];
+			// 	if(role == "ROLE_REVIEWER" || role == "ROLE_EDITOR"){
+			// 		$("#add").attr("style","display:none;");
+			// 		var aa = document.getElementsByClassName("operations");//获取到的是一个类数组
+			// 		$(".operations").attr("style","display:none;");
+			// 	}
+			// });
+		$("#sider").load("/sider",function(){
+			$(".siderNav .l5").addClass('cur')
+		});
+
+		$("#topInfo").load("/header")
+
+		var page1 = [[${pageSize}]]%10;
+		var page2;
+		if(page1 != 0){
+			page2 = Math.round([[${pageSize}]]/10) + 1;
+		}else{
+			page2 = Math.round([[${pageSize}]]/10)
+		}
+		//console.log(page2)
+		/*
+            * 定义回掉函数
+            * @param  number:跳转页
+            * */
+		function pageChange(i) {
+			//alert("index is :" + i);
+			//Pagination.Page($(".ht-page"), i, 300, 10);
+			window.location.href = "[[@{../authenticationSet(page)}]]="+i;
+			//window.location.reload();
+		}
+
+		Pagination.init($(".ht-page"), pageChange);
+		let page = getQuery("page");
+		if(page>0){
+			Pagination.Page($(".ht-page"), page2,[[${pageSize}]], 10);
+		}
+		else{
+			Pagination.Page($(".ht-page"), 0,[[${pageSize}]], 10);
+
+		}
+
+		/*定义获取参数的方法*/
+		function getQuery(para){
+			var reg = new RegExp("(^|&)"+para +"=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if(r!=null){
+				return unescape(r[2]);
+			}
+			return null;
+		}
+
+		$(function () {
+			$('#bt_update').click(function () {
+				var urlData = {name: $('#username1').val(), password: $('#password1').val(),role:$('#role1').val()};
+				Swal.fire({
+					type: 'question', // 弹框类型
+					title: '', //标题
+					text: "是否更新权限！", //显示内容
+
+					confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+					confirmButtonText: '确定',// 确定按钮的 文字
+					showCancelButton: true, // 是否显示取消按钮
+					cancelButtonColor: '#d33', // 取消按钮的 颜色
+					cancelButtonText: "取消", // 取消按钮的 文字
+
+					focusCancel: true, // 是否聚焦 取消按钮
+					reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+				}).then(function(isConfirm){
+					try {
+						//判断 是否 点击的 确定按钮
+						if (isConfirm.value) {
+							$.get('updateUser', urlData, function (result) {
+								$(".modal").css("display", "none");
+									Swal.fire({
+										type: 'success', // 弹框类型
+										title: '', //标题
+										text: "更新权限成功！", //显示内容
+
+										confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+										confirmButtonText: '确定',// 确定按钮的 文字
+										showCancelButton: false, // 是否显示取消按钮
+										cancelButtonColor: '#d33', // 取消按钮的 颜色
+										cancelButtonText: "取消", // 取消按钮的 文字
+
+										focusCancel: true, // 是否聚焦 取消按钮
+										reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+									}).then(function(isConfirm){
+										try {
+											//判断 是否 点击的 确定按钮
+											if (isConfirm.value) {
+												window.location.reload();
+											}
+										} catch (e) {
+											alert(e);
+										}
+									});
+							}, 'json');
+
+						}
+						else {
+							Swal.fire("取消", "点击了取消", "error");
+						}
+					} catch (e) {
+						alert(e);
+					}
+				});
+
+			});
+		});
+
+</script>
+

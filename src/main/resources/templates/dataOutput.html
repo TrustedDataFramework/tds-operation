@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>数据导出</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="renderer" content="webkit">
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+      
+   <body class="body_main">
+   	  <!--左边菜单-->
+      <div id="sider" class="sider"></div>
+	  <div class="wrapMain">
+	  	 <!--头部-->
+	  	 <div class="topInfo" id="topInfo">	  
+	  	 </div>
+	  	 <div class="mainBox">
+	  	 	 <div class="tabBox tabBox_out">
+		  	 	 <div class="borderRadius5 bosshdow boxdiv first_div">
+		  	 	 	<h3 class="title">数据导出</h3>
+		  	 	 	<div class="dataBox">
+		  	 	 			<div class="clearfix">
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">地址：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="address"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">分类：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="message1"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message2"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息"id="message3"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message4"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="message5"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message6"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="message7"/>
+			  	 	 			</div>
+			  	 	 			<div class="din">
+			  	 	 				<label class="lab">其他信息：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message8"/>
+			  	 	 			</div>
+		  	 	 			</div>
+		  	 	 			<div class="btnbox"><button class="btndefault borderRadius5 btn" id="export">导出</button></div>
+
+		  	 	 	</div>
+		  	 	 </div>
+	  	 	 </div>
+	  	 	 <div class="space"></div>
+	  	 </div>
+	  </div>
+   </body>
+
+</html>
+<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+ 	$("#sider").load("/sider",function(){
+ 		$(".siderNav .l6").addClass('cur')
+ 	});
+ 	
+ 	$("#topInfo").load("/header")
+
+	$(function () {
+		$(' #export').click(function () {
+			var from_value = $('#address').val();
+			if ($.trim(from_value) != "") {
+				var json = {};
+				json.from = from_value;
+				window.location.href = "export/txrecordFromAddress?json=" + encodeURI(JSON.stringify(json));
+			} else {
+				alert('请输入地址');
+			}
+		});
+		var isrun = true;
+		$(' .import').click(function () {
+			if (isrun) {
+				isrun = false;
+				$.get("importDb",
+						function (result) {
+							alert(result.message);
+						}, 'json').fail(function () {
+					alert("导入区块-发生内部错误");
+				}).always(function () {
+					setTimeout(function () {
+						isrun = true;
+					}, 1000);
+				});
+			}
+		});
+	});
+
+</script>

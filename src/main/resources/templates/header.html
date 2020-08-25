@@ -1,0 +1,171 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+</head>
+<body>
+<div>
+  <div class="tpinfo userInfo">
+  	   <p>当前访问时间：<span id = "time"></span></p>
+  	   <div class="userFun">
+  	   	   <a class="yh" th:text="${customUser.getUsername()}"></a>
+  	   	   <a href="/logout" class="tc">退出</a>
+  	   </div>
+  </div>
+  <div class="tpinfo tPointInfo">
+  	  
+  	  <p class="ppo">当前节点：<span th:text="${info.getNodeIP()}"></span></p>
+  	  <p>节点版本：<span th:text="${version}"></span></p>
+  	  <p>运行状态：<span th:text="${isrun}"></span></p>
+  	  <p>节点类型：<span th:text="${info.getNodeType()}"></span></p>
+  	  <div class="postRight">
+  	  	  <button class="borderRadius5 btn btn-stop" id="stop"><span>停止</span></button>
+		  <button class="borderRadius5 btn btn-reset" id="restart"><span>重启</span></button>
+  	  </div>
+  </div>
+  </div>
+</body>
+<script th:inline="javascript">
+	function setTime(){
+		var dt=new Date();
+		var strHour=dt.getHours();
+		var strMinutes=dt.getMinutes();
+		var strSeconds=dt.getSeconds();
+		var strYear=dt.getFullYear()+"-";
+		var strMonth=(dt.getMonth()+1)+"-";
+		var strDay=dt.getDate();
+		if (dt.getMonth()<10){
+			strMonth = "0"+strMonth;
+		}
+		if (strDay<10){
+			strDay = "0"+strDay;
+		}
+		if (strHour<10){
+			strHour = "0"+strHour;
+		}
+		if (strMinutes<10){
+			strMinutes = "0"+strMinutes;
+		}
+		if (strSeconds<10){
+			strSeconds = "0"+strSeconds;
+		}
+		var strTime=strHour+":"+strMinutes+":"+strSeconds;
+		document.getElementById("time").innerHTML=strYear+strMonth+strDay+" "+strTime;
+	}
+	setInterval("setTime()",1000);
+	$("#stop").click(function () {
+		Swal.fire({
+			type: 'question', // 弹框类型
+			title: '', //标题
+			text: "是否停止！", //显示内容
+			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+			confirmButtonText: '确定',// 确定按钮的 文字
+			showCancelButton: true, // 是否显示取消按钮
+			cancelButtonColor: '#d33', // 取消按钮的 颜色
+			cancelButtonText: "取消", // 取消按钮的 文字
+			focusCancel: true, // 是否聚焦 取消按钮
+			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+		}).then(function(isConfirm){
+			try {
+				//判断 是否 点击的 确定按钮
+				if (isConfirm.value) {
+					$.ajax({
+						type: "GET",
+						contentType: "application/json",
+						url: "/stop",
+						data: "",
+						success: function (result) {
+							if (result.code == 5000){
+								Swal.fire('', result.message, 'error');
+								return;
+							}
+							Swal.fire({
+								type: 'success', // 弹框类型
+								title: '', //标题
+								text: "成功！", //显示内容
+								confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+								confirmButtonText: '确定',// 确定按钮的 文字
+								showCancelButton: false, // 是否显示取消按钮
+								cancelButtonColor: '#d33', // 取消按钮的 颜色
+								cancelButtonText: "取消", // 取消按钮的 文字
+								focusCancel: true, // 是否聚焦 取消按钮
+								reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+							}).then(function(isConfirm){
+								try {
+									window.location.reload();
+								} catch (e) {
+									alert(e);
+								}
+							});
+						}
+					})
+				}
+				else {
+					Swal.fire("取消", "点击了取消", "error");
+				}
+			} catch (e) {
+				alert(e);
+			}
+		});
+	});
+
+	$("#restart").click(function () {
+		Swal.fire({
+			type: 'question', // 弹框类型
+			title: '', //标题
+			text: "是否重启！", //显示内容
+			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+			confirmButtonText: '确定',// 确定按钮的 文字
+			showCancelButton: true, // 是否显示取消按钮
+			cancelButtonColor: '#d33', // 取消按钮的 颜色
+			cancelButtonText: "取消", // 取消按钮的 文字
+			focusCancel: true, // 是否聚焦 取消按钮
+			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+		}).then(function(isConfirm){
+			try {
+				//判断 是否 点击的 确定按钮
+				if (isConfirm.value) {
+					$.ajax({
+						type: "GET",
+						contentType: "application/json",
+						url: "restart",
+						data: "",
+						success: function (result) {
+							if (result.code == 5000){
+								Swal.fire('', result.message, 'error');
+								return;
+							}
+							Swal.fire({
+								type: 'success', // 弹框类型
+								title: '', //标题
+								text: "成功！", //显示内容
+								confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+								confirmButtonText: '确定',// 确定按钮的 文字
+								showCancelButton: false, // 是否显示取消按钮
+								cancelButtonColor: '#d33', // 取消按钮的 颜色
+								cancelButtonText: "取消", // 取消按钮的 文字
+								focusCancel: true, // 是否聚焦 取消按钮
+								reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+							}).then(function(isConfirm){
+								try {
+									window.location.reload();
+								} catch (e) {
+									alert(e);
+								}
+							});
+						}
+					})
+				}
+				else {
+					Swal.fire("取消", "点击了取消", "error");
+				}
+			} catch (e) {
+				alert(e);
+			}
+		});
+	});
+</script>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>信息概要</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="renderer" content="webkit"/>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+      
+   <body class="body_main">
+   	  <!--左边菜单-->
+      <div id="sider" class="sider"></div>
+	  <div class="wrapMain">
+	  	 <!--头部-->
+	  	 <div class="topInfo" id="topInfo">	  
+	  	 </div>
+	  	 <div class="mainBox">
+	  	 	 <div class="tabBox tabBox_summ">
+		  	 	 <div class="borderRadius5 bosshdow  first_div ">
+		  	 	 	 <h3 class="title">监控信息</h3>
+		  	 	 	 <div class="monitorInfo">
+		  	 	 	 	<div class="curbg">
+		  	 	 	 		<div class="line"></div>
+		  	 	 	 	</div>
+		  	 	 	 	<div class="col">
+		  	 	 	 		<p class="pt">每天出块数量</p>
+							<p class="num" th:text="${result.blocksPerDay}==''?'0':${result.blocksPerDay}"></p>
+						</div>
+		  	 	 	 	<div class="col">
+		  	 	 	 		<p class="pt">区块高度</p>
+		  	 	 	 		<p class="num" th:text="${result.height}==''?'0':${result.height}"></p>
+		  	 	 	 	</div>
+		  	 	 	 	<div class="col">
+		  	 	 	 		<p class="pt">平均出块时间</p>
+		  	 	 	 		<p class="num" th:text="${result.averageBlockInterval}==''?'0':${result.averageBlockInterval}+'&nbsp;S'"></p>
+		  	 	 	 	</div>
+		  	 	 	 	<div class="col">
+		  	 	 	 		<p class="pt">平均gas单价</p>
+		  	 	 	 		<p class="num" th:text="${result.averageGasPrice}==''?'0':${result.averageGasPrice}"></p>
+		  	 	 	 	</div>
+		  	 	 	 	<div class="col">
+		  	 	 	 		<p class="pt">事务池大小</p>
+		  	 	 	 		<p class="num" th:text="(${result.transactionPoolSize}==''?'0':${result.transactionPoolSize}) + (${result.transactionPoolSize}==null?'0':${result.transactionPoolSize})"></p>
+		  	 	 	 	</div>
+		  	 	 	 	<div class="col">
+		  	 	 	 		<p class="pt">当前难度</p>
+		  	 	 	 		<p class="plevel" th:text="${result.currentDifficulty}==''?'0':${result.currentDifficulty}"></p>
+		  	 	 	 	</div>
+		  	 	 	 	
+		  	 	 	 </div>
+		  	 	 </div>
+		  	 	 <div class="borderRadius5 bosshdow boxdiv">
+		  	 	 	<h3 class="title">预警状态</h3>
+		  	 	 	<div class="dataBox">
+		  	 	 		<ul class="ul_staBox">
+		  	 	 			<li>
+								<p class="pt" >cpu状态</p>
+								<div class="sta_icon" ><span th:text="${result.cpu}==''?'0':${result.cpu}"></span></div>
+		  	 	 			</li>
+		  	 	 			<li>
+		  	 	 				<p class="pt">内存</p>
+		  	 	 				<div class="sta_icon"><span th:text="${result.memory}==''?'0':${result.memory}"></span></div>
+		  	 	 			</li>
+		  	 	 			<li>
+		  	 	 				<p class="pt">卡块情况</p>
+		  	 	 				<div class="sta_icon"><span th:text="${result.mining}==''?'0':${result.mining}"></span></div>
+		  	 	 			</li>
+		  	 	 			<li>
+		  	 	 				<p class="pt">运行状态</p>
+		  	 	 				<div class="sta_icon"><span th:text="${isrun}"></span></div>
+		  	 	 			</li>
+		  	 	 			<li>
+		  	 	 				<p class="pt">矿工检测</p>
+								<div class="sta_icon"><span th:text="${info.getNodeType()}"></span></div>
+		  	 	 			</li>
+		  	 	 		</ul>
+		  	 	 	</div>
+		  	 	 </div>
+	  	 	 </div>
+	  	 	 <div class="space"></div>
+	  	 </div>
+	  </div>
+   </body>
+
+</html>
+<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	var index = 0
+ 	$("#sider").load("/sider",function(){
+ 		$(".siderNav .l1").addClass('cur')
+ 	});
+ 	
+ 	$("#topInfo").load("/header")
+ 	
+ 	$(".monitorInfo .col").click(function(e){
+ 	    index = $(this).index()-1;
+ 		var width = $(this).outerWidth();
+ 		$(".curbg").css({'left':index*width+'px'})
+ 	
+ 	})
+ 	
+ 	 $(window).resize(function(){
+ 	 	var w = $(".monitorInfo").outerWidth();
+ 	 	$(".curbg").css({'left':(w/6)*index+'px'})
+ 	 })
+ 	
+</script>
+
+<script type="text/javascript">
+		// alert([[${result.getCpu()}]]);
+		// var b ="1";
+		// if(a == "") {
+		// 	let cpu = Math.round([[${result.getCpu()}]] * 100) / 100;
+		// 	document.getElementById("cpu").innerHTML = cpu + "%";
+		// }else{
+		// 	document.getElementById("cpu").innerHTML = "0";
+		// }
+		// if([[${result.getMemoryUsed()}]] !== "" && [[${result.getTotalMemory()}]] !== "") {
+		// 	let num = [[${result.getMemoryUsed()}]] / [[${result.getTotalMemory()}]] * 100;
+		// 	let f = Math.round(num * 100) / 100;
+		// 	document.getElementById("memoryUsed").innerHTML = f + "%";
+		// }else {
+		// 	document.getElementById("memoryUsed").innerHTML = "0";
+		// }
+		// if ([[${result.getMining()}]] == true) {
+		// 	//$("#mining").val("是");
+		// 	document.getElementById("mining").innerHTML = "是";
+		// } else {
+		// 	//$("#mining").val("否");
+		// 	document.getElementById("mining").innerHTML = "否";
+		// }
+	// window.setInterval(function() {
+	// 	$.ajax({
+	// 		type: "GET",
+	// 		contentType: "application/json",
+	// 		url: "/cpu",
+	// 		data: "",
+	// 		success: function (result) {
+	// 			document.getElementById("cpuStatus").innerHTML = result;
+	// 		}
+	// 	})
+	// 	// $.ajax({
+	// 	// 	type: "GET",
+	// 	// 	contentType: "application/json",
+	// 	// 	url: "/block",
+	// 	// 	data: "",
+	// 	// 	success: function (result) {
+	// 	// 		document.getElementById("blockStatus").innerHTML = result;
+	// 	// 	}
+	// 	// })
+	// },1000);
+</script>
