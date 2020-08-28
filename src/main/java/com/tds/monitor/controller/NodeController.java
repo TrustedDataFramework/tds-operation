@@ -59,20 +59,20 @@ public class NodeController {
         return result;
     }
 
-        @GetMapping(value = {"/connection"})
-        @ResponseBody
-        public Object connection(String ip,String username,String password) {
-            Result result = new Result();
-            ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, password);
-            if (connectionUtil.login()) {
-                result.setMessage("成功");
-                result.setCode(ResultCode.SUCCESS);
-            } else {
-                result.setMessage("连接失败");
-                result.setCode(ResultCode.FAIL);
-            }
-            return result;
+    @GetMapping(value = {"/connection"})
+    @ResponseBody
+    public Object connection(String ip,String username,String password) {
+        Result result = new Result();
+        ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, password);
+        if (connectionUtil.login()) {
+            result.setMessage("成功");
+            result.setCode(ResultCode.SUCCESS);
+        } else {
+            result.setMessage("连接失败");
+            result.setCode(ResultCode.FAIL);
         }
+        return result;
+    }
 
     @GetMapping(value = {"/searchNode"})
     public Nodes searchNode(@RequestParam("ipPort") String ipPort) {

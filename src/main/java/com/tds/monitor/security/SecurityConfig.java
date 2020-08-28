@@ -3,6 +3,7 @@ package com.tds.monitor.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -48,23 +49,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
-                .loginPage("/login")// 自定义用户登入页面
+                .loginPage("/login")// 自定义登录页面
                 //指定自定义form表单请求的路径
-                //.loginProcessingUrl("/login")
+                .loginProcessingUrl("/login")
                 .failureUrl("/login") // 自定义登入失败页面，前端可以通过url中是否有error来提供友好的用户登入提示
-               // .defaultSuccessUrl("/login")
                 .and()
                 .rememberMe()// 开启记住密码功能
                 .rememberMeServices(getRememberMeServices()) // 必须提供
                 .key(SECRET_KEY) // 此SECRET需要和生成TokenBasedRememberMeServices的密钥相同
+               // .defaultSuccessUrl("/login")
                 .and()
+                .logout()
+                .deleteCookies()
+                .and()
+                .authorizeRequests().antMatchers("/login", "/static/login.html","/css/**","/js/**","/img/**","/font-awesome-4.7.0/**","/h2/**").permitAll()
+                .anyRequest().authenticated()
+                .and().headers().frameOptions().sameOrigin()
                 /*
                  * 默认允许所有路径所有人都可以访问，确保静态资源的正常访问。
                  * 后面再通过方法注解的方式来控制权限。
                  */
-                .authorizeRequests()
-                .antMatchers("/login","login.html","/css/**","/js/**","/img/**","/font-awesome-4.7.0/**").permitAll()
-                .anyRequest().authenticated()
                 .and()
                 .logout()
                 .deleteCookies()

@@ -130,7 +130,7 @@
 			let endTime = $('#endTime').val();
 			if(startTime>endTime){
 				alert("时间选择错误");
-				window.location.reload();
+				return;
 			}else if (startTime == ""|| endTime == ""){
 				alert("时间不能为空");
 				return;
@@ -155,7 +155,6 @@
 					if (isConfirm.value) {
 						$.get('printLog', urlData, function (result) {
 							if(result.code == 2000) {
-
 								var pom = document.createElement("a");
 								pom.setAttribute(
 										"href",

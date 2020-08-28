@@ -182,8 +182,8 @@ body{width:100%;min-height:100%;}
 .curbg{position: absolute;width: 16.66%; height: 100%; top:0px;left:0px; background:#fafafc;z-index: 1;}
 .curbg .line{width: 100%;height:5px;background:#26E898; position:absolute; bottom: 0px;left: 0px;}
 
-.ul_staBox{font-size:25px;}
-.ul_staBox li{width:16.66%; display: inline-block; vertical-align: middle; padding: 39px 0;}
+.ul_staBox{font-size:24px;}
+.ul_staBox li{width:15.66%; display: inline-block; vertical-align: middle; padding: 39px 0;}
 .ul_staBox .pt{font-size:18px;color:#555; text-align:center; height:40px; line-height: 40px; padding: 20px 0;}
 .sta_icon{width:37.5%; margin: 0 auto;}
 .sta_icon img{width: 100%;}

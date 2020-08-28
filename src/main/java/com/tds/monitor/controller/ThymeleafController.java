@@ -2,11 +2,14 @@ package com.tds.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tds.monitor.dao.NodeDao;
+import com.tds.monitor.dao.UserDao;
 import com.tds.monitor.leveldb.Leveldb;
 import com.tds.monitor.model.*;
 import com.tds.monitor.model.*;
 import com.tds.monitor.security.IsUser;
 import com.tds.monitor.service.CustomUser;
+import com.tds.monitor.service.Database;
 import com.tds.monitor.service.Impl.CustomUserServiceImpl;
 import com.tds.monitor.utils.ConnectionUtil;
 import com.tds.monitor.utils.HttpRequestUtil;
@@ -21,16 +24,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.tdf.common.store.LevelDb;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 @IsUser
@@ -42,6 +45,16 @@ public class ThymeleafController {
     @Autowired
     private CustomUserServiceImpl customUserService;
 
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+
+    @Autowired
+    private LevelDb levelDb;
+
     @Value("${Image}")
     private String image;
 
@@ -50,15 +63,11 @@ public class ThymeleafController {
         CustomUser customUser = (CustomUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //更新用户最后登陆时间
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Leveldb leveldb = new Leveldb();
-        List<User> userList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getName().equals(customUser.getUsername())) {
-                userList.get(i).setLoginTime(formatter.format(new Date()));
-                break;
-            }
+        if (userDao.findByName(customUser.getUsername()).isPresent()){
+            User user = userDao.findByName(customUser.getUsername()).get();
+            user.setLogin_time(formatter.format(new Date()));
+            userDao.save(user);
         }
-        leveldb.addAccount("user", JSON.toJSONString(userList));
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         TDSInfo info = new TDSInfo();
         //节点详情
@@ -77,23 +86,6 @@ public class ThymeleafController {
                 BigDecimal totalMemory = new BigDecimal(info.getTotalMemory());
                 BigDecimal memory = memoryUsed.divide(totalMemory,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                 info.setMemory(String.format("%.2f", memory) + "%");
-                if(info.getMining().equals(true)){
-                    info.setMining("是");
-                }else{
-                    info.setMining("否");
-                }
-                String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
-                List<Nodes> nodeList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-                for (int i = 0; i < nodeList.size(); i++) {
-                    if (nodeList.get(i).getNodeIP().equals(bindNodeiphost[0]) && nodeList.get(i).getNodePort().equals(bindNodeiphost[1])) {
-                        if (nodeList.get(i).getNodeType().equals("1")){
-                            nodeinfo.setNodeType("全节点");
-                            break;
-                        }
-                        nodeinfo.setNodeType("矿工节点");
-                        break;
-                    }
-                }
                 map.addAttribute("isrun","运行中");
             }else {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
@@ -109,12 +101,11 @@ public class ThymeleafController {
     public String home1(ModelMap map) throws Exception {
         CustomUser customUser = (CustomUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        Leveldb leveldb = new Leveldb();
         TDSInfo info = new TDSInfo();
         //节点详情
         Nodes nodeinfo = new Nodes();
         if (mapCacheUtil.getCacheItem("bindNode") != null){
-                   String url_node = mapCacheUtil.getCacheItem("bindNode").toString();
+            String url_node = mapCacheUtil.getCacheItem("bindNode").toString();
             JSONObject get_info = new JSONObject();
             if (HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)!=""){
                 get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)).getJSONObject("data");
@@ -130,22 +121,10 @@ public class ThymeleafController {
                 BigDecimal totalMemory = new BigDecimal(info.getTotalMemory());
                 BigDecimal memory = memoryUsed.divide(totalMemory,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                 info.setMemory(String.format("%.2f", memory) + "%");
-                if(info.getMining().equals(true)){
-                    info.setMining("是");
+                if(info.isMining()){
+                    info.setMinings("是");
                 }else{
-                    info.setMining("否");
-                }
-                String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
-                List<Nodes> nodeList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-                for (int i = 0; i < nodeList.size(); i++) {
-                    if (nodeList.get(i).getNodeIP().equals(bindNodeiphost[0]) && nodeList.get(i).getNodePort().equals(bindNodeiphost[1])) {
-                        if (nodeList.get(i).getNodeType().equals("1")){
-                            nodeinfo.setNodeType("全节点");
-                            break;
-                        }
-                        nodeinfo.setNodeType("矿工节点");
-                        break;
-                    }
+                    info.setMinings("否");
                 }
                 map.addAttribute("isrun","运行中");
             }else {
@@ -163,10 +142,9 @@ public class ThymeleafController {
         return "login";
     }
 
-    @GetMapping("/header")
+    @RequestMapping("/header")
     public String header(ModelMap map) {
         try {
-            Leveldb leveldb = new Leveldb();
             map.addAttribute((CustomUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             map.addAttribute("dateNow", new java.util.Date().getTime());
             List<String> nodeinfoList = new ArrayList<>();
@@ -184,7 +162,7 @@ public class ThymeleafController {
                 version = result.get("version").toString();
                 nodeinfo.setNodeIP(mapCacheUtil.getCacheItem("bindNode").toString());
                 String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
-                List<Nodes> nodeList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
+                List<Nodes> nodeList = nodeDao.findAll();
                 for (int i = 0; i < nodeList.size(); i++) {
                     if (nodeList.get(i).getNodeIP().equals(bindNodeiphost[0]) && nodeList.get(i).getNodePort().equals(bindNodeiphost[1])) {
                         if (nodeList.get(i).getNodeType().equals("1")) {
@@ -214,12 +192,10 @@ public class ThymeleafController {
         return "sider";
     }
 
-    @GetMapping("/console")
+    @RequestMapping("/console")
     public String console(ModelMap map,
-                            @RequestParam(defaultValue = "0",value = "page")Integer pageNum) throws IOException {
-        Leveldb leveldb = new Leveldb();
-        List<Nodes> nodeList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-
+                            @RequestParam(defaultValue = "0",value = "page")Integer pageNum){
+        List<Nodes> nodeList = nodeDao.findAll();
         if (nodeList != null) {
             List<String> list = new ArrayList<>();
             List<Nodes> nodesListPage = new ArrayList<>();
@@ -260,7 +236,7 @@ public class ThymeleafController {
         return "console";
     }
 
-    @GetMapping("/InfoSummary")
+    @GetMapping("/infoSummary")
     public String InfoSummary() {
         return "InfoSummary";
     }
@@ -276,23 +252,22 @@ public class ThymeleafController {
     }
 
     @GetMapping("/warnInfo")
-    public String warnInfo(ModelMap map) throws IOException {
-        Leveldb leveldb = new Leveldb();
+    public String warnInfo(ModelMap map){
         Mail mail = new Mail();
-        Object read = JSONObject.parseObject(leveldb.readAccountFromSnapshot("mail"), Mail.class);
-        if (read != null) {
+        if (levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
+            Object read = JSONObject.parseObject(new String(levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
             mail= (Mail) read;
         }
         map.addAttribute(mail);
+        map.addAttribute("role",customUserService.getRole());
         return "warnInfo";
     }
 
     @GetMapping("/authenticationSet")
     public String authenticationSet(ModelMap map,
-                                    @RequestParam(defaultValue = "0",value = "page")Integer pageNum) throws  Exception{
-        Leveldb leveldb = new Leveldb();
+                                    @RequestParam(defaultValue = "0",value = "page")Integer pageNum){
         List<User> userListPage = new ArrayList<User>();
-        List<User> userList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
+        List<User> userList = userDao.findAll();
         if(userList.size()-pageNum*10<=10&&userList.size()-pageNum*10>=0){
             for(int i = pageNum*10;i<userList.size();i++){
                 userListPage.add(userList.get(i));
@@ -314,22 +289,16 @@ public class ThymeleafController {
     }
 
     @ResponseBody
-    @GetMapping("/adduser")
-    public String adduser(@ModelAttribute User user) throws IOException {
+    @RequestMapping("/adduser")
+    public String adduser(@ModelAttribute User user){
         boolean tag = false;
-        Leveldb leveldb = new Leveldb();
-        List<User> userList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getName().equals(user.getName())) {
-                tag = true;
-                break;
-            }
+        if (!userDao.findByName(user.getName()).isPresent()){
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            userDao.save(user);
+            tag = true;
         }
         Result rs = new Result();
-        if (!tag) {
-            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-            userList.add(user);
-            leveldb.addAccount("user", JSON.toJSONString(userList));
+        if (tag) {
             rs.setCode(ResultCode.SUCCESS);
             rs.setMessage("添加用户成功");
         } else {
@@ -340,47 +309,31 @@ public class ThymeleafController {
     }
 
     @ResponseBody
-    @GetMapping("/deleteuser")
-    public String deleteuser(@ModelAttribute User user) throws IOException {
+    @RequestMapping("/deleteuser")
+    public String deleteuser(@ModelAttribute User user){
         Result rs = new Result();
-        Leveldb leveldb = new Leveldb();
-        List<User> userList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
-        for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getName().equals(user.getName())) {
-                userList.remove(i);
-                leveldb.addAccount("user", JSON.toJSONString(userList));
-                rs.setCode(ResultCode.SUCCESS);
-                rs.setMessage("删除成功");
-                break;
-            }
+        List<User> userList = userDao.findAll();
+        if (userDao.findByName(user.getName()).isPresent()){
+            userDao.deleteByName(user.getName());
+            rs.setCode(ResultCode.SUCCESS);
+            rs.setMessage("删除成功");
+        }else {
+            rs.setCode(ResultCode.FAIL);
+            rs.setMessage("删除失败");
         }
         return rs.toString();
     }
 
     @ResponseBody
     @RequestMapping("/addnode")
-    public String addnode(@ModelAttribute Nodes node) throws IOException {
-        boolean tag = false;
-        Leveldb leveldb = new Leveldb();
-        List<Nodes> nodeList = new ArrayList<Nodes>();
-        Object read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-        if (read != null) {
-            nodeList = (List<Nodes>) read;
-            for (int i = 0; i < nodeList.size(); i++) {
-                if (nodeList.get(i).getNodeIP().equals(node.getNodeIP()) && nodeList.get(i).getNodePort().equals(node.getNodePort())) {
-                    tag = true;
-                    break;
-                }
-            }
-        }
+    public String addnode(@ModelAttribute Nodes node){
         Result rs = new Result();
-        if (!tag) {
-            nodeList.add(node);
-            leveldb.addAccount("node", JSON.toJSONString(nodeList));
+        if (!nodeDao.findNodesByNodeIPAndNodePort(node.getNodeIP(),node.getNodePort()).isPresent()){
+            nodeDao.save(node);
             rs.setCode(ResultCode.SUCCESS);
             rs.setMessage("添加节点成功");
-        } else {
-            rs.setCode(ResultCode.Warn);
+        }else {
+            rs.setCode(ResultCode.FAIL);
             rs.setMessage("已存在相同节点");
         }
         return rs.toString();
@@ -388,7 +341,7 @@ public class ThymeleafController {
 
     @ResponseBody
     @RequestMapping("/bindNode")
-    public String bindNode(@RequestParam("nodeStr") String nodeStr) throws IOException {
+    public String bindNode(@RequestParam("nodeStr") String nodeStr){
         Result rs = new Result();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         if (mapCacheUtil.getCacheItem("bindNode") == null){
@@ -416,7 +369,7 @@ public class ThymeleafController {
 
     @ResponseBody
     @RequestMapping("/deleteNode")
-    public String deleteNode(@RequestParam("nodeStr") String nodeStr) throws IOException {
+    public String deleteNode(@RequestParam("nodeStr") String nodeStr){
         Result rs = new Result();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         if (mapCacheUtil.getCacheItem("bindNode") != null){
@@ -424,18 +377,10 @@ public class ThymeleafController {
                 mapCacheUtil.removeCacheItem("bindNode");
             }
         }
-        Leveldb leveldb = new Leveldb();
         String[] nodeinfo = nodeStr.split(":");
-        List<Nodes> nodesList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-        for (int i = 0; i < nodesList.size(); i++) {
-            if (nodesList.get(i).getNodeIP().equals(nodeinfo[0]) && nodesList.get(i).getNodePort().equals(nodeinfo[1])) {
-                nodesList.remove(i);
-                leveldb.addAccount("node", JSON.toJSONString(nodesList));
-                rs.setCode(ResultCode.SUCCESS);
-                rs.setMessage("删除成功");
-                break;
-            }
-        }
+        nodeDao.deleteByNodeIPAndNodePort(nodeinfo[0],nodeinfo[1]);
+        rs.setCode(ResultCode.SUCCESS);
+        rs.setMessage("删除成功");
         return rs.toString();
     }
 
@@ -443,8 +388,7 @@ public class ThymeleafController {
     @RequestMapping("/editmail")
     public String editMail(@ModelAttribute Mail mail) throws IOException {
         Result rs = new Result();
-        Leveldb leveldb = new Leveldb();
-        leveldb.addAccount("mail", JSON.toJSONString(mail));
+        levelDb.put("mail".getBytes(StandardCharsets.UTF_8),JSON.toJSONString(mail).getBytes(StandardCharsets.UTF_8));
         rs.setCode(ResultCode.SUCCESS);
         rs.setMessage("成功");
         return rs.toString();
@@ -462,10 +406,10 @@ public class ThymeleafController {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
                 List<String> strList = new ArrayList<String>();
                 try {
-                    //GetNodeinfo getNodeinfo = new GetNodeinfo(mapCacheUtil.getCacheItem("bindNode").toString()).invoke();
-                    String username = "sal";
-                    String usepassword = "123456";
-                    String ip = "192.168.1.36";
+                    GetNodeinfo getNodeinfo = new GetNodeinfo(mapCacheUtil.getCacheItem("bindNode").toString()).invoke();
+                    String username = getNodeinfo.username;
+                    String usepassword = getNodeinfo.usepassword;
+                    String ip = getNodeinfo.ip;
                     ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, usepassword);
                     if (connectionUtil.login()) {
                         if (connectionUtil.login()) {
@@ -534,12 +478,9 @@ public class ThymeleafController {
 
 
         public GetNodeinfo invoke() throws IOException {
-            Leveldb leveldb = new Leveldb();
-            Object read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-            List<Nodes> nodeList = new ArrayList<Nodes>();
+            List<Nodes> nodeList = nodeDao.findAll();
             ip = null;
-            if (read != null) {
-                nodeList = (List<Nodes>) read;
+            if (nodeList != null) {
                 for (int i = 0; i < nodeList.size(); i++) {
                     if (nodeList.get(i).getNodeIP().equals(ipPort.split(":")[0]) && nodeList.get(i).getNodePort().equals(ipPort.split(":")[1])) {
                         ip = nodeList.get(i).getNodeIP();

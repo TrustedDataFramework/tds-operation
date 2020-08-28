@@ -156,6 +156,14 @@
 
 		});
 	});
+
+	$(document).ready(function () {
+
+		var role = [[${role}]];
+		if(role == "ROLE_REVIEWER"){//仅查询
+			document.getElementById("bt_editmail").style.visibility="hidden";//隐藏
+		};
+	});
 	//
 </script>
 

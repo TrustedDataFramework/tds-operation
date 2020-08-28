@@ -3,7 +3,8 @@ package com.tds.monitor.model;
 public class TDSInfo {
     private String cpu;
     private String memoryUsed;
-    private String mining;
+    private boolean mining;
+    private String minings;
     private String totalMemory;
     private String memory;
 
@@ -23,11 +24,19 @@ public class TDSInfo {
         this.memory = memory;
     }
 
-    public String getMining() {
-        return (mining != null) ? mining : "";
+    public String getMinings() {
+        return minings;
     }
 
-    public void setMining(String mining) {
+    public void setMinings(String minings) {
+        this.minings = minings;
+    }
+
+    public boolean isMining() {
+        return mining;
+    }
+
+    public void setMining(boolean mining) {
         this.mining = mining;
     }
 

@@ -1,21 +1,26 @@
 package com.tds.monitor.service.Impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.tds.monitor.dao.UserDao;
 import com.tds.monitor.model.User;
 import com.tds.monitor.service.CustomUserService;
-import com.tds.monitor.leveldb.Leveldb;
 import com.tds.monitor.service.CustomUser;
 import com.tds.monitor.service.Database;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomUserServiceImpl implements CustomUserService {
 
+    @Autowired
+    private UserDao userDao;
 
     @Override
     public String getRole() {
@@ -25,20 +30,25 @@ public class CustomUserServiceImpl implements CustomUserService {
 
     @Override
     public CustomUser getCustomUserByName(String name) {
-
-        try {
-            Database database = new Database();
-            Leveldb leveldb = new Leveldb();
-            List<User> userList = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
-            for (int i = 0; i < userList.size(); i++) {
-                if (userList.get(i).getName().equals(name)) {
-                    User user = userList.get(i);
-                    CustomUser customUser = new CustomUser(0, user.getName(), user.getPassword(), database.getGrants(user.getRole()));
-                    return customUser;
-                }
+        Database database = new Database();
+        Map<String, CustomUser> data = new HashMap<>();
+        List<User> list = userDao.findAll();
+        if (list.isEmpty()) {
+            User user = new User(0L, "admin", database.getPassword("admin"), "ROLE_ADMIN",null);
+            userDao.save(user);
+            CustomUser customUser = new CustomUser(0, user.getName(), user.getPassword(), database.getGrants(user.getRole()));
+            data.put(user.getName(), customUser);
+        }else {
+            for (int i = 0; i < list.size(); i++) {
+                CustomUser customUser = new CustomUser(i, list.get(i).getName(), list.get(i).getPassword(), database.getGrants(list.get(i).getRole()));
+                data.put(list.get(i).getName(), customUser);
             }
-        } catch (IOException e) {
-            return null;
+        }
+        database.setData(data);
+        if (userDao.findByName(name).isPresent()){
+            User user = userDao.findByName(name).get();
+            CustomUser customUser = new CustomUser(0, user.getName(), user.getPassword(), database.getGrants(user.getRole()));
+            return customUser;
         }
         return null;
     }

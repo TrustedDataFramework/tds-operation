@@ -24,8 +24,8 @@
 		  	 	 	<div class="dataBox">
 		  	 	 			<div class="clearfix">
 			  	 	 			<div class="din">
-			  	 	 				<label class="lab">地址：</label>
-			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="address"/>
+			  	 	 				<label class="lab">公钥：</label>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="公钥信息" id="publicKey"/>
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
@@ -33,7 +33,7 @@
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">分类：</label>
-			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="message1"/>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message1"/>
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
@@ -41,7 +41,7 @@
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
-			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息"id="message3"/>
+			  	 	 				<input class="borderRadius5 editIn" placeholder=""id="message3"/>
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
@@ -49,7 +49,7 @@
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
-			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="message5"/>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message5"/>
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
@@ -57,7 +57,7 @@
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
-			  	 	 				<input class="borderRadius5 editIn" placeholder="地址信息" id="message7"/>
+			  	 	 				<input class="borderRadius5 editIn" placeholder="" id="message7"/>
 			  	 	 			</div>
 			  	 	 			<div class="din">
 			  	 	 				<label class="lab">其他信息：</label>
@@ -85,29 +85,36 @@
 
 	$(function () {
 		$(' #export').click(function () {
-			var from_value = $('#address').val();
-			if ($.trim(from_value) != "") {
-				var json = {};
-				json.from = from_value;
-				window.location.href = "export/txrecordFromAddress?json=" + encodeURI(JSON.stringify(json));
+			var publicKey = $('#publicKey').val();
+			if ($.trim(publicKey) != "") {
+				let json = {};
+				json.method = "export";
+				json.publicKey = publicKey;
+				window.location.href = "export/txrecordByPublicKey?json=" + encodeURI(JSON.stringify(json));
+
+				// $.ajax({
+				// 	url: '/export/txrecordByPublicKey',
+				// 	type: 'post',
+				// 	data: JSON.stringify(json),
+				// 	headers : {
+				// 		'Content-Type' : 'application/json;charset=utf-8'
+				// 	},
+				// 	dataType: "json",
+				// 	success: function (data) {
+				// 		if(data.code == 200) {
+				// 			alert("1");
+				// 		}else {
+				// 			alert("2")
+				// 		}
+				// 	},
+				// 	error: function (err) {
+				//
+				// 	}
+				// })
+
+
 			} else {
-				alert('请输入地址');
-			}
-		});
-		var isrun = true;
-		$(' .import').click(function () {
-			if (isrun) {
-				isrun = false;
-				$.get("importDb",
-						function (result) {
-							alert(result.message);
-						}, 'json').fail(function () {
-					alert("导入区块-发生内部错误");
-				}).always(function () {
-					setTimeout(function () {
-						isrun = true;
-					}, 1000);
-				});
+				alert('请输入公钥信息');
 			}
 		});
 	});

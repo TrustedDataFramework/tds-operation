@@ -11,6 +11,7 @@ import org.iq80.leveldb.DBFactory;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.stereotype.Component;
 import org.tdf.common.store.DBSettings;
 import org.tdf.common.store.LevelDb;
 
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+@Component
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

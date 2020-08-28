@@ -66,15 +66,19 @@
 		  	 	 			</li>
 		  	 	 			<li>
 		  	 	 				<p class="pt">卡块情况</p>
-		  	 	 				<div class="sta_icon"><span th:text="${result.mining}==''?'0':${result.mining}"></span></div>
+		  	 	 				<div class="sta_icon"><span id="blockStatus"></span></div>
 		  	 	 			</li>
+							<li>
+								<p class="pt">分叉情况</p>
+								<div class="sta_icon"><span id ="bifurcation"></span></div>
+							</li>
 		  	 	 			<li>
 		  	 	 				<p class="pt">运行状态</p>
-		  	 	 				<div class="sta_icon"><span th:text="${isrun}"></span></div>
+		  	 	 				<div class="sta_icon"><span th:text="${isrun}   "></span></div>
 		  	 	 			</li>
 		  	 	 			<li>
 		  	 	 				<p class="pt">矿工检测</p>
-								<div class="sta_icon"><span th:text="${info.getNodeType()}"></span></div>
+								<div class="sta_icon"><span th:text="${result.getMinings()}"></span></div>
 		  	 	 			</li>
 		  	 	 		</ul>
 		  	 	 	</div>
@@ -110,46 +114,33 @@
 </script>
 
 <script type="text/javascript">
-		// alert([[${result.getCpu()}]]);
-		// var b ="1";
-		// if(a == "") {
-		// 	let cpu = Math.round([[${result.getCpu()}]] * 100) / 100;
-		// 	document.getElementById("cpu").innerHTML = cpu + "%";
-		// }else{
-		// 	document.getElementById("cpu").innerHTML = "0";
-		// }
-		// if([[${result.getMemoryUsed()}]] !== "" && [[${result.getTotalMemory()}]] !== "") {
-		// 	let num = [[${result.getMemoryUsed()}]] / [[${result.getTotalMemory()}]] * 100;
-		// 	let f = Math.round(num * 100) / 100;
-		// 	document.getElementById("memoryUsed").innerHTML = f + "%";
-		// }else {
-		// 	document.getElementById("memoryUsed").innerHTML = "0";
-		// }
-		// if ([[${result.getMining()}]] == true) {
-		// 	//$("#mining").val("是");
-		// 	document.getElementById("mining").innerHTML = "是";
-		// } else {
-		// 	//$("#mining").val("否");
-		// 	document.getElementById("mining").innerHTML = "否";
-		// }
-	// window.setInterval(function() {
-	// 	$.ajax({
-	// 		type: "GET",
-	// 		contentType: "application/json",
-	// 		url: "/cpu",
-	// 		data: "",
-	// 		success: function (result) {
-	// 			document.getElementById("cpuStatus").innerHTML = result;
-	// 		}
-	// 	})
-	// 	// $.ajax({
-	// 	// 	type: "GET",
-	// 	// 	contentType: "application/json",
-	// 	// 	url: "/block",
-	// 	// 	data: "",
-	// 	// 	success: function (result) {
-	// 	// 		document.getElementById("blockStatus").innerHTML = result;
-	// 	// 	}
-	// 	// })
-	// },1000);
+	var t2 = window.setInterval(function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url: "/bifurcation",
+			data: "",
+			success: function (result) {
+				if (result.code == -1) {
+					document.getElementById("bifurcation").innerHTML = "分叉";
+				} else if (result.code  == 0) {
+					document.getElementById("bifurcation").innerHTML = "异常";
+				} else if (result.code  == -2) {
+					document.getElementById("bifurcation").innerHTML = "0";
+				} else {
+					document.getElementById("bifurcation").innerHTML = "正常";
+				}
+			}
+		}),
+
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url: "/block",
+			data: "",
+			success: function (result) {
+				document.getElementById("blockStatus").innerHTML = result;
+			}
+		})
+	},1000);
 </script>

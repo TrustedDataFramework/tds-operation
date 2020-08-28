@@ -29,6 +29,17 @@
   </div>
 </body>
 <script th:inline="javascript">
+
+	$(document).ready(function () {
+		var role = [[${role}]];
+		if(role == "ROLE_REVIEWER"){//仅查询
+			// document.getElementById("start").style.visibility="hidden";//隐藏
+			// document.getElementById("stop").style.visibility="hidden";//隐藏
+			$("#restart").attr("style","display:none;");
+			$("#stop").attr("style","display:none;");
+		}
+	});
+
 	function setTime(){
 		var dt=new Date();
 		var strHour=dt.getHours();

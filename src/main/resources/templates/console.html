@@ -21,7 +21,7 @@
 	  	 	 <div class="tabBox tabBox_authSet">
 		  	 	 <div class="borderRadius5 bosshdow  first_div">
 		  	 	 	<div class="addBtnBox">
-						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()"><span>添加新节点</span></button>
+						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span>添加新节点</span></button>
 
 					</div>
 
@@ -135,7 +135,7 @@
 <!--						<button class="borderRadius5 btndefault btnAdd"><span>添加新节点</span></button></div>-->
 		  	 	 	<table class="t_tab">
 		  	 	 		<thead>
-		  	 	 			<tr ><th>序号</th><th>节点信息</th><th>节点版本</th><th>运行状态</th><th>节点类型</th><th width="30%">操作</th></tr>
+		  	 	 			<tr ><th>序号</th><th>节点信息</th><th>节点版本</th><th>运行状态</th><th>节点类型</th><th width="30%"  class="operation">操作</th></tr>
 		  	 	 		</thead>
 		  	 	 		<tbody>
 		  	 	 			<tr th:each="node,nodeState: ${nodesListPage}">
@@ -147,11 +147,11 @@
 									<p th:case=1>全节点</p>
 									<p th:case=2>矿工节点</p>
 								</td>
-		  	 	 				<td class="borderRadius5">
+		  	 	 				<td class="borderRadius5 bt_ad" >
 		  	 	 					<a class="abtn_btn bt_bind"  th:if="${node.getNodeIP()}+':'+${node.getNodePort()} != ${nodeip} "th:id="${node.getNodeIP()}+':'+${node.getNodePort()}">绑定</a>
 									<a th:if="${node.getNodeIP()}+':'+${node.getNodePort()} == ${nodeip} "  class="abtn_btn bt_unbind" th:id="${node.getNodeIP()}+':'+${node.getNodePort()}">解绑</a>
 		  	 	 					<a class="abtn_btn bt_update" th:if="${node.getNodeIP()}+':'+${node.getNodePort()} != ${nodeip} " onclick="showModal1()" th:id="${node.getNodeIP()}+':'+${node.getNodePort()} ">编辑</a>
-		  	 	 					<a class="abtn_btn bt_delete"  th:id="${node.getNodeIP()}+':'+${node.getNodePort()}">删除</a>
+		  	 	 					<a class="abtn_btn bt_delete"  th:id="${node.getNodeIP()}+':'+${node.getNodePort()}" >删除</a>
 		  	 	 				</td>
 		  	 	 			</tr>
 		  	 	 			
@@ -165,9 +165,6 @@
 	  	 </div>
 	  </div>
 	  </div>
-   </body>
-
-</html>
 <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/pagination.js" type="text/javascript" charset="utf-8"></script>
 <script>
@@ -190,7 +187,7 @@
          * @param  number:跳转页
          * */
         function pageChange(i) {
-            alert("index is :" + i);
+            //alert("index is :" + i);
             //Pagination.Page($(".ht-page"), i, 300, 10);
 			window.location.href = "[[@{../console(page)}]]="+i;
         }
@@ -240,7 +237,7 @@
  	
 </script>
 
-<script type="text/javascript">
+<script th:inline="javascript">
 	$(function () {
 		$('#bt_submit').click(function () {
 			var re = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
@@ -484,15 +481,17 @@
 			});
 		});
 
-		// $(document).ready(function () {
-		// 	var role = [[${role}]];
-		// 	if(role == "ROLE_REVIEWER"){//仅查询
-		// 		$("#operation").attr("style","display:none;");//隐藏div
-		// 		$("#add").attr("style","display:none;");//隐藏div
-		// 		var aa = document.getElementsByClassName("operations");//获取到的是一个类数组
-		// 		$(".operations").attr("style","display:none;");
-		// 	}
-		// });
+		$(document).ready(function () {
+			var role = [[${role}]];
+			if(role == "ROLE_REVIEWER"){//仅查询
+				$("#add").attr("style","display:none;");//隐藏div
+				// $(".bt_delete").attr("style","display:none;");//隐藏div
+				// $(".bt_update").attr("style","display:none;");//隐藏div
+				$(".bt_ad").attr("style","display:none;");//隐藏div
+				$(".operation").attr("style","display:none;");//隐藏div
+				//var aa = document.getElementsByClassName("operations");//获取到的是一个类数组
+			}
+		});
 
 		$("#connection").click(function () {
 			$("#wait").css("display", "none");
@@ -620,3 +619,7 @@
 
 	});
 </script>
+
+   </body>
+
+</html>

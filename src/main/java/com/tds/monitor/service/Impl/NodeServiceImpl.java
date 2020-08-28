@@ -2,6 +2,8 @@ package com.tds.monitor.service.Impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tds.monitor.dao.NodeDao;
+import com.tds.monitor.dao.UserDao;
 import com.tds.monitor.model.Nodes;
 import com.tds.monitor.model.Result;
 import com.tds.monitor.model.ResultCode;
@@ -14,6 +16,7 @@ import com.tds.monitor.service.NodeService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +31,21 @@ public class NodeServiceImpl implements NodeService {
     private String image;
     private static final Logger logger = LoggerFactory.getLogger(NodeServiceImpl.class);
 
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private UserDao userDao;
+
     @Override
     public Object stop(String ipPort) {
         List<String> strList = new ArrayList<String>();
         Result result = new Result();
         try {
-            GetNodeinfo getNodeinfo = new GetNodeinfo(ipPort).invoke();
-            String username = getNodeinfo.getUsername();
-            String usepassword = getNodeinfo.getUsepassword();
-            String ip = getNodeinfo.getIp();
+            Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).get();
+            String username = node.getUserName();
+            String usepassword = node.getPassword();
+            String ip = node.getNodeIP();
             if (username == null || usepassword == null) {
                 result.setMessage("失败，请完善远程连接信息。");
                 result.setCode(ResultCode.FAIL);
@@ -79,10 +88,10 @@ public class NodeServiceImpl implements NodeService {
         List<String> strList = new ArrayList<String>();
         Result result = new Result();
         try {
-            GetNodeinfo getNodeinfo = new GetNodeinfo(ipPort).invoke();
-            String username = getNodeinfo.getUsername();
-            String usepassword = getNodeinfo.getUsepassword();
-            String ip = getNodeinfo.getIp();
+            Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).get();
+            String username = node.getUserName();
+            String usepassword = node.getPassword();
+            String ip = node.getNodeIP();
             if (username == null || usepassword == null) {
                 result.setMessage("失败，请完善远程连接信息。");
                 result.setCode(ResultCode.FAIL);
@@ -166,73 +175,27 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public Nodes searchNode(String ipPort) {
-        Nodes nodes = new Nodes();
-        try {
-            Leveldb leveldb = new Leveldb();
-            List<Nodes> nodeList = new ArrayList<Nodes>();
-            Object read = null;
-            read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-            if (read != null) {
-                nodeList = (List<Nodes>) read;
-                for (int i = 0; i < nodeList.size(); i++) {
-                    if (nodeList.get(i).getNodeIP().equals(ipPort.split(":")[0]) && nodeList.get(i).getNodePort().equals(ipPort.split(":")[1])) {
-                        nodes = nodeList.get(i);
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).isPresent()){
+            return nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).get();
         }
-        return nodes;
+        return new Nodes();
     }
 
     @Override
     public User searchUser(String username) {
-        User user = new User();
-        try {
-            Leveldb leveldb = new Leveldb();
-            List<User> userList = new ArrayList<>();
-            Object read = null;
-            read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
-            if (read != null) {
-                userList = (List<User>) read;
-                for (int i = 0; i < userList.size(); i++) {
-                    if (userList.get(i).getName().equals(username)) {
-                        user = userList.get(i);
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (userDao.findByName(username).isPresent()){
+            return userDao.findByName(username).get();
         }
-        return user;
+        return new User();
     }
 
     @Override
     public boolean updateUser(User user) {
         boolean t = false;
-        try {
-            Leveldb leveldb = new Leveldb();
-            List<User> userList = new ArrayList<>();
-            Object read = null;
-            read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("user"), User.class);
-            if (read != null) {
-                userList = (List<User>) read;
-                for (int i = 0; i < userList.size(); i++) {
-                    if (userList.get(i).getName().equals(user.getName())) {
-                        userList.remove(i);
-                        userList.add(user);
-                        leveldb.addAccount("user", JSON.toJSONString(userList));
-                        t = true;
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return t;
+        if (userDao.findByName(user.getName()).isPresent()){
+            user.setId(userDao.findByName(user.getName()).get().getId());
+            userDao.save(user);
+            t = true;
         }
         return t;
     }
@@ -241,26 +204,10 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public boolean updateNode(Nodes nodes) {
         boolean t = false;
-        try {
-            Leveldb leveldb = new Leveldb();
-            List<Nodes> nodeList = new ArrayList<Nodes>();
-            Object read = null;
-            read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-            if (read != null) {
-                nodeList = (List<Nodes>) read;
-                for (int i = 0; i < nodeList.size(); i++) {
-                    if (nodeList.get(i).getNodeIP().equals(nodes.getNodeIP()) && nodeList.get(i).getNodePort().equals(nodes.getNodePort())) {
-                        nodeList.remove(i);
-                        nodeList.add(nodes);
-                        leveldb.addAccount("node", JSON.toJSONString(nodeList));
-                        t = true;
-                        break;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return t;
+        if (nodeDao.findNodesByNodeIPAndNodePort(nodes.getNodeIP(),nodes.getNodePort()).isPresent()){
+            nodes.setId(nodeDao.findNodesByNodeIPAndNodePort(nodes.getNodeIP(),nodes.getNodePort()).get().getId());
+            nodeDao.save(nodes);
+            t = true;
         }
         return t;
     }
@@ -318,19 +265,16 @@ public class NodeServiceImpl implements NodeService {
         }
 
         public GetNodeinfo invoke() throws IOException {
-            Leveldb leveldb = new Leveldb();
-            Object read = JSONObject.parseArray(leveldb.readAccountFromSnapshot("node"), Nodes.class);
-            List<Nodes> nodeList = new ArrayList<Nodes>();
+            List<Nodes> nodeList = nodeDao.findAll();
             ip = null;
-            if (read != null) {
-                nodeList = (List<Nodes>) read;
+            if (nodeList != null) {
                 for (int i = 0; i < nodeList.size(); i++) {
-                    if (nodeList.get(i).getNodeIP().equals(ipPort.split(":")[0]) && nodeList.get(i).getNodePort().equals(ipPort.split(":")[1])) {
-                        ip = nodeList.get(i).getNodeIP();
-                        username = nodeList.get(i).getUserName();
-                        usepassword = nodeList.get(i).getPassword();
-                        break;
-                    }
+//                    if (nodeList.get(i).getNodeIP().equals(ipPort.split(":")[0]) && nodeList.get(i).getNodePort().equals(ipPort.split(":")[1])) {
+//                        ip = nodeList.get(i).getNodeIP();
+//                        username = nodeList.get(i).getUserName();
+//                        usepassword = nodeList.get(i).getPassword();
+//                        break;
+//                    }
                 }
             }
             return this;

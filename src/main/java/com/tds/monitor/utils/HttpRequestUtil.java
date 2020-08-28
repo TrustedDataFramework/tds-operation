@@ -1,10 +1,8 @@
 package com.tds.monitor.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -109,4 +107,70 @@ public class HttpRequestUtil {
         }
         return result;
     }
+
+    public static String sendPostWb(String url,  String param) {
+        String result = "";
+
+        try {
+
+            URL reqUrl = new URL(url);
+            HttpURLConnection httpConn = (HttpURLConnection) reqUrl.openConnection();
+
+            //设置参数
+            httpConn.setDoOutput(true);        //需要输出
+            httpConn.setDoInput(true);        //需要输入
+            httpConn.setUseCaches(false);    //不允许缓存
+            httpConn.setRequestMethod("POST");        //设置POST方式连接
+
+            //设置请求属性
+            httpConn.setRequestProperty("Content-Type", "application/json");
+            httpConn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
+            httpConn.setRequestProperty("Charset", "UTF-8");
+            httpConn.setRequestProperty("accept", "*/*");
+
+            //建立输入流，向指向的URL传入参数
+            DataOutputStream dos = new DataOutputStream(httpConn.getOutputStream());
+            //dos.writeBytes(jsonData); 这个方法会有中文乱码,使用下面的方法解决
+            dos.write(param.getBytes("utf-8"));
+            dos.flush();
+            dos.close();
+
+            if (httpConn.getResponseCode() != 200) {
+                throw new RuntimeException("HTTP POST json Request Failed with Error code : "
+                        + httpConn.getResponseCode() + " url:" + url + " json:" + param);
+            }
+
+            InputStream inputStream = httpConn.getInputStream();
+            result = readAll(inputStream);
+            inputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    /**
+     * 读取字节流
+     *
+     * @param inputStream
+     * @return
+     */
+    private static String readAll(InputStream inputStream) {
+
+        StringBuilder builder = new StringBuilder();
+
+        try {
+            byte[] b = new byte[1024];
+            int length = -1;
+            while ((length = inputStream.read(b)) != -1) {
+                builder.append(new String(b, 0, length,"UTF-8"));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return builder.toString();
+    }
+
 }

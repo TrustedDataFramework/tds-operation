@@ -28,7 +28,7 @@
 					 <div class="addBtnBox"><a onclick="showModal()" class="borderRadius5 btndefault btnAdd"><span>添加新的用户</span></a></div>
 		  	 	 	<table class="t_tab">
 		  	 	 		<thead>
-		  	 	 			<tr ><th>序号</th><th>登陆账号</th><th>当前权限</th><th>最后上线时间</th><th>操作</th></tr>
+		  	 	 			<tr ><th>序号</th><th>登陆账号</th><th>当前权限</th><th>最后上线时间</th><th class="operation">操作</th></tr>
 		  	 	 		</thead>
 		  	 	 		<tbody>
 		  	 	 			<tr th:each="user,userStat: ${userListPage}">
@@ -39,8 +39,8 @@
 									<p th:case="'ROLE_EDITOR'">操作员</p>
 									<p th:case="'ROLE_REVIEWER'">仅查询</p>
 								</td>
-		  	 	 				<td th:text="${user.getLoginTime()}"></td>
-								<td><a class="abtn"><span onclick="showModal1()" class="" 	th:id="${user.getName()}">权限设置</span></a><br/>
+		  	 	 				<td th:text="${user.getLogin_time()}"></td>
+								<td class="operations"><a class="abtn" th:if="${user.getName()} != 'admin' "><span onclick="showModal1()" class="" 	th:id="${user.getName()}">权限设置</span></a><br/>
 									<a th:if="${user.getName()} != 'admin' " th:id="${user.getName()}" class="abtn bt_delete">删除</a>
 								</td>
 		  	 	 			</tr>
@@ -106,10 +106,8 @@
 		  </div>
 	  </div>
 
-   </body>
-</html>
 
-<script>
+<script type="text/javascript">
 	function showModal(){
 		$("#modal").addClass('modal_in');
 	}
@@ -127,9 +125,55 @@
 	function hideModal(){
 		$(".modal").removeClass('modal_in');
 	}
+
+
+	$("#sider").load("/sider",function(){
+		$(".siderNav .l5").addClass('cur')
+	});
+
+	$("#topInfo").load("/header")
+
+	var page1 = [[${pageSize}]]%10;
+	var page2;
+	if(page1 != 0){
+		page2 = Math.round([[${pageSize}]]/10) + 1;
+	}else{
+		page2 = Math.round([[${pageSize}]]/10)
+	}
+	//console.log(page2)
+	/*
+        * 定义回掉函数
+        * @param  number:跳转页
+        * */
+	function pageChange(i) {
+		//alert("index is :" + i);
+		//Pagination.Page($(".ht-page"), i, 300, 10);
+		window.location.href = "[[@{../authenticationSet(page)}]]="+i;
+		//window.location.reload();
+	}
+
+	Pagination.init($(".ht-page"), pageChange);
+	let page = getQuery("page");
+	if(page>0){
+		Pagination.Page($(".ht-page"), page2,[[${pageSize}]], 10);
+	}
+	else{
+		Pagination.Page($(".ht-page"), 0,[[${pageSize}]], 10);
+
+	}
+
+	/*定义获取参数的方法*/
+	function getQuery(para){
+		var reg = new RegExp("(^|&)"+para +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null){
+			return unescape(r[2]);
+		}
+		return null;
+	}
 </script>
 
-<script type="text/javascript">
+<script th:inline="javascript">
 		$(function () {
 			$('#bt_submit').click(function () {
 				var name = $('#username').val();
@@ -167,58 +211,16 @@
 				}
 			});
 			});
-			// $(document).ready(function () {
-			// 	var role = [[${role}]];
-			// 	if(role == "ROLE_REVIEWER" || role == "ROLE_EDITOR"){
-			// 		$("#add").attr("style","display:none;");
-			// 		var aa = document.getElementsByClassName("operations");//获取到的是一个类数组
-			// 		$(".operations").attr("style","display:none;");
-			// 	}
-			// });
-		$("#sider").load("/sider",function(){
-			$(".siderNav .l5").addClass('cur')
-		});
-
-		$("#topInfo").load("/header")
-
-		var page1 = [[${pageSize}]]%10;
-		var page2;
-		if(page1 != 0){
-			page2 = Math.round([[${pageSize}]]/10) + 1;
-		}else{
-			page2 = Math.round([[${pageSize}]]/10)
-		}
-		//console.log(page2)
-		/*
-            * 定义回掉函数
-            * @param  number:跳转页
-            * */
-		function pageChange(i) {
-			//alert("index is :" + i);
-			//Pagination.Page($(".ht-page"), i, 300, 10);
-			window.location.href = "[[@{../authenticationSet(page)}]]="+i;
-			//window.location.reload();
-		}
-
-		Pagination.init($(".ht-page"), pageChange);
-		let page = getQuery("page");
-		if(page>0){
-			Pagination.Page($(".ht-page"), page2,[[${pageSize}]], 10);
-		}
-		else{
-			Pagination.Page($(".ht-page"), 0,[[${pageSize}]], 10);
-
-		}
-
-		/*定义获取参数的方法*/
-		function getQuery(para){
-			var reg = new RegExp("(^|&)"+para +"=([^&]*)(&|$)");
-			var r = window.location.search.substr(1).match(reg);
-			if(r!=null){
-				return unescape(r[2]);
-			}
-			return null;
-		}
+			$(document).ready(function () {
+				var role = [[${role}]];
+				if(role == "ROLE_REVIEWER" || role == "ROLE_EDITOR"){
+					//document.getElementById("operation").style.visibility="hidden";//隐藏
+					//document.getElementById("operations").style.visibility="hidden";//隐藏
+					$(".addBtnBox").attr("style","display:none;");
+					$(".operations").attr("style","display:none;");
+					$(".operation").attr("style","display:none;");
+				}
+			});
 
 		$(function () {
 			$('#bt_update').click(function () {
@@ -281,3 +283,6 @@
 
 </script>
 
+
+   </body>
+</html>
