@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.tds.monitor.MonitorApplication
+Class-Path: common-1.0.0.jar
+
