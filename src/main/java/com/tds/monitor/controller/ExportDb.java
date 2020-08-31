@@ -41,7 +41,7 @@ public class ExportDb {
 //    }
 
     @GetMapping("/export/txrecordByPublicKey")
-    public void export(HttpServletResponse response,@RequestParam(value = "json") String json){
+    public void export(HttpServletResponse response,String json){
         try {
             JSONArray list = new JSONArray();
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
@@ -88,13 +88,13 @@ public class ExportDb {
                     HSSFRow dataRow = sheet.createRow(sheet.getLastRowNum() + 1);
                     dataRow.createCell(0).setCellValue(jsonObject.get("version").toString());
                     String type = "";
-                    if (jsonObject.get("type").toString() == "0") {
+                    if (jsonObject.get("type").toString().equals("0")) {
                         type = "coin base";
-                    } else if (jsonObject.get("type").toString() == "1") {
+                    } else if (jsonObject.get("type").toString().equals("1")) {
                         type = "转账";
-                    } else if (jsonObject.get("type").toString() == "2") {
+                    } else if (jsonObject.get("type").toString().equals("2")) {
                         type = "合约部署";
-                    } else if (jsonObject.get("type").toString() == "3") {
+                    } else if (jsonObject.get("type").toString().equals("3")) {
                         type = "合约调用";
                     } else {
                         type = "";

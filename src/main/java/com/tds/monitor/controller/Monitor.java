@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.tdf.common.store.LevelDb;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +41,9 @@ public class   Monitor {
     private JdbcTemplate tmpl;
     @Autowired
     public NodeServiceImpl nodeService;
+
+    @Autowired
+    private LevelDb leveldb;
 
 
     //分叉监测
@@ -169,10 +173,10 @@ public class   Monitor {
     @Scheduled(cron="0/5 * *  * * ? ")
     public void monitorStatus() throws IOException {
         boolean ismail = false;
-//        if (leveldb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
-//            Object read = JSONObject.parseObject(new String(leveldb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
-//            ismail = true;
-//        }
+        if (leveldb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
+            Object read = JSONObject.parseObject(new String(leveldb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
+            ismail = true;
+        }
         recoveryBifurcate(ismail);
         checkBlockIsStuck(ismail);
     }
