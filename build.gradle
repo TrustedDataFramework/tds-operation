@@ -4,13 +4,13 @@ plugins {
     id 'java'
 }
 
-group = 'com.wisdom'
+group = 'com.tds'
 //version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 //apply plugin: 'war'
 apply plugin:'application'
-mainClassName = 'com.wisdom.monitor.MonitorApplication'
+mainClassName = 'com.tds.monitor.MonitorApplication'
 
 run {
     main = project.getProperty('mainClassName')

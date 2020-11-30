@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import org.tdf.common.store.LevelDb;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -101,21 +102,21 @@ public class SendMailUtil {
         return true;
     }
 
-//    public static void main(String[] args) throws IOException {
-//        StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
-//        messageText.append("<span>警告:</span></br>");
-//        messageText.append("<span>您绑定的节点出现分叉！</span></br>");
-//
-//        Properties props = new Properties();
-//        props.put("mail.smtp.auth", "true");
-//        props.put("mail.smtp.starttls.enable", "true");
-//        props.put("mail.smtp.host", "smtp.outlook.com");
-//        props.put("mail.smtp.port", "587");
-//        //自定义信息
-//        props.put("username", "w13376293175@outlook.com");//你的邮箱
-//        props.put("password", "ww00000000@");//你的密码
-//        props.put("to", "w13376293175@outlook.com");//接收的邮箱
-//        SendMailUtil.send(props,"通知",messageText.toString());
-//
-//    }
+    public static void main(String[] args) throws IOException {
+        StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
+        messageText.append("<span>警告:</span></br>");
+        messageText.append("<span>您绑定的节点出现分叉！</span></br>");
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.outlook.com");
+        props.put("mail.smtp.port", "587");
+        //自定义信息
+        props.put("username", "zq18136788784@outlook.com");//你的邮箱
+        props.put("password", "zq960603");//你的密码
+        props.put("to", "zq18136788784@outlook.com");//接收的邮箱
+        SendMailUtil.send(props,"通知",messageText.toString());
+
+    }
 }

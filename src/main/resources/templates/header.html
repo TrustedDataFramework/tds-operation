@@ -5,6 +5,7 @@
 	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+	<script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
 </head>
 <body>
 <div>
@@ -67,9 +68,15 @@
 		document.getElementById("time").innerHTML=strYear+strMonth+strDay+" "+strTime;
 	}
 	setInterval("setTime()",1000);
+	var warning;
+	if(!!window.ActiveXObject || "ActiveXObject" in window){
+		warning = '';
+	}else{
+		warning = 'warning';
+	}
 	$("#stop").click(function () {
 		Swal.fire({
-			type: 'question', // 弹框类型
+			type: warning, // 弹框类型
 			title: '', //标题
 			text: "是否停止！", //显示内容
 			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
@@ -125,7 +132,7 @@
 
 	$("#restart").click(function () {
 		Swal.fire({
-			type: 'question', // 弹框类型
+			type: warning, // 弹框类型
 			title: '', //标题
 			text: "是否重启！", //显示内容
 			confirmButtonColor: '#3085d6',// 确定按钮的 颜色

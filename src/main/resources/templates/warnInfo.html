@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="renderer" content="webkit">
   <link rel="stylesheet" type="text/css" href="css/style.css"/>
+	<script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
 </head>
 
 <body class="body_main">
@@ -97,9 +98,15 @@
 				Swal.fire("", "请输入密码", "error");
 				return;
 			}
+			var warning;
+			if(!!window.ActiveXObject || "ActiveXObject" in window){
+				warning = '';
+			}else{
+				warning = 'warning';
+			}
 			var urlData = {sender: $('#txt_send').val(), receiver: $('#txt_receiver').val(),password:$('#txt_password').val()};
 			Swal.fire({
-				type: 'question', // 弹框类型
+				type: warning, // 弹框类型
 				title: '', //标题
 				text: "是否绑定邮箱！", //显示内容
 

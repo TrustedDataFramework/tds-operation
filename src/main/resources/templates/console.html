@@ -9,6 +9,9 @@
         <meta name="renderer" content="webkit">
 		<link rel="stylesheet" type="text/css" href="css/style.css"/>
 		<link rel="stylesheet" type="text/css" href="css/pagination.css"/>
+
+		<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 	</head>
       
    <body class="body_main">
@@ -238,6 +241,12 @@
 </script>
 
 <script th:inline="javascript">
+	var warning;
+	if(!!window.ActiveXObject || "ActiveXObject" in window){
+		warning = '';
+	}else{
+		warning = 'warning';
+	}
 	$(function () {
 		$('#bt_submit').click(function () {
 			var re = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
@@ -256,7 +265,7 @@
 				password: $('#password').val(), dbIP: $('#dbip').val(), dbPort: $('#dbport').val(), databaseName: $('#database').val(),
 				dbUsername: $('#dbusername').val(), dbPassword: $('#dbpassword').val(),leveldbPath: $('#leveldb').val()};
 			Swal.fire({
-				type: 'question', // 弹框类型
+				type: warning, // 弹框类型
 				title: '', //标题
 				text: "是否添加！", //显示内容
 
@@ -314,7 +323,7 @@
 		$(' .bt_delete').click(function () {
 			var urlData = {nodeStr: $(this).attr('id')};
 			Swal.fire({
-				type: 'question', // 弹框类型
+				type: warning, // 弹框类型
 				title: '', //标题
 				text: "是否删除！", //显示内容
 
@@ -372,7 +381,7 @@
 		$(' .bt_bind').click(function () {
 			var urlData = {nodeStr: $(this).attr('id')};
 			Swal.fire({
-				type: 'question', // 弹框类型
+				type: warning, // 弹框类型
 				title: '', //标题
 				text: "是否绑定！", //显示内容
 
@@ -428,7 +437,7 @@
 		$(' .bt_unbind').click(function () {
 			var urlData = {nodeStr: $(this).attr('id')};
 			Swal.fire({
-				type: 'question', // 弹框类型
+				type: warning, // 弹框类型
 				title: '', //标题
 				text: "是否解绑！", //显示内容
 
@@ -559,7 +568,7 @@
 				dbUsername: $('#update_dbusername').val(), dbPassword: $('#update_dbpassword').val(), leveldbPath:$('#update_leveldb').val()};
 
 			Swal.fire({
-				type: 'question', // 弹框类型
+				type: warning, // 弹框类型
 				title: '', //标题
 				text: "是否更新！", //显示内容
 
