@@ -28,8 +28,8 @@ import java.util.List;
 @Slf4j
 @Component
 public class ApplicationRunnerImpl implements ApplicationRunner {
-    @Value(value = "classpath:a.json")
-    private Resource resource;
+//    @Value(value = "classpath:a.json")
+//    private Resource resource;
 
     @Autowired
     private NodeDao nodeDao;
@@ -37,21 +37,21 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
-        BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-        StringBuffer message=new StringBuffer();
-        String line = null;
-        while((line = br.readLine()) != null) {
-            message.append(line);
-        }
-        String defaultString=message.toString();
-        String result=defaultString.replace("\r\n", "").replaceAll(" +", "");
-        System.out.println(result);
+//        BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+//        StringBuffer message=new StringBuffer();
+//        String line = null;
+//        while((line = br.readLine()) != null) {
+//            message.append(line);
+//        }
+//        String defaultString=message.toString();
+//        String result=defaultString.replace("\r\n", "").replaceAll(" +", "");
+//        System.out.println(result);
         //获取指定路径
-        System.getProperty("home.dir");
-        String path;
-        System.out.println(System.getProperty("home.dir"));
-        path = System.getProperty("home.dir") + ".tdos" + "/etc/docker-compose.yml";
-        System.out.println(path);
+//        System.getProperty("home.dir");
+//        String path;
+//        System.out.println(System.getProperty("home.dir"));
+//        path = System.getProperty("home.dir") + ".tdos" + "/etc/docker-compose.yml";
+//        System.out.println(path);
 //        JSONObject jsonObject = JSONObject.parseObject(result);
 //        String ip = jsonObject.getString("ip");
 //        String port = jsonObject.getString("port");
@@ -85,30 +85,30 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 //        }
     }
 
-    private static String pushUrl= "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
+    //private static String pushUrl= "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
-    private List getWhiteArrays(){
-        List list = new ArrayList();
-        try {
-            URL url = new URL(pushUrl);
-            //System.out.println("访问路径"+pushUrl);
-            URLConnection conn = url.openConnection();
-            conn.setReadTimeout(1000);  //读取超时，时限1秒
-            conn.setConnectTimeout(1000);  //链接超时，时限1秒
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
-            StringBuffer receive = new StringBuffer();
-            receive.append(reader.readLine());
-            JSONObject jsonObject =JSONObject.parseObject(receive.toString());
-            for(Object o :jsonObject.getJSONArray("whiteArrays")){
-                list.add(o);
-            }
-            reader.close();//读取关闭
-            conn.connect();  //链接关闭
-        } catch (Exception e) {
-            e.printStackTrace();//这里抓取的异常范围比较大，是异常就抛出
-        }
-        return list;
-    }
+//    private List getWhiteArrays(){
+//        List list = new ArrayList();
+//        try {
+//            URL url = new URL(pushUrl);
+//            //System.out.println("访问路径"+pushUrl);
+//            URLConnection conn = url.openConnection();
+//            conn.setReadTimeout(1000);  //读取超时，时限1秒
+//            conn.setConnectTimeout(1000);  //链接超时，时限1秒
+//
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+//            StringBuffer receive = new StringBuffer();
+//            receive.append(reader.readLine());
+//            JSONObject jsonObject =JSONObject.parseObject(receive.toString());
+//            for(Object o :jsonObject.getJSONArray("whiteArrays")){
+//                list.add(o);
+//            }
+//            reader.close();//读取关闭
+//            conn.connect();  //链接关闭
+//        } catch (Exception e) {
+//            e.printStackTrace();//这里抓取的异常范围比较大，是异常就抛出
+//        }
+//        return list;
+//    }
 
 }
