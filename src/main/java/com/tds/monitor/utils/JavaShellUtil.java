@@ -21,7 +21,7 @@ public class JavaShellUtil {
     private static final String shellName = "/bin/bash";
     private static final String shellParam = "-c";
 
-    private static final String browserUrl = "/.tdos/etc/browser.sh ";
+    private static final String browserUrl = System.getProperty("user.home") + "/.tdos/etc/browser.sh ";
 
     public static boolean judgeImages(String shellCommand, String[] containername) {
         int tag = 0;
@@ -50,7 +50,7 @@ public class JavaShellUtil {
     }
 
     public static String ProcessBrowserShell(int state, String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + System.getProperty("user.home") + browserUrl + state};
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + browserUrl + state};
         return ProcessShell(cmd);
     }
 
