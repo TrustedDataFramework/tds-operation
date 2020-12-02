@@ -42,15 +42,19 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
         String ip = LocalHostUtil.getLocalIP();
         //查看节点是否启动
-        JSONObject jsonObject = restTemplateUtil.getNodeInfo("192.168.1.89",6011);
+        JSONObject jsonObject = restTemplateUtil.getNodeInfo("127.0.0.1",7010);
         if(jsonObject.getInteger("code") == 200){
+            log.info("==============================获取注册码");
             //获取注册码
             byte[] all = Files.readAllBytes(Paths.get(Constants.ETC_DIR, ".serial"));
+            String mes = new String(all);
             //获取白名单
+            log.info("==============================获取白名单");
             List list = getWhiteArrays();
-            if(list.contains(Hex.encodeHexString(all))) {
+            if(list.contains(mes) ){
                 //sudo 密码
                 //String password = Constants.getSudoPassword();
+                log.info("==============================启动节点");
                 String[] cmds = new String[]{
                         "java", "-jar", Constants.TDS_JAR_PATH,
                         "--spring.config.location=" + Constants.YML_PATH,
@@ -68,6 +72,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                 });
                 t.start();
                 //获取节点数据
+                log.info("==============================获取节点数据");
                 byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), "etc", "config.json"));
                 String mess = new String(message);
                 String mining;
@@ -77,10 +82,12 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                     mining = "1";
                 }
                 Nodes node = new Nodes();
+                log.info("==============================获取节点到数据");
                 node.setNodeIP(ip);
-                node.setNodePort("7011");
+                node.setNodePort("7010");
                 node.setNodeType(mining);
-                if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7011").isPresent()) {
+                if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
+                    log.info("=============================保存节点信息");
                     nodeDao.save(node);
                 }
             }
