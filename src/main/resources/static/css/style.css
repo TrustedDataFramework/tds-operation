@@ -376,3 +376,16 @@ a{cursor:pointer;}
 	float: left;
 	display: flex;
 }
+
+.browser_box .browser-btn{display: inset-block; vertical-align:middle; padding:8px 20px; margin:10px 8px;}
+.browser_box .browser-info{
+	background:#F2F2F2; text-align: left; padding:20px 30px;
+	margin: 0 30px; margin-top: 20px;font-size:0px;
+}
+.browser_box .browser-info p{color:#3182FF; font-size:18px;
+	padding: 10px 0; display:inline-block; width:25%; text-align:center
+}
+
+.pointer{cursor: pointer;}
+.browserInfo{padding-bottom:20px;font-size: 18px;}
+.browserInfo span{padding-right:30px;}

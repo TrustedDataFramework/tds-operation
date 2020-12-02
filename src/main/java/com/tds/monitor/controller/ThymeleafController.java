@@ -284,6 +284,11 @@ public class ThymeleafController {
         return "dataOutput";
     }
 
+    @GetMapping("/monitorBrowser")
+    public String monitorBrowser() {
+        return "monitorBrowser";
+    }
+
     @ResponseBody
     @RequestMapping("/adduser")
     public String adduser(@ModelAttribute User user){
@@ -488,5 +493,12 @@ public class ThymeleafController {
             }
             return this;
         }
+    }
+
+    //检测浏览器
+    public String detectExplorer(){
+        JSONObject get_info = new JSONObject();
+        get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://"), null)).getJSONObject("data");
+        return "";
     }
 }

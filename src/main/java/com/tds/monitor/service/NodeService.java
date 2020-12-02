@@ -12,5 +12,4 @@ public interface NodeService {
     boolean updateUser(User user);
     boolean updateNode(Nodes nodes);
 
-
 }

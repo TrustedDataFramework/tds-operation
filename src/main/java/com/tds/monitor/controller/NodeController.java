@@ -6,6 +6,7 @@ import com.tds.monitor.model.ResultCode;
 import com.tds.monitor.model.User;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.ConnectionUtil;
+import com.tds.monitor.utils.LocalHostUtil;
 import com.tds.monitor.utils.MapCacheUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,5 +93,20 @@ public class NodeController {
     @GetMapping(value = {"/updateNode"})
     public boolean updateNode(@ModelAttribute Nodes node) {
         return nodeService.updateNode(node);
+    }
+
+    @GetMapping(value = {"/getLocalIp"})
+    public Object getLocalIp(){
+        Result result = new Result();
+        try {
+            result.setMessage("成功");
+            result.setCode(ResultCode.SUCCESS);
+            result.setData(LocalHostUtil.getLocalIP());
+            return result;
+        }catch (Exception e){
+            result.setMessage("失败");
+            result.setCode(ResultCode.FAIL);
+            return result;
+        }
     }
 }
