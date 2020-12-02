@@ -18,6 +18,11 @@ public class JavaShellUtil {
     //发送文件到Kondor系统的Shell的文件名(绝对路径)
     private static final String sendKondorShellName = basePath + "sendKondorFile.sh";
 
+    private static final String shellName = "/bin/bash";
+    private static final String shellParam = "-c";
+
+    private static final String browserUrl = "/.tdos/etc/browser.sh ";
+
     public static boolean judgeImages(String shellCommand, String[] containername) {
         int tag = 0;
         try {
@@ -44,7 +49,35 @@ public class JavaShellUtil {
         return tag == containername.length;
     }
 
-    public static int executeShell(String shellCommand)  {
+    public static String ProcessBrowserShell(int state, String passwd) {
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + System.getProperty("user.home") + browserUrl + state};
+        return ProcessShell(cmd);
+    }
+
+    public static String ProcessShell(String... shellCommand) {
+        String result = "";
+        try {
+            Process ps = Runtime.getRuntime().exec(shellCommand);
+            int status = ps.waitFor();
+            if (status != 0) {
+                System.out.println("Failed to call shell's command ");
+            }
+            BufferedReader br = new BufferedReader(new InputStreamReader(ps.getInputStream()));
+            StringBuffer sb = new StringBuffer();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            result = sb.toString();
+        } catch (Exception e) {
+            result = e.getLocalizedMessage();
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    public static int executeShell(String shellCommand) {
         int success = 0;
         StringBuffer stringBuffer = new StringBuffer();
         BufferedReader bufferedReader = null;
@@ -98,8 +131,7 @@ public class JavaShellUtil {
         return success;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         ProcessBuilder pbsh = new ProcessBuilder("bash", "shell.sh");
         pbsh.directory(new File("/tmp"));// 指定检查脚本存放目录，绝对路径
         /*相对路径方式
@@ -107,8 +139,7 @@ public class JavaShellUtil {
 		pb.directory(new File(System.getProperty("user.dir")));//运行当前路径
         */
         pbsh.redirectErrorStream(true);//合并标准错误和标准输出
-        try
-        {
+        try {
             Process pr = pbsh.start();
             // 读取输出，脚本运行结束后获取返回值，流的转换
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(pr.getInputStream()));
@@ -120,8 +151,7 @@ public class JavaShellUtil {
             }
             String[] result = strBuf.toString().split("\\^");
             pr.waitFor();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
