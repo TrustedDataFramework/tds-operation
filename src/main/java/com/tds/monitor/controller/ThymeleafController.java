@@ -2,6 +2,7 @@ package com.tds.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tds.monitor.dao.MailDao;
 import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.dao.UserDao;
 import com.tds.monitor.model.*;
@@ -21,7 +22,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.tdf.common.store.LevelDb;
 
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
@@ -47,9 +47,8 @@ public class ThymeleafController {
     @Autowired
     private NodeDao nodeDao;
 
-
     @Autowired
-    private LevelDb levelDb;
+    private MailDao mailDao;
 
     @Value("${Image}")
     private String image;
@@ -250,9 +249,8 @@ public class ThymeleafController {
     @GetMapping("/warnInfo")
     public String warnInfo(ModelMap map){
         Mail mail = new Mail();
-        if (levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
-            Object read = JSONObject.parseObject(new String(levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
-            mail= (Mail) read;
+        if (!mailDao.findAll().isEmpty()){
+            mail= mailDao.findMailById(1).get();
         }
         map.addAttribute(mail);
         map.addAttribute("role",customUserService.getRole());
@@ -389,7 +387,13 @@ public class ThymeleafController {
     @RequestMapping("/editmail")
     public String editMail(@ModelAttribute Mail mail) throws IOException {
         Result rs = new Result();
-        levelDb.put("mail".getBytes(StandardCharsets.UTF_8),JSON.toJSONString(mail).getBytes(StandardCharsets.UTF_8));
+        if (!mailDao.findAll().isEmpty()){
+            mail.setSender(mail.getSender());
+            mail.setPassword(mail.getPassword());
+            mail.setReceiver(mail.getReceiver());
+            mailDao.save(mail);
+        }
+        //levelDb.put("mail".getBytes(StandardCharsets.UTF_8),JSON.toJSONString(mail).getBytes(StandardCharsets.UTF_8));
         rs.setCode(ResultCode.SUCCESS);
         rs.setMessage("成功");
         return rs.toString();

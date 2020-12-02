@@ -117,9 +117,9 @@ dependencies {
     compile fileTree(dir:'lib',include:['*.jar'])
     compile group: 'org.ethereum', name: 'leveldbjni-all', version: '1.18.3'
 //    implementation 'com.github.WisedomChainGroup:java-sdk:0.3.0'
-    compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.7'
+//    compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.7'
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb-api
-    compile group: 'org.iq80.leveldb', name: 'leveldb-api', version: '0.7'
+ //   compile group: 'org.iq80.leveldb', name: 'leveldb-api', version: '0.7'
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compile group: 'com.h2database', name: 'h2', version: '1.4.187'
 

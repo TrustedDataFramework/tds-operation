@@ -7,10 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
-import org.tdf.common.store.LevelDb;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -23,26 +21,24 @@ import javax.mail.internet.MimeMessage;
 @EnableScheduling
 public class SendMailUtil {
     private static final Logger logger = LoggerFactory.getLogger(SendMailUtil.class);
-    @Autowired
-    private LevelDb levelDb;
 
     public boolean sendMailOutLook(String title, String body){
         Mail mail = new Mail();
-        if (levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
-            Object read = JSONObject.parseObject(new String(levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
-            mail= (Mail) read;
-            //设置参数
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.host", "smtp.outlook.com");
-            props.put("mail.smtp.port", "587");
-            //自定义信息
-            props.put("username", mail.getSender());//你的邮箱
-            props.put("password", mail.getPassword());//你的密码
-            props.put("to", mail.getReceiver());//接收的邮箱
-            return SendMailUtil.send(props,title,body);
-        }
+//        if (levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
+//            Object read = JSONObject.parseObject(new String(levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
+//            mail= (Mail) read;
+//            //设置参数
+//            Properties props = new Properties();
+//            props.put("mail.smtp.auth", "true");
+//            props.put("mail.smtp.starttls.enable", "true");
+//            props.put("mail.smtp.host", "smtp.outlook.com");
+//            props.put("mail.smtp.port", "587");
+//            //自定义信息
+//            props.put("username", mail.getSender());//你的邮箱
+//            props.put("password", mail.getPassword());//你的密码
+//            props.put("to", mail.getReceiver());//接收的邮箱
+//            return SendMailUtil.send(props,title,body);
+//        }
         return false;
     }
 
