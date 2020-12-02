@@ -22,6 +22,7 @@ public class JavaShellUtil {
     private static final String shellParam = "-c";
 
     private static final String browserUrl = System.getProperty("user.home") + "/.tdos/etc/browser.sh ";
+    private static final String killUrl = System.getProperty("user.home") + "/.tdos/etc/kill.sh ";
 
     public static boolean judgeImages(String shellCommand, String[] containername) {
         int tag = 0;
@@ -47,6 +48,11 @@ public class JavaShellUtil {
             System.out.println("执行Shell命令时发生异常");
         }
         return tag == containername.length;
+    }
+
+    public static String ProcessKillShell(String name, String passwd) {
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + killUrl + name};
+        return ProcessShell(cmd);
     }
 
     public static String ProcessBrowserShell(int state, String passwd) {
