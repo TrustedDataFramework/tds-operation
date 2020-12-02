@@ -1,114 +1,143 @@
 package com.tds.monitor.service.Impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tds.monitor.dao.NodeDao;
-import com.tds.monitor.model.Meaasge;
 import com.tds.monitor.model.Nodes;
-import com.tds.monitor.model.Result;
-import com.tds.monitor.model.ResultCode;
-import com.tds.monitor.utils.ConnectionUtil;
-import com.tds.monitor.utils.MapCacheUtil;
+import com.tds.monitor.utils.Constants;
+import com.tds.monitor.utils.LocalHostUtil;
+import com.tds.monitor.utils.RestTemplateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Component
 public class ApplicationRunnerImpl implements ApplicationRunner {
-//    @Value(value = "classpath:a.json")
-//    private Resource resource;
 
     @Autowired
     private NodeDao nodeDao;
 
+    @Autowired
+    RestTemplateUtil restTemplateUtil;
+
+    private static String pushUrl= "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
+
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
+
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
-//        BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-//        StringBuffer message=new StringBuffer();
-//        String line = null;
-//        while((line = br.readLine()) != null) {
-//            message.append(line);
-//        }
-//        String defaultString=message.toString();
-//        String result=defaultString.replace("\r\n", "").replaceAll(" +", "");
-//        System.out.println(result);
-        //获取指定路径
-//        System.getProperty("home.dir");
-//        String path;
-//        System.out.println(System.getProperty("home.dir"));
-//        path = System.getProperty("home.dir") + ".tdos" + "/etc/docker-compose.yml";
-//        System.out.println(path);
-//        JSONObject jsonObject = JSONObject.parseObject(result);
-//        String ip = jsonObject.getString("ip");
-//        String port = jsonObject.getString("port");
-//        String type = jsonObject.getString("type");
-//        String nodeStr = ip+":"+port;
-//        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-//        if (mapCacheUtil.getCacheItem("bindNode") == null){
-//            mapCacheUtil.putCacheItem("bindNode",nodeStr);
-//        }else {
-//            mapCacheUtil.removeCacheItem("bindNode");
-//            mapCacheUtil.putCacheItem("bindNode",nodeStr);
-//        }
-//        System.out.println("12111");
-//        Nodes node = new Nodes();
-//        node.setNodeIP(ip);
-//        node.setNodePort(port);
-//        node.setNodeType(type);
-//        node.setUserName("");
-//        node.setPassword("");
-//        node.setUserName("");
-//        node.setNodeState("");
-//        node.setNodeVersion("");
-//        node.setPassword("");
-//        node.setLeveldbPath("");
-//        if (!nodeDao.findNodesByNodeIPAndNodePort(ip,port).isPresent()){
-//            System.out.println("121");
-//            nodeDao.save(node);
-//        }else{
-//            nodeDao.deleteAll();
-//            System.out.println("12");
-//        }
+        String ip = LocalHostUtil.getLocalIP();
+        //查看节点是否启动
+        JSONObject jsonObject = restTemplateUtil.getNodeInfo("127.0.0.1",7010);
+        if(jsonObject.getInteger("code") == 200){
+            log.info("==============================获取注册码");
+            //获取注册码
+            byte[] all = Files.readAllBytes(Paths.get(Constants.ETC_DIR, ".serial"));
+            String mes = new String(all);
+            //获取白名单
+            log.info("==============================获取白名单");
+            List list = getWhiteArrays();
+            if(list.contains(mes) ){
+                //sudo 密码
+                //String password = Constants.getSudoPassword();
+                log.info("==============================启动节点");
+                String[] cmds = new String[]{
+                        "java", "-jar", Constants.TDS_JAR_PATH,
+                        "--spring.config.location=" + Constants.YML_PATH,
+                };
+                Thread t = new Thread(() -> {
+                    try {
+                        Process process = Runtime.getRuntime().exec(cmds);
+                        // 把子进程日志打到当前进程
+                        IOUtils.copy(process.getInputStream(), System.out);
+                        // 把子进程错误日志打到当前进程
+                        IOUtils.copy(process.getErrorStream(), System.err);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                t.start();
+                //获取节点数据
+                log.info("==============================获取节点数据");
+                byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), "etc", "config.json"));
+                String mess = new String(message);
+                String mining;
+                if (JSON.parseObject(mess).getString("mining").equals("true")) {
+                    mining = "2";
+                } else {
+                    mining = "1";
+                }
+                Nodes node = new Nodes();
+                log.info("==============================获取节点到数据");
+                node.setNodeIP(ip);
+                node.setNodePort("7010");
+                node.setNodeType(mining);
+                if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
+                    log.info("=============================保存节点信息");
+                    nodeDao.save(node);
+                }
+            }
+        }else{
+
+        }
     }
 
-    //private static String pushUrl= "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
-//    private List getWhiteArrays(){
-//        List list = new ArrayList();
-//        try {
-//            URL url = new URL(pushUrl);
-//            //System.out.println("访问路径"+pushUrl);
-//            URLConnection conn = url.openConnection();
-//            conn.setReadTimeout(1000);  //读取超时，时限1秒
-//            conn.setConnectTimeout(1000);  //链接超时，时限1秒
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
-//            StringBuffer receive = new StringBuffer();
-//            receive.append(reader.readLine());
-//            JSONObject jsonObject =JSONObject.parseObject(receive.toString());
-//            for(Object o :jsonObject.getJSONArray("whiteArrays")){
-//                list.add(o);
-//            }
-//            reader.close();//读取关闭
-//            conn.connect();  //链接关闭
-//        } catch (Exception e) {
-//            e.printStackTrace();//这里抓取的异常范围比较大，是异常就抛出
-//        }
-//        return list;
-//    }
+    private static List getWhiteArrays(){
+        List list = new ArrayList();
+        try {
+            URL url = new URL(pushUrl);
+            //System.out.println("访问路径"+pushUrl);
+            URLConnection conn = url.openConnection();
+            conn.setReadTimeout(1000);  //读取超时，时限1秒
+            conn.setConnectTimeout(1000);  //链接超时，时限1秒
 
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+            StringBuffer receive = new StringBuffer();
+            receive.append(reader.readLine());
+            JSONObject jsonObject =JSONObject.parseObject(receive.toString());
+            for(Object o :jsonObject.getJSONArray("whiteArrays")){
+                list.add(o);
+            }
+            reader.close();//读取关闭
+            conn.connect();  //链接关闭
+        } catch (Exception e) {
+            e.printStackTrace();//这里抓取的异常范围比较大，是异常就抛出
+        }
+        return list;
+    }
+
+
+    private static boolean exeCmd(String[] cmds){
+        boolean result = false;
+        BufferedReader br = null;
+        try {
+            Process p = Runtime.getRuntime().exec(cmds);
+            br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            System.out.println("sb:" + sb.toString());
+            result = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

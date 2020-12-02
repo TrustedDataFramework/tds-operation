@@ -28,16 +28,16 @@
 		  	 	 	<div class="dataBox">
 		  	 	 	   <div class="browser-info">
 						   <p>IP:<span id="ip">192.168.1.123</span></p>
-						   <p>端口：8080</p>
-						   <p>版本：2.0.1</p>
-						   <p>运行状态：成功</p>
+						   <p>端口：8181</p>
+						   <p>版本：<span id="version">2.0.1</span></p>
+						   <p>运行状态：<span id="status">成功</span></p>
 						</div>
 		 
 						<div class="btnbox">
-							<a class="btndefault borderRadius5 browser-btn">停止</a>
-							<a class="btndefault borderRadius5 browser-btn">启动</a>
-							<a class="btndefault borderRadius5 browser-btn">重启</a>
-							<a class="btndefault borderRadius5 browser-btn">访问</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal2()">停止</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal1()">启动</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal3()">重启</a>
+							<span class="btndefault borderRadius5 browser-btn" onclick="search()">访问</span>
 						</div>
 		  	 	 		
 		  	 	 	</div>
@@ -45,6 +45,59 @@
 	  	 	 </div>
 	  	 	 <div class="space"></div>
 	  	 </div>
+	  </div>
+
+	  <!--输入密码弹出框-->
+
+	  <div class="modal" id="modal1">
+		  <div class="modal-by-dialog modal-point">
+			  <a onclick="hideModal1()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">密码</h3>
+			  <div class="form">
+				  <div class="col clearfix">
+					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password1"/></div>
+				  </div>
+				  <div class="fbtnbox">
+					  <a  class="borderRadius5 fbtn" onclick="hideModal1()" id = "submit1">提交</a>
+				  </div>
+
+			  </div>
+		  </div>
+
+	  </div>
+
+	  <div class="modal" id="modal2">
+		  <div class="modal-by-dialog modal-point">
+			  <a onclick="hideModal2()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">密码</h3>
+			  <div class="form">
+				  <div class="col clearfix">
+					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password2"/></div>
+				  </div>
+				  <div class="fbtnbox">
+					  <a  class="borderRadius5 fbtn" onclick="hideModal2()" id = "submit2">提交</a>
+				  </div>
+
+			  </div>
+		  </div>
+
+	  </div>
+
+	  <div class="modal" id="modal3">
+		  <div class="modal-by-dialog modal-point">
+			  <a onclick="hideModal3()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">密码</h3>
+			  <div class="form">
+				  <div class="col clearfix">
+					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password3"/></div>
+				  </div>
+				  <div class="fbtnbox">
+					  <a  class="borderRadius5 fbtn" onclick="hideModal3()" id = "submit3">提交</a>
+				  </div>
+
+			  </div>
+		  </div>
+
 	  </div>
    </body>
 
@@ -57,6 +110,27 @@
  	
  	$("#topInfo").load("/header")
 
+	function showModal1(){
+		$("#modal1").addClass('modal_in');
+	}
+
+	function hideModal1(){
+		$("#modal1").removeClass('modal_in');
+	}
+	function showModal2(){
+		$("#modal2").addClass('modal_in');
+	}
+
+	function hideModal2(){
+		$("#modal2").removeClass('modal_in');
+	}
+	function showModal3(){
+		$("#modal3").addClass('modal_in');
+	}
+
+	function hideModal3(){
+		$("#modal3").removeClass('modal_in');
+	}
 
 	$(function () {
 		$.get('getLocalIp', function (result) {
@@ -64,5 +138,136 @@
 				document.getElementById("ip").innerHTML = result.data;
 			}
 		}, 'json');
+
+		$.get('detectExplorer', function (result) {
+			if(result){
+				document.getElementById("version").innerHTML = result.data;
+				if(result.data == ""){
+					document.getElementById("status").innerHTML = "未运行";
+				}else{
+					document.getElementById("status").innerHTML = "成功";
+				}
+			}
+		}, 'json');
 	});
+
+	$('#submit1').click(function () {
+		var urlData = {password: $('#password1').val()};
+		Swal.fire({
+			type: warning, // 弹框类型
+			title: '', //标题
+			text: "是否启动！", //显示内容
+
+			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+			confirmButtonText: '确定',// 确定按钮的 文字
+			showCancelButton: true, // 是否显示取消按钮
+			cancelButtonColor: '#d33', // 取消按钮的 颜色
+			cancelButtonText: "取消", // 取消按钮的 文字
+
+			focusCancel: true, // 是否聚焦 取消按钮
+			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+		}).then(function(isConfirm){
+			try {
+				//判断 是否 点击的 确定按钮
+				if (isConfirm.value) {
+					$.get('startWeb',urlData, function (result) {
+						if(result.code == 2000){
+							document.getElementById("version").innerHTML = result.data;
+							document.getElementById("status").innerHTML = "成功";
+						}else{
+
+						}
+					}, 'json');
+				}
+				else {
+					Swal.fire("取消", "点击了取消", "error");
+				}
+			} catch (e) {
+				alert(e);
+			}
+		});
+	});
+
+	$('#submit2').click(function () {
+		var urlData = {password: $('#password2').val()};
+		Swal.fire({
+			type: warning, // 弹框类型
+			title: '', //标题
+			text: "是否停止！", //显示内容
+
+			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+			confirmButtonText: '确定',// 确定按钮的 文字
+			showCancelButton: true, // 是否显示取消按钮
+			cancelButtonColor: '#d33', // 取消按钮的 颜色
+			cancelButtonText: "取消", // 取消按钮的 文字
+
+			focusCancel: true, // 是否聚焦 取消按钮
+			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+		}).then(function(isConfirm){
+			try {
+				//判断 是否 点击的 确定按钮
+				if (isConfirm.value) {
+					$.get('stopWeb',urlData, function (result) {
+						if(result.code == 2000){
+							document.getElementById("version").innerHTML = result.data;
+							document.getElementById("status").innerHTML = "成功";
+						}else{
+
+						}
+					}, 'json');
+				}
+				else {
+					Swal.fire("取消", "点击了取消", "error");
+				}
+			} catch (e) {
+				alert(e);
+			}
+		});
+	});
+
+	$('#submit3').click(function () {
+		var urlData = {password: $('#password3').val()};
+		Swal.fire({
+			type: warning, // 弹框类型
+			title: '', //标题
+			text: "是否重启！", //显示内容
+
+			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+			confirmButtonText: '确定',// 确定按钮的 文字
+			showCancelButton: true, // 是否显示取消按钮
+			cancelButtonColor: '#d33', // 取消按钮的 颜色
+			cancelButtonText: "取消", // 取消按钮的 文字
+
+			focusCancel: true, // 是否聚焦 取消按钮
+			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+		}).then(function(isConfirm){
+			try {
+				//判断 是否 点击的 确定按钮
+				if (isConfirm.value) {
+					$.get('restartWeb',urlData, function (result) {
+						if(result.code == 2000){
+							document.getElementById("version").innerHTML = result.data;
+							document.getElementById("status").innerHTML = "成功";
+						}else{
+
+						}
+					}, 'json');
+				}
+				else {
+					Swal.fire("取消", "点击了取消", "error");
+				}
+			} catch (e) {
+				alert(e);
+			}
+		});
+	});
+
+	function search() {
+		if(document.getElementById("version").innerHTML != ""){
+			let path = "http://" + document.getElementById("ip").innerHTML + ":8181"
+			window.open(path,"_blank");
+		}else{
+			alert("请启动浏览器");
+		}
+	}
 </script>

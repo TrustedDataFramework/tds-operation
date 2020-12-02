@@ -34,7 +34,7 @@ public class RestTemplateUtil {
 
     //查看浏览器后端是否启动，默认端口8181
     public String getBrowserInfo(String url, long port) {
-        url = "http://" + url + ":" + port + "";
+        url = "http://" + url + ":" + port + "/version";
         String result;
         try {
             result = restTemplate.getForObject(url, String.class);
