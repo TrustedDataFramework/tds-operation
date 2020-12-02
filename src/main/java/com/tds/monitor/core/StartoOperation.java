@@ -1,13 +1,21 @@
 package com.tds.monitor.core;
 
+import com.tds.monitor.utils.RestTemplateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StartoOperation {
 
+    @Autowired
+    RestTemplateUtil restTemplateUtil;
+
     public StartoOperation(){
         //查看本地节点是否启动
-        //没有启动，查看java version是否安装，没有安装异常，终止启动，正常到指定默认路径shell启动节点
+        //没有启动，查看java version是否安装，没有安装异常，终止启动，正常到指定默认路径shell启动节点，
+        // 获取节点数据，初始化在h2节点信息中
         //查看浏览器是否启动
+        //docker 启动浏览器
+        //初始化在节h2浏览器信息中
     }
 }

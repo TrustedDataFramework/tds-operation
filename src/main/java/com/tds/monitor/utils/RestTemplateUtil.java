@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class URLUtil {
+public class RestTemplateUtil {
 
     public RestTemplate restTemplate;
 
     private SimpleClientHttpRequestFactory simpleClientHttpRequestFactory;
 
-    public URLUtil() {
+    public RestTemplateUtil() {
         this.simpleClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
         simpleClientHttpRequestFactory.setReadTimeout(8 * 1000);
         simpleClientHttpRequestFactory.setConnectTimeout(10 * 1000);
