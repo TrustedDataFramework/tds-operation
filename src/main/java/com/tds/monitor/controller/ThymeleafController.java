@@ -9,9 +9,7 @@ import com.tds.monitor.model.*;
 import com.tds.monitor.security.IsUser;
 import com.tds.monitor.service.CustomUser;
 import com.tds.monitor.service.Impl.CustomUserServiceImpl;
-import com.tds.monitor.utils.ConnectionUtil;
-import com.tds.monitor.utils.HttpRequestUtil;
-import com.tds.monitor.utils.MapCacheUtil;
+import com.tds.monitor.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -49,6 +48,7 @@ public class ThymeleafController {
 
     @Autowired
     private MailDao mailDao;
+
 
     @Value("${Image}")
     private String image;
@@ -249,8 +249,8 @@ public class ThymeleafController {
     @GetMapping("/warnInfo")
     public String warnInfo(ModelMap map){
         Mail mail = new Mail();
-        if (!mailDao.findAll().isEmpty()){
-            mail= mailDao.findMailById(1).get();
+        if(mailDao.findAll().size() != 0){
+            mail = mailDao.findAll().get(0);
         }
         map.addAttribute(mail);
         map.addAttribute("role",customUserService.getRole());
@@ -387,12 +387,15 @@ public class ThymeleafController {
     @RequestMapping("/editmail")
     public String editMail(@ModelAttribute Mail mail) throws IOException {
         Result rs = new Result();
-        if (!mailDao.findAll().isEmpty()){
-            mail.setSender(mail.getSender());
-            mail.setPassword(mail.getPassword());
-            mail.setReceiver(mail.getReceiver());
-            mailDao.save(mail);
-        }
+//        Mail mail1 = mailDao.findAll().get(0);
+//        if (mail1 != null){
+//            mail1.setSender(mail.getSender());
+//            mail1.setPassword(mail.getPassword());
+//            mail1.setReceiver(mail.getReceiver());
+//            mailDao.save(mail1);
+//        }else{
+//            mailDao.save(mail);
+//        }
         //levelDb.put("mail".getBytes(StandardCharsets.UTF_8),JSON.toJSONString(mail).getBytes(StandardCharsets.UTF_8));
         rs.setCode(ResultCode.SUCCESS);
         rs.setMessage("成功");
@@ -499,10 +502,5 @@ public class ThymeleafController {
         }
     }
 
-    //检测浏览器
-    public String detectExplorer(){
-        JSONObject get_info = new JSONObject();
-        get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://"), null)).getJSONObject("data");
-        return "";
-    }
+
 }
