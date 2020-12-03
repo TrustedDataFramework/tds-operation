@@ -1,6 +1,7 @@
 package com.tds.monitor.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.model.Nodes;
 import com.tds.monitor.model.Result;
 import com.tds.monitor.model.ResultCode;
@@ -26,6 +27,9 @@ public class NodeController {
     @Autowired
     RestTemplateUtil restTemplateUtil;
 
+    @Autowired
+    private NodeDao nodeDao;
+
     JavaShellUtil javaShellUtil;
 
     private static final Logger logger = LoggerFactory.getLogger(NodeController.class);
@@ -36,6 +40,19 @@ public class NodeController {
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
+                String ipPort = mapCacheUtil.getCacheItem("bindNode").toString();
+                String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
+                if(ip.equals(LocalHostUtil.getLocalIP())){
+                    Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
+                    String usepassword = node.getPassword();
+                    System.out.println(usepassword);
+                    String kill = JavaShellUtil.ProcessKillShell("sunflower",usepassword);
+                    if(kill != null || !kill.equals("")){
+                        result.setMessage("成功");
+                        result.setCode(ResultCode.SUCCESS);
+                        return result;
+                    }
+                }
                 return nodeService.stop(mapCacheUtil.getCacheItem("bindNode").toString());
             }
         }catch (Exception e){

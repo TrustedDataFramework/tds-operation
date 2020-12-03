@@ -77,13 +77,6 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                 Thread t = new Thread(() -> {
                     try {
                         Process process = Runtime.getRuntime().exec(cmds);
-                        long pid = process.pid();
-                        Files.writeString(
-                                Paths.get(Constants.TDS_PID),
-                                Long.toString(pid),
-                                StandardOpenOption.CREATE,
-                                StandardOpenOption.WRITE
-                        );
                         // 把子进程日志打到当前进程
                         IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
                         // 把子进程错误日志打到当前进程
