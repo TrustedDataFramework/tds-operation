@@ -107,9 +107,11 @@ public class NodeController {
                             result.setCode(ResultCode.FAIL);
                         }
                         return result;
-                    }
+                    }else {
+
+                    return nodeService.restart(mapCacheUtil.getCacheItem("bindNode").toString());
+                }
 //                }
-                return nodeService.restart(mapCacheUtil.getCacheItem("bindNode").toString());
             }
         }catch (Exception e){
             result.setMessage("失败");
