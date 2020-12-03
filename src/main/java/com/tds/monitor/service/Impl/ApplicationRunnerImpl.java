@@ -36,6 +36,12 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
     private static String pushUrl = "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
+    public static String getJavaBin(){
+        String javaBin = System.getenv("JAVA_BIN");
+        if(javaBin == null || javaBin.trim().isEmpty())
+            return "java";
+        return javaBin;
+    }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -63,7 +69,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                 //String password = Constants.getSudoPassword();
                 log.info("==============================启动节点");
                 String[] cmds = new String[]{
-                        "nohup", "java", "-jar", Constants.TDS_JAR_PATH,
+                        "nohup", getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
                         "--spring.config.location=" + Constants.YML_PATH,
                 };
                 Thread t = new Thread(() -> {
