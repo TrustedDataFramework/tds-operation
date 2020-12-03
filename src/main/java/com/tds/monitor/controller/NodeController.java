@@ -176,10 +176,11 @@ public class NodeController {
             JSONObject jsonObject = JSONObject.parseObject(version);
             String ver = jsonObject.getString("data");
             result.setData(ver);
+            result.setMessage("运行中");
         }else{
             result.setData("");
+            result.setMessage("未运行");
         }
-        result.setMessage("成功");
         result.setCode(ResultCode.SUCCESS);
         return result;
     }

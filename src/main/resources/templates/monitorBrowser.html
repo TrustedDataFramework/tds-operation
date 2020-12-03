@@ -143,7 +143,7 @@
 		$.get('detectExplorer', function (result) {
 			if(result){
 				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "未运行";
+				document.getElementById("status").innerHTML = result.message;
 			}
 		}, 'json');
 	});
