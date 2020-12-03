@@ -34,9 +34,9 @@
 						</div>
 		 
 						<div class="btnbox">
-							<a class="btndefault borderRadius5 browser-btn" onclick="showModal2()">停止</a>
-							<a class="btndefault borderRadius5 browser-btn" onclick="showModal1()">启动</a>
-							<a class="btndefault borderRadius5 browser-btn" onclick="showModal3()">重启</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(2)">停止</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(1)">启动</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(3)">重启</a>
 							<span class="btndefault borderRadius5 browser-btn" onclick="search()">访问</span>
 						</div>
 		  	 	 		
@@ -47,55 +47,22 @@
 	  	 </div>
 	  </div>
 
-	  <!--输入密码弹出框-->
-
-	  <div class="modal" id="modal1">
+	  <!--新增节点弹出框-->
+	  <div class="modal browser-password" id="modal">
 		  <div class="modal-by-dialog modal-point">
-			  <a onclick="hideModal1()" class="btnClose" style="color:#333333"></a>
-			  <h3 class="modal_title">密码</h3>
-			  <div class="form">
+			  <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">密码确认</h3>
+			  <form class="form">
 				  <div class="col clearfix">
-					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password1"/></div>
+
+					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password"/></div>
 				  </div>
+
 				  <div class="fbtnbox">
-					  <a  class="borderRadius5 fbtn" onclick="hideModal1()" id = "submit1">提交</a>
+					  <a  class="borderRadius5 fbtn" onclick="hideModal()" id="submit">提交</a>
 				  </div>
 
-			  </div>
-		  </div>
-
-	  </div>
-
-	  <div class="modal" id="modal2">
-		  <div class="modal-by-dialog modal-point">
-			  <a onclick="hideModal2()" class="btnClose" style="color:#333333"></a>
-			  <h3 class="modal_title">密码</h3>
-			  <div class="form">
-				  <div class="col clearfix">
-					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password2"/></div>
-				  </div>
-				  <div class="fbtnbox">
-					  <a  class="borderRadius5 fbtn" onclick="hideModal2()" id = "submit2">提交</a>
-				  </div>
-
-			  </div>
-		  </div>
-
-	  </div>
-
-	  <div class="modal" id="modal3">
-		  <div class="modal-by-dialog modal-point">
-			  <a onclick="hideModal3()" class="btnClose" style="color:#333333"></a>
-			  <h3 class="modal_title">密码</h3>
-			  <div class="form">
-				  <div class="col clearfix">
-					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password3"/></div>
-				  </div>
-				  <div class="fbtnbox">
-					  <a  class="borderRadius5 fbtn" onclick="hideModal3()" id = "submit3">提交</a>
-				  </div>
-
-			  </div>
+			  </form>
 		  </div>
 
 	  </div>
@@ -110,27 +77,20 @@
  	
  	$("#topInfo").load("/header")
 
-	function showModal1(){
-		$("#modal1").addClass('modal_in');
+	var type = ''
+	$("#sider").load("sider.html",function(){
+		$(".siderNav .l7").addClass('cur')
+	});
+
+	$("#topInfo").load("header.html")
+	function showModal(num){
+		type = num;
+
+		$(".modal").addClass('modal_in');
 	}
 
-	function hideModal1(){
-
-		$("#modal1").removeClass('modal_in');
-	}
-	function showModal2(){
-		$("#modal2").addClass('modal_in');
-	}
-
-	function hideModal2(){
-		$("#modal2").removeClass('modal_in');
-	}
-	function showModal3(){
-		$("#modal3").addClass('modal_in');
-	}
-
-	function hideModal3(){
-		$("#modal3").removeClass('modal_in');
+	function hideModal(){
+		$(".modal").removeClass('modal_in');
 	}
 
 	$(function () {
@@ -140,52 +100,52 @@
 			}
 		}, 'json');
 
+		getDetectExplorer();
+	});
+
+	function getDetectExplorer(){
 		$.get('detectExplorer', function (result) {
 			if(result){
 				document.getElementById("version").innerHTML = result.data;
 				document.getElementById("status").innerHTML = result.message;
 			}
 		}, 'json');
-	});
+	}
 
-	$('#submit1').click(function () {
-		var urlData = {password: $('#password1').val()};
-		$.get('startWeb',urlData, function (result) {
-			if(result.code == 2000){
-				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "成功";
-				alert("启动成功");
-			}else{
-				alert("启动失败");
-			}
-		}, 'json');
-	});
-
-	$('#submit2').click(function () {
-		var urlData = {password: $('#password2').val()};
-		$.get('stopWeb',urlData, function (result) {
-			console.log(result.code)
-			if(result.code == 2000){
-				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "未运行";
-				alert("停止成功");
-			}else{
-				alert("停止失败");
-			}
-		}, 'json');
-	});
-
-	$('#submit3').click(function () {
-		var urlData = {password: $('#password3').val()};
-		$.get('restartWeb',urlData, function (result) {
-			if(result.code == 2000){
-				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "成功";
-				alert("重启成功");
-			}else{
-				alert("重启失败");
-			}
-		}, 'json');
+	$('#submit').click(function () {
+		var urlData = {password: $('#password').val()};
+		if(type == 1) {
+			$.get('startWeb', urlData, function (result) {
+				if (result.code == 2000) {
+					document.getElementById("version").innerHTML = result.data;
+					document.getElementById("status").innerHTML = "成功";
+					alert("启动成功");
+				} else {
+					alert("启动失败");
+				}
+			}, 'json');
+		}else if (type ==2){
+			$.get('stopWeb',urlData, function (result) {
+				console.log(result.code)
+				if(result.code == 2000){
+					document.getElementById("version").innerHTML = result.data;
+					document.getElementById("status").innerHTML = "未运行";
+					alert("停止成功");
+				}else{
+					alert("停止失败");
+				}
+			}, 'json');
+		}else if(type == 3){
+			$.get('restartWeb',urlData, function (result) {
+				if(result.code == 2000){
+					document.getElementById("version").innerHTML = result.data;
+					document.getElementById("status").innerHTML = "成功";
+					alert("重启成功");
+				}else{
+					alert("重启失败");
+				}
+			}, 'json');
+		}
 	});
 
 	function search() {
@@ -196,4 +156,8 @@
 			alert("请启动浏览器");
 		}
 	}
+
+	setInterval(function(){
+		getDetectExplorer();
+	},1000);
 </script>

@@ -389,3 +389,9 @@ a{cursor:pointer;}
 .pointer{cursor: pointer;}
 .browserInfo{padding-bottom:20px;font-size: 18px;}
 .browserInfo span{padding-right:30px;}
+
+/*2020-12-03 */
+.browser-password .modal-point{height:260px; margin-top:-130px}
+.browser-password .modal-point .fin{margin-left:0px}
+.siderNav li.l7 a{background: url(../img/ywgj_n.png) 40px center no-repeat; }
+.siderNav li.l7.cur a{background: url(../img/ywgj_h.png) 40px center no-repeat; }

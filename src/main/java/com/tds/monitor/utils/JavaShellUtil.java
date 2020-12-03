@@ -51,8 +51,8 @@ public class JavaShellUtil {
         return tag == containername.length;
     }
 
-    public static String ProcessKillShell(String name, String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + killUrl + name};
+    public static String ProcessKillShell(String name) {
+        String[] cmd = {shellName, shellParam, "sh " + killUrl + name};
         return ProcessShell(cmd);
     }
 

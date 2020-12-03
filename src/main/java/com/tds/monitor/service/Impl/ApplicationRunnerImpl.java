@@ -23,7 +23,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -60,50 +62,56 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             String mes = new String(all).trim();
             //获取白名单
             log.info("==============================获取白名单");
-            List list = getWhiteArrays();
+            JSONObject json = getWhiteArrays();
+            List list = new ArrayList();
+            for (Object o : json.getJSONArray("whiteArrays")) {
+                list.add(o);
+            }
             log.info("111111111111111" + mes);
             log.info("111111111111111" + list.size());
-            list.forEach(l -> {
-                System.out.println("2222" + l);
-            });
             if (list.contains(mes) && list.size() > 0) {
-                //sudo 密码
-                //String password = Constants.getSudoPassword();
-                log.info("==============================启动节点");
-                String[] cmds = new String[]{
-                        "nohup", getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
-                        "--spring.config.location=" + Constants.YML_PATH,
-                };
-                Thread t = new Thread(() -> {
-                    try {
-                        Process process = Runtime.getRuntime().exec(cmds);
-                        // 把子进程日志打到当前进程
-                        IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
-                        // 把子进程错误日志打到当前进程
-                        IOUtils.copy(process.getErrorStream(), new FileOutputStream(Constants.TDS_ERROR));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+                Date localTime = df.parse(df.format(new Date()));
+                Date endTime = df.parse(json.getString("endTime"));
+                if (localTime.before(endTime)) {
+                    //sudo 密码
+                    //String password = Constants.getSudoPassword();
+                    log.info("==============================启动节点");
+                    String[] cmds = new String[]{
+                            "nohup", getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
+                            "--spring.config.location=" + Constants.YML_PATH,
+                    };
+                    Thread t = new Thread(() -> {
+                        try {
+                            Process process = Runtime.getRuntime().exec(cmds);
+                            // 把子进程日志打到当前进程
+                            IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
+                            // 把子进程错误日志打到当前进程
+                            IOUtils.copy(process.getErrorStream(), new FileOutputStream(Constants.TDS_ERROR));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    t.start();
+                    //获取节点数据
+                    log.info("==============================获取节点数据");
+                    byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
+                    String mess = new String(message);
+                    String mining;
+                    if (JSON.parseObject(mess).getString("mining").equals("true")) {
+                        mining = "2";
+                    } else {
+                        mining = "1";
                     }
-                });
-                t.start();
-                //获取节点数据
-                log.info("==============================获取节点数据");
-                byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
-                String mess = new String(message);
-                String mining;
-                if (JSON.parseObject(mess).getString("mining").equals("true")) {
-                    mining = "2";
-                } else {
-                    mining = "1";
-                }
-                Nodes node = new Nodes();
-                log.info("==============================获取节点到数据");
-                node.setNodeIP(ip);
-                node.setNodePort("7010");
-                node.setNodeType(mining);
-                if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
-                    log.info("=============================保存节点信息");
-                    nodeDao.save(node);
+                    Nodes node = new Nodes();
+                    log.info("==============================获取节点到数据");
+                    node.setNodeIP(ip);
+                    node.setNodePort("7010");
+                    node.setNodeType(mining);
+                    if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
+                        log.info("=============================保存节点信息");
+                        nodeDao.save(node);
+                    }
                 }
             }
 //            } else {
@@ -112,8 +120,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     }
 
 
-    private static List getWhiteArrays() {
-        List list = new ArrayList();
+    public static JSONObject getWhiteArrays() {
+        JSONObject jsonObject = new JSONObject();
         try {
             URL url = new URL(pushUrl);
             //System.out.println("访问路径"+pushUrl);
@@ -124,16 +132,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             StringBuffer receive = new StringBuffer();
             receive.append(reader.readLine());
-            JSONObject jsonObject = JSONObject.parseObject(receive.toString());
-            for (Object o : jsonObject.getJSONArray("whiteArrays")) {
-                list.add(o);
-            }
+            jsonObject = JSONObject.parseObject(receive.toString());
             reader.close();//读取关闭
             conn.connect();  //链接关闭
         } catch (Exception e) {
             e.printStackTrace();//这里抓取的异常范围比较大，是异常就抛出
         }
-        return list;
+        return jsonObject;
     }
 
 

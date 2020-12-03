@@ -43,13 +43,9 @@ public class NodeController {
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
-                String ipPort = mapCacheUtil.getCacheItem("bindNode").toString();
                 String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
                 if(ip.equals(LocalHostUtil.getLocalIP())){
-                    Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
-                    String usepassword = node.getPassword();
-                    System.out.println(usepassword);
-                    String kill = JavaShellUtil.ProcessKillShell("sunflower",usepassword);
+                    String kill = JavaShellUtil.ProcessKillShell("sunflower");
                     if(kill != null || !kill.equals("")){
                         result.setMessage("成功");
                         result.setCode(ResultCode.SUCCESS);
@@ -74,13 +70,9 @@ public class NodeController {
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
-                String ipPort = mapCacheUtil.getCacheItem("bindNode").toString();
                 String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
-                String port = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[1];
                 if(ip.equals(LocalHostUtil.getLocalIP())){
-                    Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
-                    String usepassword = node.getPassword();
-                    String kill = JavaShellUtil.ProcessKillShell("sunflower",usepassword);
+                    JavaShellUtil.ProcessKillShell("sunflower");
 //                    if(kill != null || !kill.equals("")){
                         String[] cmds = new String[]{
                                 "nohup", ApplicationRunnerImpl.getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
