@@ -41,7 +41,7 @@ public class NodeServiceImpl implements NodeService {
         List<String> strList = new ArrayList<String>();
         Result result = new Result();
         try {
-            Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).get();
+            Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
             String username = node.getUserName();
             String usepassword = node.getPassword();
             String ip = node.getNodeIP();
@@ -87,7 +87,7 @@ public class NodeServiceImpl implements NodeService {
         List<String> strList = new ArrayList<String>();
         Result result = new Result();
         try {
-            Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).get();
+            Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
             String username = node.getUserName();
             String usepassword = node.getPassword();
             String ip = node.getNodeIP();
@@ -174,15 +174,15 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public Nodes searchNode(String ipPort) {
-        if (nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).isPresent()){
-            return nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0],ipPort.split(":")[1]).get();
+        if (nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).isPresent()) {
+            return nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
         }
         return new Nodes();
     }
 
     @Override
     public User searchUser(String username) {
-        if (userDao.findByName(username).isPresent()){
+        if (userDao.findByName(username).isPresent()) {
             return userDao.findByName(username).get();
         }
         return new User();
@@ -191,7 +191,7 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public boolean updateUser(User user) {
         boolean t = false;
-        if (userDao.findByName(user.getName()).isPresent()){
+        if (userDao.findByName(user.getName()).isPresent()) {
             user.setId(userDao.findByName(user.getName()).get().getId());
             userDao.save(user);
             t = true;
@@ -203,8 +203,8 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public boolean updateNode(Nodes nodes) {
         boolean t = false;
-        if (nodeDao.findNodesByNodeIPAndNodePort(nodes.getNodeIP(),nodes.getNodePort()).isPresent()){
-            nodes.setId(nodeDao.findNodesByNodeIPAndNodePort(nodes.getNodeIP(),nodes.getNodePort()).get().getId());
+        if (nodeDao.findNodesByNodeIPAndNodePort(nodes.getNodeIP(), nodes.getNodePort()).isPresent()) {
+            nodes.setId(nodeDao.findNodesByNodeIPAndNodePort(nodes.getNodeIP(), nodes.getNodePort()).get().getId());
             nodeDao.save(nodes);
             t = true;
         }

@@ -21,6 +21,10 @@ public class Constants {
     public static final String SUDO_PASSWORD_PATH = Paths.get(ETC_DIR, ".sudo").toString();
     // tds 链 pid 文件
     public static final String TDS_PID = Paths.get(ETC_DIR, ".pid").toString();
+    // tds 日志
+    public static final String TDS_LOG = Paths.get(TDS_HOME, ".log").toString();
+    // tds 错误输出
+    public static final String TDS_ERROR = Paths.get(TDS_HOME, ".err").toString();
 
     @SneakyThrows
     public static String getSudoPassword(){
