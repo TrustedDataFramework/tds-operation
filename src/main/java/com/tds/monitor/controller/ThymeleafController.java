@@ -387,15 +387,15 @@ public class ThymeleafController {
     @RequestMapping("/editmail")
     public String editMail(@ModelAttribute Mail mail) throws IOException {
         Result rs = new Result();
-//        Mail mail1 = mailDao.findAll().get(0);
-//        if (mail1 != null){
-//            mail1.setSender(mail.getSender());
-//            mail1.setPassword(mail.getPassword());
-//            mail1.setReceiver(mail.getReceiver());
-//            mailDao.save(mail1);
-//        }else{
-//            mailDao.save(mail);
-//        }
+        if(mailDao.findAll().size() == 0){
+            mailDao.save(mail);
+        }else{
+            Mail mail1 = mailDao.findAll().get(0);
+            mail1.setSender(mail.getSender());
+            mail1.setPassword(mail.getPassword());
+            mail1.setReceiver(mail.getReceiver());
+            mailDao.save(mail1);
+        }
         //levelDb.put("mail".getBytes(StandardCharsets.UTF_8),JSON.toJSONString(mail).getBytes(StandardCharsets.UTF_8));
         rs.setCode(ResultCode.SUCCESS);
         rs.setMessage("成功");

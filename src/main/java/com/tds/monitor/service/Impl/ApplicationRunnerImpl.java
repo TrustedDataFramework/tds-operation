@@ -15,6 +15,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -33,7 +34,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     @Autowired
     RestTemplateUtil restTemplateUtil;
 
-    private static String pushUrl= "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
+    private static String pushUrl = "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
 
     @Override
@@ -42,21 +43,28 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
         String ip = LocalHostUtil.getLocalIP();
         //查看节点是否启动
-        JSONObject jsonObject = restTemplateUtil.getNodeInfo("127.0.0.1",7010);
-        if(jsonObject.getInteger("code") == 200){
+        JSONObject jsonObject = restTemplateUtil.getNodeInfo(ip, 7010);
+        if (jsonObject == null) {
+            //kill
+//            if (jsonObject.getInteger("code") != 200) {
             log.info("==============================获取注册码");
             //获取注册码
             byte[] all = Files.readAllBytes(Paths.get(Constants.ETC_DIR, ".serial"));
-            String mes = new String(all);
+            String mes = new String(all).trim();
             //获取白名单
             log.info("==============================获取白名单");
             List list = getWhiteArrays();
-            if(list.contains(mes) ){
+            log.info("111111111111111" + mes);
+            log.info("111111111111111" + list.size());
+            list.forEach(l -> {
+                System.out.println("2222" + l);
+            });
+            if (list.contains(mes) && list.size() > 0) {
                 //sudo 密码
                 //String password = Constants.getSudoPassword();
                 log.info("==============================启动节点");
                 String[] cmds = new String[]{
-                        "java", "-jar", Constants.TDS_JAR_PATH,
+                        "nohup", "java", "-jar", Constants.TDS_JAR_PATH,
                         "--spring.config.location=" + Constants.YML_PATH,
                 };
                 Thread t = new Thread(() -> {
@@ -73,7 +81,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                 t.start();
                 //获取节点数据
                 log.info("==============================获取节点数据");
-                byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), "etc", "config.json"));
+                byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
                 String mess = new String(message);
                 String mining;
                 if (JSON.parseObject(mess).getString("mining").equals("true")) {
@@ -91,13 +99,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                     nodeDao.save(node);
                 }
             }
-        }else{
-
+//            } else {
+//            }
         }
     }
 
 
-    private static List getWhiteArrays(){
+    private static List getWhiteArrays() {
         List list = new ArrayList();
         try {
             URL url = new URL(pushUrl);
@@ -106,11 +114,11 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             conn.setReadTimeout(1000);  //读取超时，时限1秒
             conn.setConnectTimeout(1000);  //链接超时，时限1秒
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             StringBuffer receive = new StringBuffer();
             receive.append(reader.readLine());
-            JSONObject jsonObject =JSONObject.parseObject(receive.toString());
-            for(Object o :jsonObject.getJSONArray("whiteArrays")){
+            JSONObject jsonObject = JSONObject.parseObject(receive.toString());
+            for (Object o : jsonObject.getJSONArray("whiteArrays")) {
                 list.add(o);
             }
             reader.close();//读取关闭
@@ -122,7 +130,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     }
 
 
-    private static boolean exeCmd(String[] cmds){
+    private static boolean exeCmd(String[] cmds) {
         boolean result = false;
         BufferedReader br = null;
         try {

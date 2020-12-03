@@ -27,10 +27,10 @@
 		  	 	 	<h3 class="title">监测浏览器</h3>
 		  	 	 	<div class="dataBox">
 		  	 	 	   <div class="browser-info">
-						   <p>IP:<span id="ip">192.168.1.123</span></p>
-						   <p>端口：8181</p>
-						   <p>版本：<span id="version">2.0.1</span></p>
-						   <p>运行状态：<span id="status">成功</span></p>
+						   <p>IP:<span id="ip"></span></p>
+						   <p>端口：8080</p>
+						   <p>版本：<span id="version"></span></p>
+						   <p>运行状态：<span id="status"></span></p>
 						</div>
 		 
 						<div class="btnbox">
@@ -115,6 +115,7 @@
 	}
 
 	function hideModal1(){
+
 		$("#modal1").removeClass('modal_in');
 	}
 	function showModal2(){
@@ -142,129 +143,54 @@
 		$.get('detectExplorer', function (result) {
 			if(result){
 				document.getElementById("version").innerHTML = result.data;
-				if(result.data == ""){
-					document.getElementById("status").innerHTML = "未运行";
-				}else{
-					document.getElementById("status").innerHTML = "成功";
-				}
+				document.getElementById("status").innerHTML = "未运行";
 			}
 		}, 'json');
 	});
 
 	$('#submit1').click(function () {
 		var urlData = {password: $('#password1').val()};
-		Swal.fire({
-			type: warning, // 弹框类型
-			title: '', //标题
-			text: "是否启动！", //显示内容
-
-			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-			confirmButtonText: '确定',// 确定按钮的 文字
-			showCancelButton: true, // 是否显示取消按钮
-			cancelButtonColor: '#d33', // 取消按钮的 颜色
-			cancelButtonText: "取消", // 取消按钮的 文字
-
-			focusCancel: true, // 是否聚焦 取消按钮
-			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
-		}).then(function(isConfirm){
-			try {
-				//判断 是否 点击的 确定按钮
-				if (isConfirm.value) {
-					$.get('startWeb',urlData, function (result) {
-						if(result.code == 2000){
-							document.getElementById("version").innerHTML = result.data;
-							document.getElementById("status").innerHTML = "成功";
-						}else{
-
-						}
-					}, 'json');
-				}
-				else {
-					Swal.fire("取消", "点击了取消", "error");
-				}
-			} catch (e) {
-				alert(e);
+		$.get('startWeb',urlData, function (result) {
+			if(result.code == 2000){
+				document.getElementById("version").innerHTML = result.data;
+				document.getElementById("status").innerHTML = "成功";
+				alert("启动成功");
+			}else{
+				alert("启动失败");
 			}
-		});
+		}, 'json');
 	});
 
 	$('#submit2').click(function () {
 		var urlData = {password: $('#password2').val()};
-		Swal.fire({
-			type: warning, // 弹框类型
-			title: '', //标题
-			text: "是否停止！", //显示内容
-
-			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-			confirmButtonText: '确定',// 确定按钮的 文字
-			showCancelButton: true, // 是否显示取消按钮
-			cancelButtonColor: '#d33', // 取消按钮的 颜色
-			cancelButtonText: "取消", // 取消按钮的 文字
-
-			focusCancel: true, // 是否聚焦 取消按钮
-			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
-		}).then(function(isConfirm){
-			try {
-				//判断 是否 点击的 确定按钮
-				if (isConfirm.value) {
-					$.get('stopWeb',urlData, function (result) {
-						if(result.code == 2000){
-							document.getElementById("version").innerHTML = result.data;
-							document.getElementById("status").innerHTML = "成功";
-						}else{
-
-						}
-					}, 'json');
-				}
-				else {
-					Swal.fire("取消", "点击了取消", "error");
-				}
-			} catch (e) {
-				alert(e);
+		$.get('stopWeb',urlData, function (result) {
+			console.log(result.code)
+			if(result.code == 2000){
+				document.getElementById("version").innerHTML = result.data;
+				document.getElementById("status").innerHTML = "未运行";
+				alert("停止成功");
+			}else{
+				alert("停止失败");
 			}
-		});
+		}, 'json');
 	});
 
 	$('#submit3').click(function () {
 		var urlData = {password: $('#password3').val()};
-		Swal.fire({
-			type: warning, // 弹框类型
-			title: '', //标题
-			text: "是否重启！", //显示内容
-
-			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-			confirmButtonText: '确定',// 确定按钮的 文字
-			showCancelButton: true, // 是否显示取消按钮
-			cancelButtonColor: '#d33', // 取消按钮的 颜色
-			cancelButtonText: "取消", // 取消按钮的 文字
-
-			focusCancel: true, // 是否聚焦 取消按钮
-			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
-		}).then(function(isConfirm){
-			try {
-				//判断 是否 点击的 确定按钮
-				if (isConfirm.value) {
-					$.get('restartWeb',urlData, function (result) {
-						if(result.code == 2000){
-							document.getElementById("version").innerHTML = result.data;
-							document.getElementById("status").innerHTML = "成功";
-						}else{
-
-						}
-					}, 'json');
-				}
-				else {
-					Swal.fire("取消", "点击了取消", "error");
-				}
-			} catch (e) {
-				alert(e);
+		$.get('restartWeb',urlData, function (result) {
+			if(result.code == 2000){
+				document.getElementById("version").innerHTML = result.data;
+				document.getElementById("status").innerHTML = "成功";
+				alert("重启成功");
+			}else{
+				alert("重启失败");
 			}
-		});
+		}, 'json');
 	});
 
 	function search() {
 		if(document.getElementById("version").innerHTML != ""){
-			let path = "http://" + document.getElementById("ip").innerHTML + ":8181"
+			let path = "http://" + document.getElementById("ip").innerHTML + ":8080"
 			window.open(path,"_blank");
 		}else{
 			alert("请启动浏览器");

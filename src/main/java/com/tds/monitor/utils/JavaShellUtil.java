@@ -4,6 +4,7 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +58,7 @@ public class JavaShellUtil {
 
     public static String ProcessBrowserShell(int state, String passwd) {
         String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + browserUrl + state};
+        System.out.println(Arrays.toString(cmd));
         return ProcessShell(cmd);
     }
 

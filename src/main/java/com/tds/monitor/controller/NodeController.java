@@ -1,5 +1,6 @@
 package com.tds.monitor.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tds.monitor.model.Nodes;
 import com.tds.monitor.model.Result;
 import com.tds.monitor.model.ResultCode;
@@ -104,6 +105,7 @@ public class NodeController {
     public Object getLocalIp(){
         Result result = new Result();
         try {
+            System.out.println("================="+LocalHostUtil.getLocalIP());
             result.setMessage("成功");
             result.setCode(ResultCode.SUCCESS);
             result.setData(LocalHostUtil.getLocalIP());
@@ -119,9 +121,11 @@ public class NodeController {
     public Object detectExplorer() throws UnknownHostException {
         Result result = new Result();
         String ip = LocalHostUtil.getLocalIP();
-        String version = restTemplateUtil.getBrowserInfo(ip,8181);
+        String version = restTemplateUtil.getBrowserInfo(ip,8080);
         if(version != null){
-            result.setData(version);
+            JSONObject jsonObject = JSONObject.parseObject(version);
+            String ver = jsonObject.getString("data");
+            result.setData(ver);
         }else{
             result.setData("");
         }
@@ -141,8 +145,52 @@ public class NodeController {
             return result;
         }else{
             String ip = LocalHostUtil.getLocalIP();
-            String version = restTemplateUtil.getBrowserInfo(ip,8181);
-            result.setData(version);
+            String version = restTemplateUtil.getBrowserInfo(ip,8080);
+            JSONObject jsonObject = JSONObject.parseObject(version);
+            String ver = jsonObject.getString("data");
+            result.setData(ver);
+            result.setMessage("成功");
+            result.setCode(ResultCode.SUCCESS);
+            return result;
+        }
+    }
+
+    //停止浏览器
+    @GetMapping(value = {"/stopWeb"})
+    public Object stopWeb(@RequestParam("password") String password) throws Exception {
+        Result result = new Result();
+        String res = javaShellUtil.ProcessBrowserShell(2,password);
+        if(res == ""){
+            result.setMessage("失败");
+            result.setCode(ResultCode.FAIL);
+            return result;
+        }else{
+            String ip = LocalHostUtil.getLocalIP();
+            String version = restTemplateUtil.getBrowserInfo(ip,8080);
+            JSONObject jsonObject = JSONObject.parseObject(version);
+            String ver = jsonObject.getString("data");
+            result.setData(ver);
+            result.setMessage("成功");
+            result.setCode(ResultCode.SUCCESS);
+            return result;
+        }
+    }
+
+    //重启浏览器
+    @GetMapping(value = {"/restartWeb"})
+    public Object restartWeb(@RequestParam("password") String password) throws Exception {
+        Result result = new Result();
+        String res = javaShellUtil.ProcessBrowserShell(3,password);
+        if(res == ""){
+            result.setMessage("失败");
+            result.setCode(ResultCode.FAIL);
+            return result;
+        }else{
+            String ip = LocalHostUtil.getLocalIP();
+            String version = restTemplateUtil.getBrowserInfo(ip,8080);
+            JSONObject jsonObject = JSONObject.parseObject(version);
+            String ver = jsonObject.getString("data");
+            result.setData(ver);
             result.setMessage("成功");
             result.setCode(ResultCode.SUCCESS);
             return result;
