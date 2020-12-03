@@ -98,17 +98,10 @@ public class NodeController {
                             }
                         });
                         t.start();
-                        JSONObject start = restTemplateUtil.getNodeInfo(ip,7010);
-                        if(start != null){
-                            result.setMessage("成功");
-                            result.setCode(ResultCode.SUCCESS);
-                        }else{
-                            result.setMessage("失败");
-                            result.setCode(ResultCode.FAIL);
-                        }
+                        result.setMessage("成功");
+                        result.setCode(ResultCode.SUCCESS);
                         return result;
                     }else {
-
                     return nodeService.restart(mapCacheUtil.getCacheItem("bindNode").toString());
                 }
 //                }
