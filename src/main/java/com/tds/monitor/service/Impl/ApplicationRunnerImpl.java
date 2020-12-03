@@ -38,7 +38,6 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
         String ip = LocalHostUtil.getLocalIP();
         //查看节点是否启动
@@ -63,9 +62,9 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                     try {
                         Process process = Runtime.getRuntime().exec(cmds);
                         // 把子进程日志打到当前进程
-                        IOUtils.copy(process.getInputStream(), System.out);
+                        IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
                         // 把子进程错误日志打到当前进程
-                        IOUtils.copy(process.getErrorStream(), System.err);
+                        IOUtils.copy(process.getErrorStream(), new FileOutputStream(Constants.TDS_ERROR));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
