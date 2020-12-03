@@ -6,13 +6,16 @@ import com.tds.monitor.model.Nodes;
 import com.tds.monitor.model.Result;
 import com.tds.monitor.model.ResultCode;
 import com.tds.monitor.model.User;
+import com.tds.monitor.service.Impl.ApplicationRunnerImpl;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.*;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileOutputStream;
 import java.net.UnknownHostException;
 
 @RestController
@@ -71,6 +74,41 @@ public class NodeController {
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
+                String ipPort = mapCacheUtil.getCacheItem("bindNode").toString();
+                String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
+                String port = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[1];
+                if(ip.equals(LocalHostUtil.getLocalIP())){
+                    Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
+                    String usepassword = node.getPassword();
+                    String kill = JavaShellUtil.ProcessKillShell("sunflower",usepassword);
+//                    if(kill != null || !kill.equals("")){
+                        String[] cmds = new String[]{
+                                "nohup", ApplicationRunnerImpl.getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
+                                "--spring.config.location=" + Constants.YML_PATH,
+                        };
+                        Thread t = new Thread(() -> {
+                            try {
+                                Process process = Runtime.getRuntime().exec(cmds);
+                                // 把子进程日志打到当前进程
+                                IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
+                                // 把子进程错误日志打到当前进程
+                                IOUtils.copy(process.getErrorStream(), new FileOutputStream(Constants.TDS_ERROR));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        t.start();
+                        JSONObject start = restTemplateUtil.getNodeInfo(ip,Long.parseLong(port));
+                        if(start != null){
+                            result.setMessage("成功");
+                            result.setCode(ResultCode.SUCCESS);
+                        }else{
+                            result.setMessage("失败");
+                            result.setCode(ResultCode.FAIL);
+                        }
+                        return result;
+                    }
+//                }
                 return nodeService.restart(mapCacheUtil.getCacheItem("bindNode").toString());
             }
         }catch (Exception e){
