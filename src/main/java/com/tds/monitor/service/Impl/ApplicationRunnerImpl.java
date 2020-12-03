@@ -19,8 +19,10 @@ import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +77,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                 Thread t = new Thread(() -> {
                     try {
                         Process process = Runtime.getRuntime().exec(cmds);
+                        long pid = process.pid();
+                        Files.writeString(
+                                Paths.get(Constants.TDS_PID),
+                                Long.toString(pid),
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.WRITE
+                        );
                         // 把子进程日志打到当前进程
                         IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
                         // 把子进程错误日志打到当前进程
