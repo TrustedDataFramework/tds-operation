@@ -15,20 +15,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static java.util.TimeZone.getTimeZone;
-
 @RestController
 public class ExportDb {
-
-//    @Autowired
-//    TransactionService transactionService;
-
-//    @ResponseBody
-//    @RequestMapping("/hello")
-//    public String hello(Model model) {
-//        model.addAttribute("name", "thymeleaf");
-//        return "test-push";
-//    }
 
     @GetMapping("/export/txrecordByPublicKey")
     public void export(HttpServletResponse response,String json){
@@ -90,10 +78,6 @@ public class ExportDb {
                         type = "";
                     }
                     dataRow.createCell(1).setCellValue(type);
-//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-//                Date date = formatter.parse(jsonObject.get("createdAt").toString());
-//                SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//                String sDate=sdf.format(date);
                     dataRow.createCell(2).setCellValue(jsonObject.get("createdAt").toString());
                     dataRow.createCell(3).setCellValue(jsonObject.get("nonce").toString());
                     dataRow.createCell(4).setCellValue(jsonObject.get("from").toString());

@@ -9,8 +9,6 @@ import java.util.Optional;
 
 public interface NodeDao extends JpaRepository<Nodes, Long> {
 
-    Optional<Nodes> findNodesById(Long id);
-
 
     @Override
     <S extends Nodes> S save(S entity);

@@ -22,11 +22,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -69,7 +68,6 @@ public class ThymeleafController {
         Nodes nodeinfo = new Nodes();
         if (mapCacheUtil.getCacheItem("bindNode") != null){
             String url_node = mapCacheUtil.getCacheItem("bindNode").toString();
-            //String url_node = "192.168.1.167:7010";
             JSONObject get_info = new JSONObject();
             if (HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)!=""){
                 get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)).getJSONObject("data");
@@ -81,6 +79,14 @@ public class ThymeleafController {
                 BigDecimal totalMemory = new BigDecimal(info.getTotalMemory());
                 BigDecimal memory = memoryUsed.divide(totalMemory,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                 info.setMemory(String.format("%.2f", memory) + "%");
+                byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
+                String mess = new String(message);
+                if (JSON.parseObject(mess).getString("mining").equals("true")) {
+                    info.setMinings("是");
+                } else {
+                    info.setMinings("否");
+                }
+
                 map.addAttribute("isrun","运行中");
             }else {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
@@ -116,9 +122,12 @@ public class ThymeleafController {
                 BigDecimal totalMemory = new BigDecimal(info.getTotalMemory());
                 BigDecimal memory = memoryUsed.divide(totalMemory,4,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
                 info.setMemory(String.format("%.2f", memory) + "%");
-                if(info.isMining()){
+
+                byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
+                String mess = new String(message);
+                if (JSON.parseObject(mess).getString("mining").equals("true")) {
                     info.setMinings("是");
-                }else{
+                } else {
                     info.setMinings("否");
                 }
                 map.addAttribute("isrun","运行中");
@@ -212,14 +221,10 @@ public class ThymeleafController {
                     nodeList.get(i).setNodeVersion(JSON.parseObject(JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, "")).get("data").toString()).get("version").toString());
                 }
             }
-
             map.addAttribute(nodeList);
             map.addAllAttributes(list);
-            List<String> nodeinfoList = new ArrayList<>();
-            String nodeinfo = "";
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
             if (mapCacheUtil.getCacheItem("bindNode") != null) {
-                nodeinfoList = Arrays.asList(mapCacheUtil.getCacheItem("bindNode").toString().split(":"));
                 map.addAttribute("nodeip", mapCacheUtil.getCacheItem("bindNode").toString());
             }
             map.addAttribute("pageSize", nodeList.size());
@@ -396,7 +401,6 @@ public class ThymeleafController {
             mail1.setReceiver(mail.getReceiver());
             mailDao.save(mail1);
         }
-        //levelDb.put("mail".getBytes(StandardCharsets.UTF_8),JSON.toJSONString(mail).getBytes(StandardCharsets.UTF_8));
         rs.setCode(ResultCode.SUCCESS);
         rs.setMessage("成功");
         return rs.toString();
@@ -412,7 +416,6 @@ public class ThymeleafController {
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
-                List<String> strList = new ArrayList<String>();
                 try {
                     GetNodeinfo getNodeinfo = new GetNodeinfo(mapCacheUtil.getCacheItem("bindNode").toString()).invoke();
                     String username = getNodeinfo.username;

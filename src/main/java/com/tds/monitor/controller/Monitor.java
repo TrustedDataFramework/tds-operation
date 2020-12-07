@@ -27,13 +27,6 @@ import java.util.*;
 public class   Monitor {
     private static final Logger logger = LoggerFactory.getLogger(Monitor.class);
     @Autowired
-    private NodeDao nodeDao;
-
-    @Value("${Image}")
-    private String image;
-    @Autowired
-    private JdbcTemplate tmpl;
-    @Autowired
     public NodeServiceImpl nodeService;
 
 
@@ -51,7 +44,10 @@ public class   Monitor {
                 String nBlockhash = getBlockHash(ip,height);
                 int confirmNum =0;
                 List<String> proposersList = getPeers();
-                if(proposersList.size()>0) {
+                if(proposersList.size()<3){
+                    return APIResult.newSuccess(1);
+                }
+                if(proposersList.size()>=3) {
                     for (String str : proposersList) {
                         String proposersBlockHash = getBlockHash(str, height);
                         if(proposersBlockHash != null){
@@ -95,36 +91,6 @@ public class   Monitor {
         }
     }
 
-//    //卡块监测
-//    public static int checkBlockIsStuck(boolean ismail){
-//        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-//        if (mapCacheUtil.getCacheItem("bindNode") != null) {
-//            //获取当前高度
-//            String ip = mapCacheUtil.getCacheItem("bindNode").toString();
-//            String heightUrl = "http://" + ip + "/rpc/stat";
-//            JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, ""));
-//            JSONObject result1 = result.getJSONObject("data");
-//            if (result == null)
-//                return -1;
-//            if ("true".equals(result1.getString("mining"))) {
-//                return 1;
-//            }else {
-//                if (ismail){
-//                    StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
-//                    messageText.append("<span>警告:</span></br>");
-//                    messageText.append("<span>您绑定的节点存在卡块风险！请检查！！！</span></br>");
-//                    try {
-//                        SendMailUtil.sendMailOutLook("通知",messageText.toString());
-//                    } catch (IOException e) {
-//                        logger.error("IOException when sendEmail",e);
-//                    }
-//                }
-//                return -1;
-//            }
-//        }
-//        return -1;
-//    }
-
     //卡块监测
     public static int checkBlockIsStuck(boolean ismail){
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
@@ -164,10 +130,6 @@ public class   Monitor {
     @Scheduled(cron="0/5 * *  * * ? ")
     public void monitorStatus() throws IOException {
         boolean ismail = false;
-//        if (leveldb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
-//            Object read = JSONObject.parseObject(new String(leveldb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
-//            ismail = true;
-//        }
         recoveryBifurcate(ismail);
         checkBlockIsStuck(ismail);
     }
@@ -188,7 +150,7 @@ public class   Monitor {
                 if (peersArray.size() > 0) {
                     for (int i = 0;i<peersArray.size();i++) {
                         JSONObject jsonObject = (JSONObject) peersArray.get(i);
-                        list.add(jsonObject.getString("host")+":8010");
+                        list.add(jsonObject.getString("host")+":7010");
                     }
                 }
             }

@@ -177,7 +177,7 @@ body{width:100%;min-height:100%;}
 .monitorInfo .col{width:14.66%; display: inline-block; vertical-align: middle; text-align: center; padding:20px 1% 30px 1%;position: relative;z-index: 2;
 	cursor: pointer;}
 .monitorInfo .pt{font-size:18px;color:#555; line-height: 60px; white-space: nowrap;}
-.monitorInfo .num{font-size:56px;font-weight: bold; color:#666; white-space:nowrap; overflow: hidden;letter-spacing:-3px;}
+.monitorInfo .num{font-size:40px;font-weight: bold; color:#666; white-space:nowrap; overflow: hidden;letter-spacing:-3px;}
 .monitorInfo .plevel{font-size:18px; color:#666;word-break:break-all;}
 .curbg{position: absolute;width: 16.66%; height: 100%; top:0px;left:0px; background:#fafafc;z-index: 1;}
 .curbg .line{width: 100%;height:5px;background:#26E898; position:absolute; bottom: 0px;left: 0px;}
@@ -395,3 +395,20 @@ a{cursor:pointer;}
 .browser-password .modal-point .fin{margin-left:0px}
 .siderNav li.l7 a{background: url(../img/ywgj_n.png) 40px center no-repeat; }
 .siderNav li.l7.cur a{background: url(../img/ywgj_h.png) 40px center no-repeat; }
+
+.trans-modal{position:fixed;width:100%;height:100%;left:0px;top:0px;background:rgba(255,255,255,.7);left:0px;top:0px;z-index:999;
+}
+.trans-modal .loading{ text-align:center;}
+.trans-modal .trans-main{width:100%;height:100%; display:table;}
+.trans-modal .trans-content{display:table-cell;vertical-align:middle;}
+.trans-modal .mess{font-size:24px;color:#444; text-align:center}
+
+.trans-modal{display:none;}
+.show-trans-modal{display:block}
+
+.monitorInfo .plevel{min-height: 52px;}
+
+a:hover{text-decoration:none !important;}
+siderNav li a:hover{text-decoration:none;}
+.siderNav{margin-bottom: 0px;}
+.icon-wh{vertical-align: top;}

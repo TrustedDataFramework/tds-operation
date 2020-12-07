@@ -20,7 +20,9 @@
 	  	 <div class="mainBox">
 	  	 	 <div class="tabBox tabBox_summ">
 		  	 	 <div class="borderRadius5 bosshdow  first_div ">
-		  	 	 	 <h3 class="title">监控信息</h3>
+		  	 	 	 <h3 class="title">监控信息<a href="#" data-toggle="tooltip" title="当前只支持一个节点查看" data-p data-trigger="hover" data-placement="right">
+						 <img class="icon-wh" src="../img/wh.png"/>
+					 </a></h3>
 		  	 	 	 <div class="monitorInfo">
 		  	 	 	 	<div class="curbg">
 		  	 	 	 		<div class="line"></div>
@@ -121,6 +123,7 @@
 			url: "/bifurcation",
 			data: "",
 			success: function (result) {
+				console.log(result.code)
 				if (result.code == -1) {
 					document.getElementById("bifurcation").innerHTML = "分叉";
 				} else if (result.code  == 0) {

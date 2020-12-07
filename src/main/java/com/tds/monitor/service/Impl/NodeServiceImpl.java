@@ -10,6 +10,7 @@ import com.tds.monitor.model.ResultCode;
 import com.tds.monitor.model.User;
 import com.tds.monitor.utils.ConnectionDbUtil;
 import com.tds.monitor.utils.ConnectionUtil;
+import com.tds.monitor.utils.Constants;
 import com.tds.monitor.utils.MapCacheUtil;
 import com.tds.monitor.service.NodeService;
 import org.apache.commons.lang3.StringUtils;
@@ -90,8 +91,11 @@ public class NodeServiceImpl implements NodeService {
             Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
             String username = node.getUserName();
             String usepassword = node.getPassword();
+            if(usepassword.isEmpty()){
+                usepassword = Constants.getSudoPassword();
+            }
             String ip = node.getNodeIP();
-            if (username == null || usepassword == null) {
+            if (username == null || usepassword == null || username.isEmpty() || usepassword.isEmpty()) {
                 result.setMessage("失败，请完善远程连接信息。");
                 result.setCode(ResultCode.FAIL);
                 return result;

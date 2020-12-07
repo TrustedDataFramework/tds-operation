@@ -629,6 +629,38 @@
 		});
 
 	});
+
+	window.setInterval(function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url: "/getBindNode",
+			data: "",
+			success: function (result) {
+				if (result.code == 5000){
+					$("#ip").html("请绑定节点");
+					$("#version").val("");
+					$("#isrun").val("");
+					$("#type").val("");
+				}else if (result.code == 3000) {
+					$("#ip").html("连接超时");
+					$("#version").val("");
+					$("#isrun").val("");
+					$("#type").val("");
+				}else {
+					$("#ip").html(result.ip);
+					$("#version").html(result.version);
+					$("#isrun").html(result.status);
+					if (result.type == 1){
+						$("#type").html("全节点");
+					}else {
+						$("#type").html("矿工节点");
+					}
+
+				}
+			}
+		})
+	},3000);
 </script>
 
    </body>

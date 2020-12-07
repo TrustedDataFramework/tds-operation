@@ -16,20 +16,7 @@ run {
     main = project.getProperty('mainClassName')
 }
 
-jar{
-    manifestContentCharset 'utf-8'
-    metadataCharset 'utf-8'
-    manifest{
-        attributes 'Main-Class': project.getProperty('mainClassName')
-    }
 
-    from {
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-
-}
 
 repositories {
     maven {
@@ -126,23 +113,4 @@ test {
 task copyDependencies(type: Copy) {
     from configurations.runtime
     destinationDir = file('build/libs/lib')
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class' : mainClassName
-        attributes 'Class-Path' : '. ' + configurations.compile.collect { 'lib/' + it.getName() }.join(' ')
-    }
-}
-jar.dependsOn += copyDependencies
-
-task fatJar(type: Jar) {
-    classifier = 'all'
-    manifest {
-        attributes 'Main-Class' : mainClassName
-        attributes 'Class-Path' : configurations.compile.collect { 'lib/' + it.getName() }.join(' ')
-    }
-    zip64=true
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
 }

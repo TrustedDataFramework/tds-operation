@@ -4,25 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.model.Nodes;
-import com.tds.monitor.utils.Constants;
-import com.tds.monitor.utils.LocalHostUtil;
-import com.tds.monitor.utils.RestTemplateUtil;
+import com.tds.monitor.utils.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +32,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     @Autowired
     RestTemplateUtil restTemplateUtil;
 
+    JavaShellUtil javaShellUtil;
+
     private static String pushUrl = "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
     public static String getJavaBin(){
@@ -51,11 +47,15 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
         String ip = LocalHostUtil.getLocalIP();
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        String bind = ip + ":7010";
+        if (mapCacheUtil.getCacheItem("bindNode") != null) {
+            mapCacheUtil.removeCacheItem("bindNode");
+        }
+        mapCacheUtil.putCacheItem("bindNode",bind);
         //查看节点是否启动
         JSONObject jsonObject = restTemplateUtil.getNodeInfo(ip, 7010);
         if (jsonObject == null) {
-            //kill
-//            if (jsonObject.getInteger("code") != 200) {
             log.info("==============================获取注册码");
             //获取注册码
             byte[] all = Files.readAllBytes(Paths.get(Constants.ETC_DIR, ".serial"));
@@ -67,15 +67,11 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             for (Object o : json.getJSONArray("whiteArrays")) {
                 list.add(o);
             }
-            log.info("111111111111111" + mes);
-            log.info("111111111111111" + list.size());
             if (list.contains(mes) && list.size() > 0) {
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
                 Date localTime = df.parse(df.format(new Date()));
                 Date endTime = df.parse(json.getString("endTime"));
                 if (localTime.before(endTime)) {
-                    //sudo 密码
-                    //String password = Constants.getSudoPassword();
                     log.info("==============================启动节点");
                     String[] cmds = new String[]{
                             "nohup", getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
@@ -111,11 +107,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                     if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
                         log.info("=============================保存节点信息");
                         nodeDao.save(node);
+
                     }
+                    //获取密码,启动浏览器
+                    String password = "123456";
+                    javaShellUtil.ProcessBrowserShell(1,password);
                 }
             }
-//            } else {
-//            }
         }
     }
 
@@ -124,7 +122,6 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         JSONObject jsonObject = new JSONObject();
         try {
             URL url = new URL(pushUrl);
-            //System.out.println("访问路径"+pushUrl);
             URLConnection conn = url.openConnection();
             conn.setReadTimeout(1000);  //读取超时，时限1秒
             conn.setConnectTimeout(1000);  //链接超时，时限1秒
@@ -139,25 +136,5 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
             e.printStackTrace();//这里抓取的异常范围比较大，是异常就抛出
         }
         return jsonObject;
-    }
-
-
-    private static boolean exeCmd(String[] cmds) {
-        boolean result = false;
-        BufferedReader br = null;
-        try {
-            Process p = Runtime.getRuntime().exec(cmds);
-            br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            System.out.println("sb:" + sb.toString());
-            result = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 }

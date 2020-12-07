@@ -21,9 +21,6 @@ import java.net.UnknownHostException;
 @RestController
 public class NodeController {
 
-//    @Value("${Image}")
-//    private String image;
-
     @Autowired
     public NodeServiceImpl nodeService;
 
@@ -73,7 +70,6 @@ public class NodeController {
                 String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
                 if(ip.equals(LocalHostUtil.getLocalIP())){
                     JavaShellUtil.ProcessKillShell("sunflower");
-//                    if(kill != null || !kill.equals("")){
                         String[] cmds = new String[]{
                                 "nohup", ApplicationRunnerImpl.getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
                                 "--spring.config.location=" + Constants.YML_PATH,
@@ -96,7 +92,6 @@ public class NodeController {
                     }else {
                     return nodeService.restart(mapCacheUtil.getCacheItem("bindNode").toString());
                 }
-//                }
             }
         }catch (Exception e){
             result.setMessage("失败");
@@ -158,12 +153,13 @@ public class NodeController {
             return result;
         }
     }
+
     //检测浏览器
     @GetMapping(value = {"/detectExplorer"})
     public Object detectExplorer() throws UnknownHostException {
         Result result = new Result();
         String ip = LocalHostUtil.getLocalIP();
-        String version = restTemplateUtil.getBrowserInfo(ip,8080);
+        String version = restTemplateUtil.getBrowserInfo(ip,8181);
         if(version != null){
             JSONObject jsonObject = JSONObject.parseObject(version);
             String ver = jsonObject.getString("data");
@@ -179,64 +175,73 @@ public class NodeController {
 
     //启动浏览器
     @GetMapping(value = {"/startWeb"})
-    public Object startWeb(@RequestParam("password") String password) throws Exception {
+    public String startWeb(@RequestParam("password") String password) throws Exception {
+        javaShellUtil.ProcessBrowserShell(1,password);
+        return "";
+    }
+
+    //查看浏览器是否启动
+    @GetMapping(value = {"/webStartOrNot"})
+    public Object webStartOrNot() throws UnknownHostException {
         Result result = new Result();
-        String res = javaShellUtil.ProcessBrowserShell(1,password);
-        if(res == ""){
-            result.setMessage("失败");
-            result.setCode(ResultCode.FAIL);
-            return result;
-        }else{
-            String ip = LocalHostUtil.getLocalIP();
-            String version = restTemplateUtil.getBrowserInfo(ip,8080);
-            JSONObject jsonObject = JSONObject.parseObject(version);
-            String ver = jsonObject.getString("data");
-            result.setData(ver);
+        String ip = LocalHostUtil.getLocalIP();
+        String version = restTemplateUtil.getBrowserInfo(ip,8080);
+        JSONObject jsonObject = JSONObject.parseObject(version);
+        String ver = jsonObject.getString("data");
+        result.setData(ver);
+        result.setMessage("成功");
+        result.setCode(ResultCode.SUCCESS);
+        return result;
+    }
+
+    //查看节点是否启动
+    @GetMapping(value = {"/nodeStartOrNot"})
+    public Object nodeStartOrNot() throws UnknownHostException {
+        Result result = new Result();
+        String ip = LocalHostUtil.getLocalIP();
+        JSONObject jsonObject = restTemplateUtil.getNodeInfo(ip,7010);
+        if(jsonObject != null) {
             result.setMessage("成功");
             result.setCode(ResultCode.SUCCESS);
-            return result;
         }
+        return result;
     }
 
     //停止浏览器
     @GetMapping(value = {"/stopWeb"})
     public Object stopWeb(@RequestParam("password") String password) throws Exception {
-        Result result = new Result();
-        String res = javaShellUtil.ProcessBrowserShell(2,password);
-        if(res == ""){
-            result.setMessage("失败");
-            result.setCode(ResultCode.FAIL);
-            return result;
-        }else{
-            String ip = LocalHostUtil.getLocalIP();
-            String version = restTemplateUtil.getBrowserInfo(ip,8080);
-            JSONObject jsonObject = JSONObject.parseObject(version);
-            String ver = jsonObject.getString("data");
-            result.setData(ver);
-            result.setMessage("成功");
-            result.setCode(ResultCode.SUCCESS);
-            return result;
-        }
+        javaShellUtil.ProcessBrowserShell(2,password);
+        return "";
     }
 
     //重启浏览器
     @GetMapping(value = {"/restartWeb"})
     public Object restartWeb(@RequestParam("password") String password) throws Exception {
-        Result result = new Result();
-        String res = javaShellUtil.ProcessBrowserShell(3,password);
-        if(res == ""){
-            result.setMessage("失败");
-            result.setCode(ResultCode.FAIL);
-            return result;
-        }else{
-            String ip = LocalHostUtil.getLocalIP();
-            String version = restTemplateUtil.getBrowserInfo(ip,8080);
-            JSONObject jsonObject = JSONObject.parseObject(version);
-            String ver = jsonObject.getString("data");
-            result.setData(ver);
-            result.setMessage("成功");
-            result.setCode(ResultCode.SUCCESS);
-            return result;
+        javaShellUtil.ProcessBrowserShell(3,password);
+        return "";
+    }
+
+    @GetMapping(value = {"/getBindNode"})
+    public JSONObject getBindNode() {
+        JSONObject jsonObject = new JSONObject();
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        if (mapCacheUtil.getCacheItem("bindNode") != null){
+            Nodes nodes = nodeService.searchNode(mapCacheUtil.getCacheItem("bindNode").toString());
+            jsonObject.put("ip",nodes.getNodeIP()+":"+nodes.getNodePort());
+            JSONObject jo = (JSONObject) JSONObject.toJSON(NodeinfoController.getVersion());
+            if (jo != null){
+                JSONObject result = (JSONObject) jo.get("data");
+                String version = result.get("version").toString();
+                jsonObject.put("code","2000");
+                jsonObject.put("status","运行中");
+                jsonObject.put("version",version);
+                jsonObject.put("type",nodes.getNodeType());
+                return jsonObject;
+            }
+            jsonObject.put("code","3000");
+            return jsonObject;
         }
+        jsonObject.put("code","5000");
+        return jsonObject;
     }
 }
