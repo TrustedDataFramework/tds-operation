@@ -1,5 +1,8 @@
 package com.tds.monitor.model;
 
+import lombok.Data;
+
+@Data
 public class TDSInfo {
     private String cpu;
     private String memoryUsed;
@@ -15,6 +18,8 @@ public class TDSInfo {
     private String transactionPoolSize;
     private String height;
     private String blocksPerDay;
+
+    private String p2pAddress;
 
     public String getMemory() {
         return (memory != null) ? memory : "";

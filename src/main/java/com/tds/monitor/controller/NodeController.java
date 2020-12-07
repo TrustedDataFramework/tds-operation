@@ -186,11 +186,13 @@ public class NodeController {
         Result result = new Result();
         String ip = LocalHostUtil.getLocalIP();
         String version = restTemplateUtil.getBrowserInfo(ip,8080);
-        JSONObject jsonObject = JSONObject.parseObject(version);
-        String ver = jsonObject.getString("data");
-        result.setData(ver);
-        result.setMessage("成功");
-        result.setCode(ResultCode.SUCCESS);
+        if(version != null){
+            JSONObject jsonObject = JSONObject.parseObject(version);
+            String ver = jsonObject.getString("data");
+            result.setData(ver);
+            result.setMessage("成功");
+            result.setCode(ResultCode.SUCCESS);
+        }
         return result;
     }
 

@@ -37,7 +37,7 @@
 <!--							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(2)">停止</a>-->
 <!--							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(1)">启动</a>-->
 <!--							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(3)">重启</a>-->
-							<span class="btndefault borderRadius5 browser-btn" onclick="search()">访问</span>
+							<a class="btndefault borderRadius5 browser-btn" id="search">访问</a>
 						</div>
 		  	 	 		
 		  	 	 	</div>
@@ -80,6 +80,7 @@
 </html>
 <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script>
+	var ip;
  	$("#sider").load("/sider",function(){
  		$(".siderNav .l7").addClass('cur')
  	});
@@ -87,11 +88,11 @@
  	$("#topInfo").load("/header")
 
 	var type = ''
-	$("#sider").load("sider.html",function(){
+	$("#sider").load("/sider",function(){
 		$(".siderNav .l7").addClass('cur')
 	});
 
-	$("#topInfo").load("header.html")
+	$("#topInfo").load("/header")
 	function showModal(num){
 		type = num;
 
@@ -105,7 +106,7 @@
 	$(function () {
 		$.get('getLocalIp', function (result) {
 			if(result){
-				document.getElementById("ip").innerHTML = result.data;
+				ip = result.data;
 			}
 		}, 'json');
 
@@ -146,26 +147,26 @@
 	// 	}
 	// });
 
-	function search() {
+	$('#search').click(function () {
 		$.get('webStartOrNot', function (result) {
 			if (result.code == 2000) {
-				let path = "http://" + document.getElementById("ip").innerHTML + ":8181"
+				let path = "http://" + ip + ":8181"
 				window.open(path, "_blank");
 			} else {
 				alert("请启动浏览器");
 			}
 		}, 'json');
-	}
+	})
 
 	setInterval(function(){
 		console.log("=========")
-		$.get('webStartOrNot', urlData, function (result) {
+		$.get('webStartOrNot', function (result) {
 			if (result.code == 2000) {
 				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "未运行";
+				document.getElementById("status").innerHTML = "成功";
 			}else {
 				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "成功";
+				document.getElementById("status").innerHTML = "未运行";
 			}
 		}, 'json');
 	},1000);

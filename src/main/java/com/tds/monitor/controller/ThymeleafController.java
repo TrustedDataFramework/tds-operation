@@ -86,7 +86,7 @@ public class ThymeleafController {
                 } else {
                     info.setMinings("否");
                 }
-
+                info.setP2pAddress(info.getP2pAddress().substring(0,info.getP2pAddress().indexOf(":")));
                 map.addAttribute("isrun","运行中");
             }else {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
@@ -153,8 +153,18 @@ public class ThymeleafController {
             map.addAttribute("dateNow", new java.util.Date().getTime());
             List<String> nodeinfoList = new ArrayList<>();
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+            JSONObject get_info;
+            String p2pAddress = "";
+            TDSInfo info;
             if (mapCacheUtil.getCacheItem("bindNode") != null) {
                 nodeinfoList.add(mapCacheUtil.getCacheItem("bindNode").toString());
+                if (HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", mapCacheUtil.getCacheItem("bindNode")), null)!=""){
+                    get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", mapCacheUtil.getCacheItem("bindNode")), null)).getJSONObject("data");
+                    if (get_info != null && get_info.size() != 0) {
+                        info = JSON.toJavaObject(get_info, TDSInfo.class);
+                        p2pAddress =  info.getP2pAddress().substring(0,info.getP2pAddress().indexOf(":"));
+                    }
+                }
             }
             map.addAllAttributes(nodeinfoList);
             //节点详情
@@ -184,6 +194,7 @@ public class ThymeleafController {
             }
             map.addAttribute("info", nodeinfo);
             map.addAttribute("version", version);
+            map.addAttribute("p2pAddress", p2pAddress);
             map.addAttribute("role", customUserService.getRole());
         } catch (Exception e) {
             e.printStackTrace();
