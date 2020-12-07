@@ -61,7 +61,7 @@ public class   Monitor {
                        return APIResult.newFailResult(-1,height.toString());
                 }
             }
-            return APIResult.newSuccess(-2);
+            return APIResult.newSuccess(0);
         }
         return APIResult.newFailResult(0,"Please bind node");
     }

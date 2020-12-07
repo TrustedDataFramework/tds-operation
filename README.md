@@ -1,12 +1,12 @@
-# wisdom-operations 
+# tds-operations 
 
-*wisdom-operations for monitoring Nodes*
+*tds-operations for monitoring Nodes*
 
 ## Illustrate
-*Refer to the instructions in the latest wisdom-operation.zip in the release.*
+*Refer to the instructions in the latest tds-operations.zip in the release.*
 
 ## Use
-*Download the latest wisdom-operation.zip in the release And decompress, run monitor.jar.*
+*Download the latest tds-operations.zip in the release And decompress, run monitor.jar.*
 
 ```
 java -jar monitor

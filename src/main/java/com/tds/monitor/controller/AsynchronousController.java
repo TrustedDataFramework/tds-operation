@@ -27,11 +27,11 @@ public class AsynchronousController {
     public String block() {
         int blockStatus = Monitor.checkBlockIsStuck(false);
         if (blockStatus == -1) {
-            return "异常";
+            return "是";
         } else if (blockStatus == 0) {
             return "待确认";
         } else {
-            return "正常";
+            return "否";
         }
     }
 }
