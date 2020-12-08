@@ -207,7 +207,7 @@ body{width:100%;min-height:100%;}
 .tabBox_authSet .first_div{ margin-top: 165px;}
 .t_tab tbody tr:nth-of-type(odd){background:#F6F7FB;}
 
-.t_tab .abtn_btn{width:60px;height: 30px; display: inline-block; margin: 0 8px; font-size:16px;color: #fff; background:#3182FF;
+.t_tab .abtn_btn{width:75px;height: 30px; display: inline-block; margin: 0 8px; font-size:16px;color: #fff; background:#3182FF;
 	text-align: center; line-height: 30px;}
 
 /*弹出框*/

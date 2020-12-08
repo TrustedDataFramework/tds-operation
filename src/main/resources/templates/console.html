@@ -106,7 +106,6 @@
 								 </div>
 								 <div class="sshInfo">
 									 <h3 class="pt">SSH远程连接数据</h3>
-									 <form>
 									 <div class="clearfix">
 										 <div class="sshcol">
 											 <span class="flab">用户名：</span>
@@ -123,9 +122,6 @@
 											 <h5 style="color: red;display: none" id="fail_1">连接失败</h5>
 										 </div>
 									 </div>
-									 </form>
-
-
 								 </div>
 								 <div class="fbtnbox">
 									 <a  class="borderRadius5 fbtn" onclick="hideModal()" id="update_submit">提交</a>
@@ -494,6 +490,7 @@
 
 		$(document).ready(function () {
 			var role = [[${role}]];
+			console.log(role)
 			if(role == "ROLE_REVIEWER"){//仅查询
 				$("#add").attr("style","display:none;");//隐藏div
 				// $(".bt_delete").attr("style","display:none;");//隐藏div
@@ -507,32 +504,37 @@
 		$("#connection").click(function () {
 			$("#wait").css("display", "none");
 			$("#fail").css("display", "none");
-			var re = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-			var r = re.test($('#update_nodeIp').val());
-			if (!r)
-			{
-				Swal.fire("", "IP地址不正确", "error");
-				return;
-			}
+			// var re = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+			// var r = re.test($('#update_nodeIp').val());
+			// if (!r)
+			// {
+			// 	Swal.fire("", "IP地址不正确", "error");
+			// 	return;
+			// }
 			var username = $('#update_username').val();
 			var password = $('#update_password').val();
 			if (username == ""){
 				Swal.fire("", "请完善远程信息", "error");
 				return;
-			}
-			var urlData = {ip: $('#update_nodeIp').val(),username: $('#update_username').val(), password: $('#update_password').val()};
+			}else {
+				var urlData = {
+					ip: $('#update_nodeIp').val(),
+					username: $('#update_username').val(),
+					password: $('#update_password').val()
+				};
 
-			$.get('connection', urlData, function (result) {
-				if(result.code == 2000){
-					$("#wait_1").css("display", "none");
-					$("#fail_1").css("display", "none");
-					$("#success_1").css("display", "table-row");
-				}else {
-					$("#fail_1").css("display", "table-row");
-					$("#wait_1").css("display", "none");
-					$("#success_1").css("display", "none");
-				}
-			});
+				$.get('connection', urlData, function (result) {
+					if (result.code == 2000) {
+						$("#wait_1").css("display", "none");
+						$("#fail_1").css("display", "none");
+						$("#success_1").css("display", "table-row");
+					} else {
+						$("#fail_1").css("display", "table-row");
+						$("#wait_1").css("display", "none");
+						$("#success_1").css("display", "none");
+					}
+				});
+			}
 		});
 
 		$("#connection1").click(function () {

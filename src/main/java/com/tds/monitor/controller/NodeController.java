@@ -39,25 +39,27 @@ public class NodeController {
         Result result = new Result();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
-            if (mapCacheUtil.getCacheItem("bindNode") != null){
-                String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
-                if(ip.equals(LocalHostUtil.getLocalIP())){
-                    String kill = JavaShellUtil.ProcessKillShell("sunflower");
-                    if(kill != null || !kill.equals("")){
-                        result.setMessage("成功");
-                        result.setCode(ResultCode.SUCCESS);
-                        return result;
-                    }
+            String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
+            if(ip.equals(LocalHostUtil.getLocalIP())){
+                String kill = JavaShellUtil.ProcessKillShell("sunflower");
+                if(kill != null || !kill.equals("")){
+                    result.setMessage("成功");
+                    result.setCode(ResultCode.SUCCESS);
+                    return result;
                 }
-                return nodeService.stop(mapCacheUtil.getCacheItem("bindNode").toString());
+            }else {
+                if (mapCacheUtil.getCacheItem("bindNode") != null) {
+                    return nodeService.stop(mapCacheUtil.getCacheItem("bindNode").toString());
+                }else{
+                    result.setMessage("请绑定节点");
+                    result.setCode(ResultCode.FAIL);
+                    return result;
+                }
             }
         }catch (Exception e){
             result.setMessage("失败");
             result.setCode(ResultCode.FAIL);
-            return result;
         }
-        result.setMessage("请绑定节点");
-        result.setCode(ResultCode.FAIL);
         return result;
     }
 

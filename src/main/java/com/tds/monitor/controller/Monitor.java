@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.HttpRequestUtil;
+import com.tds.monitor.utils.LocalHostUtil;
 import com.tds.monitor.utils.MapCacheUtil;
 import com.tds.monitor.utils.SendMailUtil;
 import com.tds.monitor.utils.ApiResult.APIResult;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.*;
 
 
@@ -31,37 +33,42 @@ public class   Monitor {
 
 
     //分叉监测
-    public Object checkBifurcate(){
-        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        if (mapCacheUtil.getCacheItem("bindNode") != null){
-            String ip = mapCacheUtil.getCacheItem("bindNode").toString();
-            //获取当前高度
-            String heightUrl = "http://"+ip+"/rpc/stat";
-            JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl,""));
-            if(result != null){
-                JSONObject result1 = result.getJSONObject("data");
-                Long height = result1.getLong("height");
-                String nBlockhash = getBlockHash(ip,height);
-                int confirmNum =0;
-                List<String> proposersList = getPeers();
-                if(proposersList.size()<3){
-                    return APIResult.newSuccess(1);
-                }
-                if(proposersList.size()>=3) {
-                    for (String str : proposersList) {
-                        String proposersBlockHash = getBlockHash(str, height);
-                        if(proposersBlockHash != null){
-                            if (proposersBlockHash.equals(nBlockhash)) {
-                                confirmNum++;
+    public Object checkBifurcate()           {
+        try {
+            MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+            String ip = "";
+            if (mapCacheUtil.getCacheItem("bindNode") != null){
+                ip = mapCacheUtil.getCacheItem("bindNode").toString();
+                //获取当前高度
+                String heightUrl = "http://"+ip+"/rpc/stat";
+                JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl,""));
+                if(result != null){
+                    JSONObject result1 = result.getJSONObject("data");
+                    Long height = result1.getLong("height");
+                    String nBlockhash = getBlockHash(ip,height);
+                    int confirmNum =0;
+                    List<String> proposersList = getPeers();
+                    if(proposersList.size()<3){
+                        return APIResult.newSuccess(1);
+                    }
+                    if(proposersList.size()>=3) {
+                        for (String str : proposersList) {
+                            String proposersBlockHash = getBlockHash(str, height);
+                            if(proposersBlockHash != null){
+                                if (proposersBlockHash.equals(nBlockhash)) {
+                                    confirmNum++;
+                                }
                             }
                         }
+                        //不满足2/3一致则删除对于高度的区块
+                        if (divisionRoundingUp(proposersList.size() * 2, 3) > confirmNum)
+                            return APIResult.newFailResult(-1,height.toString());
                     }
-                    //不满足2/3一致则删除对于高度的区块
-                    if (divisionRoundingUp(proposersList.size() * 2, 3) > confirmNum)
-                       return APIResult.newFailResult(-1,height.toString());
                 }
+                return APIResult.newSuccess(0);
             }
-            return APIResult.newSuccess(0);
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return APIResult.newFailResult(0,"Please bind node");
     }

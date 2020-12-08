@@ -114,7 +114,7 @@ public class ThymeleafController {
             if (get_info != null && get_info.size() != 0){
                 info = JSON.toJavaObject(get_info, TDSInfo.class);
                 if(info.getCpu().compareTo("0")<0){
-                    info.setCpu("异常");
+                    info.setCpu("0.1%");
                 }else {
                     info.setCpu(String.format("%.2f", Float.parseFloat(info.getCpu())) + "%");
                 }

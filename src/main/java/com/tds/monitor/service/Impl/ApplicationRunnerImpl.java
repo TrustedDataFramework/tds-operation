@@ -110,7 +110,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
                     }
                     //获取密码,启动浏览器
-                    String password = "123456";
+                    String password = Constants.getSudoPassword();
                     javaShellUtil.ProcessBrowserShell(1,password);
                 }
             }

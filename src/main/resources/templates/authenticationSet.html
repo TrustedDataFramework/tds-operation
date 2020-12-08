@@ -41,8 +41,9 @@
 									<p th:case="'ROLE_REVIEWER'">仅查询</p>
 								</td>
 		  	 	 				<td th:text="${user.getLogin_time()}"></td>
-								<td class="operations"><a class="abtn" th:if="${user.getName()} != 'admin' "><span onclick="showModal1()" class="" 	th:id="${user.getName()}">权限设置</span></a><br/>
-									<a th:if="${user.getName()} != 'admin' " th:id="${user.getName()}" class="abtn bt_delete">删除</a>
+								<td class="operations">
+									<a class="abtn_btn" th:if="${user.getName()} != 'admin' " onclick="showModal1()"   th:id="${user.getName()}">权限设置</a>
+									<a th:if="${user.getName()} != 'admin' " th:id="${user.getName()}" class="abtn_btn bt_delete">删除</a>
 								</td>
 		  	 	 			</tr>
 		  	 	 		</tbody>
@@ -193,35 +194,107 @@
 				var urlData = {name: $('#username').val(), password: $('#password').val(), role: $('#role').val(),loginTime:""};
 				$.get('adduser', urlData, function (result) {
 					$("#modal").css("display", "none");
-					console.log(result);
-					alert(result.message);
-					//location.href = "[[@{/authenticationSet}]]";
-					window.location.reload();
+					if(result.code == 2000) {
+						Swal.fire({
+							type: 'success', // 弹框类型
+							title: '', //标题
+							text: "新增用户成功！", //显示内容
+
+							confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+							confirmButtonText: '确定',// 确定按钮的 文字
+							showCancelButton: false, // 是否显示取消按钮
+							cancelButtonColor: '#d33', // 取消按钮的 颜色
+							cancelButtonText: "取消", // 取消按钮的 文字
+
+							focusCancel: true, // 是否聚焦 取消按钮
+							reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+						}).then(function(isConfirm){
+							try {
+								//判断 是否 点击的 确定按钮
+								if (isConfirm.value) {
+									window.location.reload();
+								}
+							} catch (e) {
+								alert(e);
+							}
+						});
+					}else{
+						Swal.fire("", "新增失败", "error");
+					}
 				}, 'json');
 			});
 			$(' .bt_delete').click(function () {
-				var r = confirm("是否删除该用户");
-				if (r == true) {
-					var urlData = {name: $(this).attr('id')};
-					$.get('deleteuser', urlData, function (result) {
-						alert(result.message);
-						console.log(result);
-						// location.href = "[[@{../authenticationSet}]]";
-						window.location.reload();
-					}, 'json');
-				}
+				var urlData = {name: $(this).attr('id')};
+				console.log($(this).attr('id'))
+				Swal.fire({
+					type: 'question', // 弹框类型
+					title: '', //标题
+					text: "是否删除用户！", //显示内容
+
+					confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+					confirmButtonText: '确定',// 确定按钮的 文字
+					showCancelButton: true, // 是否显示取消按钮
+					cancelButtonColor: '#d33', // 取消按钮的 颜色
+					cancelButtonText: "取消", // 取消按钮的 文字
+
+					focusCancel: true, // 是否聚焦 取消按钮
+					reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+				}).then(function(isConfirm){
+					try {
+						//判断 是否 点击的 确定按钮
+						if (isConfirm.value) {
+							$.get('deleteuser', urlData, function (result) {
+								$(".modal").css("display", "none");
+								if(result.code == 2000) {
+									Swal.fire({
+										type: 'success', // 弹框类型
+										title: '', //标题
+										text: "删除用户成功！", //显示内容
+
+										confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+										confirmButtonText: '确定',// 确定按钮的 文字
+										showCancelButton: false, // 是否显示取消按钮
+										cancelButtonColor: '#d33', // 取消按钮的 颜色
+										cancelButtonText: "取消", // 取消按钮的 文字
+
+										focusCancel: true, // 是否聚焦 取消按钮
+										reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+									}).then(function(isConfirm){
+										try {
+											//判断 是否 点击的 确定按钮
+											if (isConfirm.value) {
+												window.location.reload();
+											}
+										} catch (e) {
+											alert(e);
+										}
+									});
+								}else{
+									Swal.fire("", "删除失败", "error");
+								}
+							}, 'json');
+
+						}
+						else {
+							Swal.fire("取消", "点击了取消", "error");
+						}
+					} catch (e) {
+						alert(e);
+					}
+				});
+
 			});
-			});
-			$(document).ready(function () {
-				var role = [[${role}]];
-				if(role == "ROLE_REVIEWER" || role == "ROLE_EDITOR"){
-					//document.getElementById("operation").style.visibility="hidden";//隐藏
-					//document.getElementById("operations").style.visibility="hidden";//隐藏
-					$(".addBtnBox").attr("style","display:none;");
-					$(".operations").attr("style","display:none;");
-					$(".operation").attr("style","display:none;");
-				}
-			});
+		});
+		$(document).ready(function () {
+			var role = [[${role}]];
+			if(role == "ROLE_REVIEWER" || role == "ROLE_EDITOR"){
+				//document.getElementById("operation").style.visibility="hidden";//隐藏
+				//document.getElementById("operations").style.visibility="hidden";//隐藏
+				$(".addBtnBox").attr("style","display:none;");
+				$(".operations").attr("style","display:none;");
+				$(".operation").attr("style","display:none;");
+			}
+		});
 
 		$(function () {
 			$('#bt_update').click(function () {

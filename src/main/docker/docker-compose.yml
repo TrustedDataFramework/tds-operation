@@ -7,6 +7,8 @@ services:
     restart: always
     ports:
       - 8090:8090
+    volumes:
+      - /home/sal/.tdos/etc:/root/.tdos/etc
 
 networks:
   dandelion:
