@@ -221,9 +221,7 @@
 		$("#modal1").addClass('modal_in');
 		var urlData = {ipPort: event.target.id};
 		$.get('searchNode', urlData, function (result) {
-			console.log(result.nodeIP)
 			document.getElementById("update_nodeIp").innerHTML = "result.nodeIP";
-			console.log($("#update_nodeIp").val());
 			$("#update_nodeIp").val(result.nodeIP);
 			$("#update_nodePort").val(result.nodePort);
 			$("#update_nodetype").val(result.nodeType);
@@ -490,7 +488,6 @@
 
 		$(document).ready(function () {
 			var role = [[${role}]];
-			console.log(role)
 			if(role == "ROLE_REVIEWER"){//仅查询
 				$("#add").attr("style","display:none;");//隐藏div
 				// $(".bt_delete").attr("style","display:none;");//隐藏div

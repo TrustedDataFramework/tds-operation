@@ -159,7 +159,6 @@
 	})
 
 	setInterval(function(){
-		console.log("=========")
 		$.get('webStartOrNot', function (result) {
 			if (result.code == 2000) {
 				document.getElementById("version").innerHTML = result.data;
