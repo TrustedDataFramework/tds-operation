@@ -58,7 +58,11 @@ public class JavaShellUtil {
 
     public static String ProcessBrowserShell(int state, String passwd) {
         String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + browserUrl + state};
-        System.out.println(Arrays.toString(cmd));
+        return ProcessShell(cmd);
+    }
+
+    public static String exlporerShell(String passwd) {
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S docker ps"};
         return ProcessShell(cmd);
     }
 

@@ -7,10 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
-import com.tds.monitor.utils.HttpRequestUtil;
-import com.tds.monitor.utils.LocalHostUtil;
-import com.tds.monitor.utils.MapCacheUtil;
-import com.tds.monitor.utils.SendMailUtil;
+import com.tds.monitor.utils.*;
 import com.tds.monitor.utils.ApiResult.APIResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -30,6 +28,9 @@ public class   Monitor {
     private static final Logger logger = LoggerFactory.getLogger(Monitor.class);
     @Autowired
     public NodeServiceImpl nodeService;
+
+    @Autowired
+    public RestTemplateUtil restTemplateUtil;
 
 
     //分叉监测
@@ -137,8 +138,15 @@ public class   Monitor {
     @Scheduled(cron="0/5 * *  * * ? ")
     public void monitorStatus() throws IOException {
         boolean ismail = false;
-        recoveryBifurcate(ismail);
-        checkBlockIsStuck(ismail);
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
+        if (mapCacheUtil.getCacheItem("bindNode") != null) {
+            JSONObject result = restTemplateUtil.getNodeInfo(bindNodeiphost[0],7010);
+            if (result != null && !result.equals("")) {
+                recoveryBifurcate(ismail);
+                checkBlockIsStuck(ismail);
+            }
+        }
     }
 
 

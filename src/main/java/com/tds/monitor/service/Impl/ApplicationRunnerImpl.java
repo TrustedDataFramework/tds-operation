@@ -37,10 +37,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     private static String pushUrl = "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
     public static String getJavaBin(){
-        String javaBin = System.getenv("JAVA_BIN");
-        if(javaBin == null || javaBin.trim().isEmpty())
-            return "java";
-        return javaBin;
+        return Paths.get(Constants.JAVA_HOME, "bin", "java").toString();
     }
 
     @Override
@@ -107,14 +104,14 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                     if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
                         log.info("=============================保存节点信息");
                         nodeDao.save(node);
-
                     }
-                    //获取密码,启动浏览器
-                    String password = Constants.getSudoPassword();
-                    javaShellUtil.ProcessBrowserShell(1,password);
                 }
             }
         }
+        //获取密码,启动浏览器
+        log.info("=============================启动浏览器");
+        String password = Constants.getSudoPassword();
+        javaShellUtil.ProcessBrowserShell(1,password);
     }
 
 

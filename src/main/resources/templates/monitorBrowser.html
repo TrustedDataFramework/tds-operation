@@ -125,8 +125,8 @@
 		$.get('detectExplorer', function (result) {
 			if(result.code == 2000){
 				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = result.message;
 			}
+			document.getElementById("status").innerHTML = result.message;
 		}, 'json');
 	}
 
@@ -160,13 +160,8 @@
 
 	setInterval(function(){
 		$.get('webStartOrNot', function (result) {
-			if (result.code == 2000) {
-				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "成功";
-			}else {
-				document.getElementById("version").innerHTML = result.data;
-				document.getElementById("status").innerHTML = "未运行";
-			}
+			document.getElementById("version").innerHTML = result.data;
+			document.getElementById("status").innerHTML = result.message;
 		}, 'json');
 	},1000);
 </script>

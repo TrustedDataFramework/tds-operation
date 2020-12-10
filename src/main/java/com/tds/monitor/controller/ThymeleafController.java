@@ -48,6 +48,8 @@ public class ThymeleafController {
     @Autowired
     private MailDao mailDao;
 
+    JavaShellUtil javaShellUtil;
+
 
     @Value("${Image}")
     private String image;
@@ -190,7 +192,15 @@ public class ThymeleafController {
                 map.addAttribute("info", nodeinfo);
                 map.addAttribute("isrun", "运行中");
             } else {
-                nodeinfo.setNodeIP(jsonObject.getString("message"));
+                if(mapCacheUtil.getCacheItem("bindNode") != null){
+                    String[] cmd = {"ps grep | aux sunflower"};
+                    String node = javaShellUtil.ProcessShell(cmd);
+                    if(node != null){
+                        map.addAttribute("isrun", "正在启动中");
+                    }
+                } else {
+                    nodeinfo.setNodeIP(jsonObject.getString("message"));
+                }
             }
             map.addAttribute("info", nodeinfo);
             map.addAttribute("version", version);
@@ -226,7 +236,13 @@ public class ThymeleafController {
             for (int i = 0; i < nodeList.size(); i++) {
                 String heightUrl = "http://" + nodeList.get(i).getNodeIP() + ":" + nodeList.get(i).getNodePort() + "/rpc/stat";
                 if (HttpRequestUtil.sendGet(heightUrl, "") == "") {
-                    nodeList.get(i).setNodeState("未运行");
+                    String[] cmd = {"ps grep | aux sunflower"};
+                    String node = javaShellUtil.ProcessShell(cmd);
+                    if(node != null){
+                        nodeList.get(i).setNodeState("正在启动中");
+                    }else{
+                        nodeList.get(i).setNodeState("未运行");
+                    }
                 } else {
                     nodeList.get(i).setNodeState("运行中");
                     nodeList.get(i).setNodeVersion(JSON.parseObject(JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, "")).get("data").toString()).get("version").toString());

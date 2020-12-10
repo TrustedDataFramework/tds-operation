@@ -26,6 +26,8 @@ public class Constants {
     // tds 错误输出
     public static final String TDS_ERROR = Paths.get(TDS_HOME, ".err").toString();
 
+    public static final String JAVA_HOME = Paths.get(TDS_HOME, "jdk-11.0.2").toString();
+
     @SneakyThrows
     public static String getSudoPassword(){
         return new String(Files.readAllBytes(Paths.get(SUDO_PASSWORD_PATH)));

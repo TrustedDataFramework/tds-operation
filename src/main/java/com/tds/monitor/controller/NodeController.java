@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileOutputStream;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 @RestController
@@ -158,7 +159,7 @@ public class NodeController {
 
     //检测浏览器
     @GetMapping(value = {"/detectExplorer"})
-    public Object detectExplorer() throws UnknownHostException {
+    public Object detectExplorer() throws Exception {
         Result result = new Result();
         String ip = LocalHostUtil.getLocalIP();
         String version = restTemplateUtil.getBrowserInfo(ip,8181);
@@ -168,8 +169,14 @@ public class NodeController {
             result.setData(ver);
             result.setMessage("运行中");
         }else{
+            String password = Constants.getSudoPassword();
+            String status = javaShellUtil.exlporerShell(password);
             result.setData("");
-            result.setMessage("未运行");
+            if(status != null){
+                result.setMessage("正在启动中");
+            }else {
+                result.setMessage("未运行");
+            }
         }
         result.setCode(ResultCode.SUCCESS);
         return result;
@@ -184,7 +191,7 @@ public class NodeController {
 
     //查看浏览器是否启动
     @GetMapping(value = {"/webStartOrNot"})
-    public Object webStartOrNot() throws UnknownHostException {
+    public Object webStartOrNot() throws Exception {
         Result result = new Result();
         String ip = LocalHostUtil.getLocalIP();
         String version = restTemplateUtil.getBrowserInfo(ip,8080);
@@ -193,14 +200,22 @@ public class NodeController {
             String ver = jsonObject.getString("data");
             result.setData(ver);
             result.setMessage("成功");
-            result.setCode(ResultCode.SUCCESS);
+        }else{
+            String password = Constants.getSudoPassword();
+            String status = javaShellUtil.exlporerShell(password);
+            result.setData("");
+            if(status != null){
+                result.setMessage("正在启动中");
+            }else {
+                result.setMessage("未运行");
+            }
         }
         return result;
     }
 
     //查看节点是否启动
     @GetMapping(value = {"/nodeStartOrNot"})
-    public Object nodeStartOrNot() throws UnknownHostException {
+    public Object nodeStartOrNot() throws Exception {
         Result result = new Result();
         String ip = LocalHostUtil.getLocalIP();
         JSONObject jsonObject = restTemplateUtil.getNodeInfo(ip,7010);
