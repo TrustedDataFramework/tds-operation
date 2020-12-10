@@ -200,6 +200,7 @@ public class NodeController {
             String ver = jsonObject.getString("data");
             result.setData(ver);
             result.setMessage("成功");
+            result.setCode(ResultCode.SUCCESS);
         }else{
             String password = Constants.getSudoPassword();
             String status = javaShellUtil.exlporerShell(password);
