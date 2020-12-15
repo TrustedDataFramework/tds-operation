@@ -66,7 +66,8 @@ public class searchOSSFileJob {
                         Date localTime = df.parse(df.format(new Date()));
                         Date endTime = df.parse(jsonObject.getString("endTime"));
                         if (localTime.after(endTime)) {
-                            String kill = JavaShellUtil.ProcessKillShell("sunflower");
+                            String pwd = Constants.getSudoPassword();
+                            String kill = JavaShellUtil.ProcessKillShell(1,pwd);
                             if (kill != null || !kill.equals("")) {
                                 log.info("==============停止节点成功");
                             }

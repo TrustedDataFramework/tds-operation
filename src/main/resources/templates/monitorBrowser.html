@@ -34,9 +34,9 @@
 						</div>
 		 
 						<div class="btnbox">
-<!--							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(2)">停止</a>-->
-<!--							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(1)">启动</a>-->
-<!--							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(3)">重启</a>-->
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(1)">停止</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(2)">启动</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(3)">重启</a>
 							<a class="btndefault borderRadius5 browser-btn" id="search">访问</a>
 						</div>
 		  	 	 		
@@ -47,31 +47,31 @@
 	  	 </div>
 	  </div>
 
-	  <!--新增节点弹出框-->
-	  <div class="modal browser-password" id="modal">
-		  <div class="modal-by-dialog modal-point">
-			  <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
-			  <h3 class="modal_title">密码确认</h3>
-			  <form class="form">
-				  <div class="col clearfix">
+<!--	  &lt;!&ndash;新增节点弹出框&ndash;&gt;-->
+<!--	  <div class="modal browser-password" id="modal">-->
+<!--		  <div class="modal-by-dialog modal-point">-->
+<!--			  <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>-->
+<!--			  <h3 class="modal_title">密码确认</h3>-->
+<!--			  <form class="form">-->
+<!--				  <div class="col clearfix">-->
 
-					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password"/></div>
-				  </div>
+<!--					  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码" id="password"/></div>-->
+<!--				  </div>-->
 
-				  <div class="fbtnbox">
-					  <a  class="borderRadius5 fbtn" onclick="hideModal()" id="submit">提交</a>
-				  </div>
+<!--				  <div class="fbtnbox">-->
+<!--					  <a  class="borderRadius5 fbtn" onclick="hideModal()" id="submit">提交</a>-->
+<!--				  </div>-->
 
-			  </form>
-		  </div>
+<!--			  </form>-->
+<!--		  </div>-->
 
-	  </div>
+<!--	  </div>-->
 
 	  <div class="trans-modal">
 		  <div class="trans-main">
 			  <div class="trans-content">
 				  <div class="loading"><img src="../img/load.gif"/></div>
-				  <p class="mess">正在启动，请稍后</p>
+				  <p class="mess"></p>
 			  </div>
 		  </div>
 	  </div>
@@ -96,7 +96,24 @@
 	function showModal(num){
 		type = num;
 
-		$(".modal").addClass('modal_in');
+		if(type == 1){
+			$(".mess").text("正在停止，请稍后...")
+			$(".trans-modal").addClass('show-trans-modal');
+			console.log("111")
+			$.get('stopWeb', function (result) {
+			}, 'json');
+		}else if(type == 2){
+			$(".mess").text("正在启动，请稍后...")
+			$(".trans-modal").addClass('show-trans-modal');
+			$.get('startWeb', function (result) {
+			}, 'json');
+		}else if(type == 3){
+			$(".mess").text("正在重启，请稍后...")
+			$(".trans-modal").addClass('show-trans-modal');
+			$.get('restartWeb', function (result) {
+			}, 'json');
+		}
+
 	}
 
 	function hideModal(){
@@ -147,6 +164,24 @@
 	// 	}
 	// });
 
+	// $('#startWeb').click(function () {
+	// 	$(".trans-modal").addClass('show-trans-modal');
+	// 	$.get('startWeb', function (result) {
+	// 	}, 'json');
+	// })
+	//
+	// $('#stopWeb').click(function () {
+	// 	$(".trans-modal").addClass('show-trans-modal');
+	// 	$.get('stopWeb', function (result) {
+	// 	}, 'json');
+	// })
+	//
+	// $('#restartWeb').click(function () {
+	// 	$(".trans-modal").addClass('show-trans-modal');
+	// 	$.get('restartWeb', function (result) {
+	// 	}, 'json');
+	// })
+
 	$('#search').click(function () {
 		$.get('webStartOrNot', function (result) {
 			if (result.code == 2000) {
@@ -158,10 +193,35 @@
 		}, 'json');
 	})
 
-	setInterval(function(){
-		$.get('webStartOrNot', function (result) {
-			document.getElementById("version").innerHTML = result.data;
-			document.getElementById("status").innerHTML = result.message;
-		}, 'json');
+	setInterval(function() {
+		console.log(type)
+		if (type == 1) {
+			$.get('webKillOrNot', function (result) {
+				if (result.code == 2000) {
+					$(".trans-modal").removeClass('show-trans-modal');
+				}
+				document.getElementById("version").innerHTML = "";
+				document.getElementById("status").innerHTML = "未运行";
+			}, 'json');
+		}else if (type == 2) {
+			$.get('webStartOrNot', function (result) {
+				if (result.code == 2000) {
+					$(".trans-modal").removeClass('show-trans-modal');
+				}
+				document.getElementById("version").innerHTML = result.data;
+				document.getElementById("status").innerHTML = result.message;
+			}, 'json');
+		}
 	},1000);
+	setInterval(function() {
+		if (type ==3) {
+			$.get('webStartOrNot', function (result) {
+				if (result.code == 2000) {
+					$(".trans-modal").removeClass('show-trans-modal');
+				}
+				document.getElementById("version").innerHTML = result.data;
+				document.getElementById("status").innerHTML = result.message;
+			}, 'json');
+		}
+	},15000);
 </script>

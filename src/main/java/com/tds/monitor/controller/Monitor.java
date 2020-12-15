@@ -101,36 +101,43 @@ public class   Monitor {
 
     //卡块监测
     public static int checkBlockIsStuck(boolean ismail){
-        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        if (mapCacheUtil.getCacheItem("bindNode") != null) {
-            //获取当前高度
-            String ip = mapCacheUtil.getCacheItem("bindNode").toString();
-            String heightUrl = "http://" + ip + "/rpc/stat";
-            JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, ""));
-            JSONObject result1 = result.getJSONObject("data");
-            if (result1 == null)
-                return -1;
-            if (mapCacheUtil.getCacheItem("BlockHeight") == null) {
-                if ((int) result.get("code") == 200) {
-                    mapCacheUtil.putCacheItem("BlockHeight", result1.getLong("height"));
+        try {
+            MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+            if (mapCacheUtil.getCacheItem("bindNode") != null) {
+                //获取当前高度
+                String ip = mapCacheUtil.getCacheItem("bindNode").toString();
+                String heightUrl = "http://" + ip + "/rpc/stat";
+                JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, ""));
+                if(result == null){
+                    return -1;
                 }
-                return 0;
-            }
-            String height = mapCacheUtil.getCacheItem("BlockHeight").toString();
-            if (!height.equals(result1.getLong("height"))) {
-                return 1;
-            }else {
-                if (ismail){
-                    StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
-                    messageText.append("<span>警告:</span></br>");
-                    messageText.append("<span>您绑定的节点存在卡块风险！请检查！！！</span></br>");
-                    new SendMailUtil().sendMailOutLook("通知",messageText.toString());
+                JSONObject result1 = result.getJSONObject("data");
+                if (result1 == null)
+                    return -1;
+                if (mapCacheUtil.getCacheItem("BlockHeight") == null) {
+                    if ((int) result.get("code") == 200) {
+                        mapCacheUtil.putCacheItem("BlockHeight", result1.getLong("height"));
+                    }
+                    return 0;
                 }
-                return -1;
+                String height = mapCacheUtil.getCacheItem("BlockHeight").toString();
+                if (!height.equals(result1.getLong("height"))) {
+                    return 1;
+                }else {
+                    if (ismail){
+                        StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
+                        messageText.append("<span>警告:</span></br>");
+                        messageText.append("<span>您绑定的节点存在卡块风险！请检查！！！</span></br>");
+                        new SendMailUtil().sendMailOutLook("通知",messageText.toString());
+                    }
+                    return -1;
+                }
             }
+            mapCacheUtil.removeCacheItem("BlockHeight");
+            return -1;
+        }catch (Exception e){
+            throw e;
         }
-        mapCacheUtil.removeCacheItem("BlockHeight");
-        return -1;
     }
 
     //整体监测
@@ -139,8 +146,8 @@ public class   Monitor {
     public void monitorStatus() throws IOException {
         boolean ismail = false;
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
         if (mapCacheUtil.getCacheItem("bindNode") != null) {
+            String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
             JSONObject result = restTemplateUtil.getNodeInfo(bindNodeiphost[0],7010);
             if (result != null && !result.equals("")) {
                 recoveryBifurcate(ismail);

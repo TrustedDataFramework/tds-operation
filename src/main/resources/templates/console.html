@@ -23,10 +23,10 @@
 	  	 <div class="mainBox">
 	  	 	 <div class="tabBox tabBox_authSet">
 		  	 	 <div class="borderRadius5 bosshdow  first_div">
-		  	 	 	<div class="addBtnBox">
-						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span>添加新节点</span></button>
+<!--		  	 	 	<div class="addBtnBox">-->
+<!--						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span>添加新节点</span></button>-->
 
-					</div>
+<!--					</div>-->
 
 					 <!--新增节点弹出框-->
 
@@ -63,12 +63,12 @@
 											 <span class="flab">密码：</span>
 											 <div class=" fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="password"/></div>
 										 </div>
-										 <button class="borderRadius5 btndefault btnLink" id="connection1">测试连接</button>
-										 <div class="moda-le">
-											 <h5 style="color: green;display: none" id="wait">请等待...</h5>
-											 <h5 style="color: green;display: none" id="success">连接成功</h5>
-											 <h5 style="color: red;display: none" id="fail">连接失败</h5>
-										 </div>
+<!--										 <button class="borderRadius5 btndefault btnLink" id="connection1">测试连接</button>-->
+<!--										 <div class="moda-le">-->
+<!--											 <h5 style="color: green;display: none" id="wait">请等待...</h5>-->
+<!--											 <h5 style="color: green;display: none" id="success">连接成功</h5>-->
+<!--											 <h5 style="color: red;display: none" id="fail">连接失败</h5>-->
+<!--										 </div>-->
 									 </div>
 								 </div>
 								 <div class="fbtnbox">
@@ -115,12 +115,12 @@
 											 <span class="flab">密码：</span>
 											 <div class=" fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="update_password" /></div>
 										 </div>
-										 <button class="borderRadius5 btndefault btnLink" id="connection">测试连接</button>
-										 <div class="moda-le">
-											 <h5 style="color: green;display: none" id="wait_1">请等待...</h5>
-											 <h5 style="color: green;display: none" id="success_1">连接成功</h5>
-											 <h5 style="color: red;display: none" id="fail_1">连接失败</h5>
-										 </div>
+<!--										 <button class="borderRadius5 btndefault btnLink" id="connection">测试连接</button>-->
+<!--										 <div class="moda-le">-->
+<!--											 <h5 style="color: green;display: none" id="wait_1">请等待...</h5>-->
+<!--											 <h5 style="color: green;display: none" id="success_1">连接成功</h5>-->
+<!--											 <h5 style="color: red;display: none" id="fail_1">连接失败</h5>-->
+<!--										 </div>-->
 									 </div>
 								 </div>
 								 <div class="fbtnbox">
@@ -140,10 +140,10 @@
 		  	 	 		</thead>
 		  	 	 		<tbody>
 		  	 	 			<tr th:each="node,nodeState: ${nodesListPage}">
-								<td th:text="${nodeState.index+1}">Asegmahh</td>
-								<td th:text="${node.getNodeIP()}+':'+${node.getNodePort()}">Asegmahh</td>
-								<td th:text="${node.getNodeVersion()}">Asegmahh</td>
-								<td th:text="${node.getNodeState()}">Asegmahh</td>
+								<td th:text="${nodeState.index+1}"></td>
+								<td th:text="${node.getNodeIP()}+':'+${node.getNodePort()}"></td>
+								<td th:text="${node.getNodeVersion()}"></td>
+								<td th:text="${node.getNodeState()}"></td>
 								<td th:switch="${node.getNodeType()}">
 									<p th:case=1>全节点</p>
 									<p th:case=2>矿工节点</p>
@@ -214,6 +214,10 @@
 	 }
 
 	function showModal(){
+		$("#nodeIp").val('');
+		$("#nodePort").val('');
+		$("#username").val('');
+		$("#password").val('');
 		$("#modal").addClass('modal_in');
 	}
 
@@ -256,6 +260,13 @@
 			if (port == "" || port == null){
 				Swal.fire("", "请输入port", "error");
 				return;
+			}
+			var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
+					regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
+
+			if(regEn.test(port)) {
+				alert("名称不能包含特殊字符.");
+				return false;
 			}
 			var urlData = {nodeIP: $('#nodeIp').val(),nodePort: $('#nodePort').val(), nodeType: $('#nodetype').val(), userName: $('#username').val(),
 				password: $('#password').val(), dbIP: $('#dbip').val(), dbPort: $('#dbport').val(), databaseName: $('#database').val(),
@@ -302,6 +313,8 @@
 										alert(e);
 									}
 								});
+							}else{
+								Swal.fire("", "已存在相同节点", "error");
 							}
 						}, 'json');
 
@@ -354,7 +367,11 @@
 									try {
 										//判断 是否 点击的 确定按钮
 										if (isConfirm.value) {
-											window.location.reload();
+											let page1 =0;
+											if(page >0){
+												page1 = page -1;
+											}
+											pageChange(page1);
 										}
 									} catch (e) {
 										alert(e);

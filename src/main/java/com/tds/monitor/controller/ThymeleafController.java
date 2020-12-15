@@ -193,9 +193,8 @@ public class ThymeleafController {
                 map.addAttribute("isrun", "运行中");
             } else {
                 if(mapCacheUtil.getCacheItem("bindNode") != null){
-                    String[] cmd = {"ps grep | aux sunflower"};
-                    String node = javaShellUtil.ProcessShell(cmd);
-                    if(node != null){
+                    String node = javaShellUtil.nodeShell();
+                    if (node.equals("true\n")) {
                         map.addAttribute("isrun", "正在启动中");
                     }
                 } else {
@@ -217,6 +216,18 @@ public class ThymeleafController {
         return "sider";
     }
 
+    @GetMapping("/dataInitialization")
+    public String dataInitialization() {
+        return "dataInitialization";
+    }
+
+    @RequestMapping("/test1")
+    public String test1(){
+        String node = javaShellUtil.nodeShell();
+        return node;
+    }
+
+
     @RequestMapping("/console")
     public String console(ModelMap map,
                             @RequestParam(defaultValue = "0",value = "page")Integer pageNum){
@@ -236,11 +247,15 @@ public class ThymeleafController {
             for (int i = 0; i < nodeList.size(); i++) {
                 String heightUrl = "http://" + nodeList.get(i).getNodeIP() + ":" + nodeList.get(i).getNodePort() + "/rpc/stat";
                 if (HttpRequestUtil.sendGet(heightUrl, "") == "") {
-                    String[] cmd = {"ps grep | aux sunflower"};
-                    String node = javaShellUtil.ProcessShell(cmd);
-                    if(node != null){
-                        nodeList.get(i).setNodeState("正在启动中");
-                    }else{
+                    MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+                    if (mapCacheUtil.getCacheItem("bindNode") != null) {
+                        String node = javaShellUtil.nodeShell();
+                        if (node.equals("true\n")) {
+                            nodeList.get(i).setNodeState("正在启动中");
+                        } else {
+                            nodeList.get(i).setNodeState("未运行");
+                        }
+                    }else {
                         nodeList.get(i).setNodeState("未运行");
                     }
                 } else {

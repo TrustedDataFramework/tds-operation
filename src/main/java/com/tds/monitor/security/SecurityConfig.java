@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 配置Spring Security，下面说明几点注意事项。
      * 1. Spring Security 默认是开启了CSRF的，此时我们提交的POST表单必须有隐藏的字段来传递CSRF，
-     * 而且在logout中，我们必须通过POST到 /logout 的方法来退出用户，详见我们的login.html和logout.html.
+     * 而且在logout中，我们必须通过POST到 /logout 的方法来退出用户，详见我们的.html和logout.html.
      * 2. 开启了rememberMe()功能后，我们必须提供rememberMeServices，例如下面的getRememberMeServices()方法，
      * 而且我们只能在TokenBasedRememberMeServices中设置cookie名称、过期时间等相关配置,如果在别的地方同时配置，会报错。
      * 错误示例：xxxx.and().rememberMe().rememberMeServices(getRememberMeServices()).rememberMeCookieName("cookie-name")
@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login")// 自定义登录页面
                 //指定自定义form表单请求的路径
                 .loginProcessingUrl("/login")
-                .failureUrl("/login") // 自定义登入失败页面，前端可以通过url中是否有error来提供友好的用户登入提示
+                .failureUrl("/login?error=true") // 自定义登入失败页面，前端可以通过url中是否有error来提供友好的用户登入提示
                 .and()
                 .rememberMe()// 开启记住密码功能
                 .rememberMeServices(getRememberMeServices()) // 必须提供

@@ -108,10 +108,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                 }
             }
         }
-        //获取密码,启动浏览器
-        log.info("=============================启动浏览器");
-        String password = Constants.getSudoPassword();
-        javaShellUtil.ProcessBrowserShell(1,password);
+//        //获取密码,启动浏览器
+//        log.info("=============================启动浏览器");
+//        String password = Constants.getSudoPassword();
+//        javaShellUtil.ProcessBrowserShell(1,password);
     }
 
 

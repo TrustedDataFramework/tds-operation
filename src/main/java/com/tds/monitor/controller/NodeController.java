@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.FileOutputStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.concurrent.*;
 
 @RestController
 public class NodeController {
@@ -35,6 +36,8 @@ public class NodeController {
 
     private static final Logger logger = LoggerFactory.getLogger(NodeController.class);
 
+    private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
+
     @GetMapping(value = {"/stop"})
     public Object stop(){
         Result result = new Result();
@@ -42,7 +45,8 @@ public class NodeController {
         try {
             String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
             if(ip.equals(LocalHostUtil.getLocalIP())){
-                String kill = JavaShellUtil.ProcessKillShell("sunflower");
+                String pwd = Constants.getSudoPassword();
+                String kill = JavaShellUtil.ProcessKillShell(1,pwd);
                 if(kill != null || !kill.equals("")){
                     result.setMessage("成功");
                     result.setCode(ResultCode.SUCCESS);
@@ -72,7 +76,8 @@ public class NodeController {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
                 String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
                 if(ip.equals(LocalHostUtil.getLocalIP())){
-                    JavaShellUtil.ProcessKillShell("sunflower");
+                    String pwd = Constants.getSudoPassword();
+                    JavaShellUtil.ProcessKillShell(1,pwd);
                         String[] cmds = new String[]{
                                 "nohup", ApplicationRunnerImpl.getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
                                 "--spring.config.location=" + Constants.YML_PATH,
@@ -161,22 +166,16 @@ public class NodeController {
     @GetMapping(value = {"/detectExplorer"})
     public Object detectExplorer() throws Exception {
         Result result = new Result();
-        String ip = LocalHostUtil.getLocalIP();
-        String version = restTemplateUtil.getBrowserInfo(ip,8181);
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
+        String version = restTemplateUtil.getBrowserInfo(ip,8080);
         if(version != null){
             JSONObject jsonObject = JSONObject.parseObject(version);
             String ver = jsonObject.getString("data");
             result.setData(ver);
             result.setMessage("运行中");
         }else{
-            String password = Constants.getSudoPassword();
-            String status = javaShellUtil.exlporerShell(password);
-            result.setData("");
-            if(status != null){
-                result.setMessage("正在启动中");
-            }else {
-                result.setMessage("未运行");
-            }
+            result.setMessage("未运行");
         }
         result.setCode(ResultCode.SUCCESS);
         return result;
@@ -184,16 +183,55 @@ public class NodeController {
 
     //启动浏览器
     @GetMapping(value = {"/startWeb"})
-    public String startWeb(@RequestParam("password") String password) throws Exception {
+    public String startWeb(){
+        String password = Constants.getSudoPassword();
         javaShellUtil.ProcessBrowserShell(1,password);
         return "";
+    }
+
+    //初始化节点
+    @GetMapping(value = {"/initNode"})
+    public String initNode(){
+        try {
+            String pwd = Constants.getSudoPassword();
+            javaShellUtil.ProcessKillShell(2,pwd);
+            // 5 秒后退出运维工具
+            EXECUTOR.schedule(() -> System.exit(0), 7, TimeUnit.SECONDS);
+            return "";
+        }catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //查看节点和浏览器进程是否清除
+    @GetMapping(value = {"/searchNodeAndWeb"})
+    public Object searchNodeAndWeb() throws SocketException, UnknownHostException {
+        Result result = new Result();
+        String ip;
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        if (mapCacheUtil.getCacheItem("bindNode") != null) {
+            ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
+        }else{
+            ip = LocalHostUtil.getLocalIP();
+        }
+        String version = restTemplateUtil.getBrowserInfo(ip,8080);
+        JSONObject jsonObject = restTemplateUtil.getNodeInfo(ip,7010);
+        if(version != null && !version.isEmpty() && jsonObject != null && !jsonObject.isEmpty()){
+            result.setData("");
+            result.setCode(ResultCode.FAIL);
+        }else{
+            result.setCode(ResultCode.SUCCESS);
+        }
+        return result;
     }
 
     //查看浏览器是否启动
     @GetMapping(value = {"/webStartOrNot"})
     public Object webStartOrNot() throws Exception {
+
         Result result = new Result();
-        String ip = LocalHostUtil.getLocalIP();
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
         String version = restTemplateUtil.getBrowserInfo(ip,8080);
         if(version != null){
             JSONObject jsonObject = JSONObject.parseObject(version);
@@ -202,14 +240,23 @@ public class NodeController {
             result.setMessage("成功");
             result.setCode(ResultCode.SUCCESS);
         }else{
-            String password = Constants.getSudoPassword();
-            String status = javaShellUtil.exlporerShell(password);
-            result.setData("");
-            if(status != null){
-                result.setMessage("正在启动中");
-            }else {
-                result.setMessage("未运行");
-            }
+            result.setMessage("未运行");
+        }
+        return result;
+    }
+
+    //查看浏览器容器是否清除
+    @GetMapping(value = {"/webKillOrNot"})
+    public Object webKillOrNot(){
+        String password = Constants.getSudoPassword();
+        String resu = javaShellUtil.exlporerShell(password);
+//        resu = resu.substring(0,resu.indexOf("\\"));
+//        int i = Integer.getInteger(resu);
+        Result result = new Result();
+        if(resu.equals("1\n")){
+            result.setCode(ResultCode.SUCCESS);
+        }else{
+            result.setCode(ResultCode.FAIL);
         }
         return result;
     }
@@ -224,44 +271,61 @@ public class NodeController {
             result.setMessage("成功");
             result.setCode(ResultCode.SUCCESS);
         }
+        result.setCode(ResultCode.FAIL);
         return result;
     }
 
     //停止浏览器
     @GetMapping(value = {"/stopWeb"})
-    public Object stopWeb(@RequestParam("password") String password) throws Exception {
+    public Object stopWeb(){
+        String password = Constants.getSudoPassword();
         javaShellUtil.ProcessBrowserShell(2,password);
         return "";
     }
 
     //重启浏览器
     @GetMapping(value = {"/restartWeb"})
-    public Object restartWeb(@RequestParam("password") String password) throws Exception {
+    public Object restartWeb(){
+        String password = Constants.getSudoPassword();
         javaShellUtil.ProcessBrowserShell(3,password);
         return "";
     }
 
     @GetMapping(value = {"/getBindNode"})
     public JSONObject getBindNode() {
-        JSONObject jsonObject = new JSONObject();
-        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        if (mapCacheUtil.getCacheItem("bindNode") != null){
-            Nodes nodes = nodeService.searchNode(mapCacheUtil.getCacheItem("bindNode").toString());
-            jsonObject.put("ip",nodes.getNodeIP()+":"+nodes.getNodePort());
-            JSONObject jo = (JSONObject) JSONObject.toJSON(NodeinfoController.getVersion());
-            if (jo != null){
-                JSONObject result = (JSONObject) jo.get("data");
-                String version = result.get("version").toString();
-                jsonObject.put("code","2000");
-                jsonObject.put("status","运行中");
-                jsonObject.put("version",version);
-                jsonObject.put("type",nodes.getNodeType());
-                return jsonObject;
+        try {
+            JSONObject jsonObject = new JSONObject();
+            MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+            if (mapCacheUtil.getCacheItem("bindNode") != null){
+                Nodes nodes = nodeService.searchNode(mapCacheUtil.getCacheItem("bindNode").toString());
+                if(nodes == null){
+                    jsonObject.put("code","5000");
+                    return jsonObject;
+                }
+                jsonObject.put("ip",nodes.getNodeIP()+":"+nodes.getNodePort());
+                String version1 = restTemplateUtil.getBrowserInfo(mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0],8080);
+                if(version1 != null) {
+                    JSONObject jo = (JSONObject) JSONObject.toJSON(NodeinfoController.getVersion());
+                    if (jo != null){
+                        JSONObject result = (JSONObject) jo.get("data");
+                        String version = result.get("version").toString();
+                        jsonObject.put("code","2000");
+                        jsonObject.put("status","运行中");
+                        jsonObject.put("version",version);
+                        jsonObject.put("type",nodes.getNodeType());
+                        return jsonObject;
+                    }
+                    jsonObject.put("code","3000");
+                    return jsonObject;
+                }else{
+                    jsonObject.put("code","5000");
+                    return jsonObject;
+                }
             }
-            jsonObject.put("code","3000");
+            jsonObject.put("code","5000");
             return jsonObject;
+        }catch (Exception e){
+            throw e;
         }
-        jsonObject.put("code","5000");
-        return jsonObject;
     }
 }

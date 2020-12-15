@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>浏览器监测</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="renderer" content="webkit">
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+		<script src="js/pagination.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+		<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+		
+		
+	</head>
+      
+   <body class="body_main">
+   	  <!--左边菜单-->
+      <div id="sider" class="sider"></div>
+	  <div class="wrapMain">
+	  	 <!--头部-->
+	  	 <div class="topInfo" id="topInfo">	  
+	  	 </div>
+	  	 <div class="mainBox">
+	  	 	 <div class="tabBox tabBox_out browser_box">
+		  	 	 <div class="borderRadius5 bosshdow boxdiv first_div">
+		  	 	 	<h3 class="title">数据初始化</h3>
+		  	 	 	<div class="dataBox">
+						   
+						<div class="init-box">
+							 <div class="warn"><img src="img/icon_warn.png"/></div>
+							 <div class="warn-mess">
+								<p>请注意！</p>
+								<p>点击初始化按钮，节点信息和浏览器信息将被清空！</p>
+							</div>
+						</div>
+		 
+						<div class="btnbox">
+							
+							<a class="btndefault borderRadius5 browser-btn" id="init">初始化</a>
+						</div>
+		  	 	 		
+		  	 	 	</div>
+		  	 	 </div>
+	  	 	 </div>
+	  	 	 <div class="space"></div>
+	  	 </div>
+	  </div>
+	  
+	  <!--新增节点弹出框-->
+	  <div class="modal browser-password" id="modal">
+	  	  <div class="modal-by-dialog modal-point">
+			<a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
+			<h3 class="modal_title">密码确认</h3>
+			<form class="form">
+				<div class="col clearfix">
+				
+				  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入密码"/></div>
+				</div>
+				
+				<div class="fbtnbox">
+					<a  class="borderRadius5 fbtn" onclick="hideModal()">提交</a>
+				</div>
+				
+			</form>
+		  </div>
+	  	
+	  </div>
+
+	  <div class="trans-modal">
+		  <div class="trans-main">
+			  <div class="trans-content">
+				  <div class="loading"><img src="../img/load.gif"/></div>
+				  <p class="mess">正在初始化，成功后运维平台将退出，请从向导工具重新部署</p>
+			  </div>
+		  </div>
+	  </div>
+
+
+   </body>
+
+</html>
+
+<script type="text/javascript">
+var type = ''
+ 	$("#sider").load("/sider",function(){
+ 		$(".siderNav .l8").addClass('cur')
+ 	});
+ 	
+ 	$("#topInfo").load("/header")
+ 	function showModal(num){
+	  type = num;
+	 
+	  $(".modal").addClass('modal_in');
+	  
+	}
+	
+	function hideModal(){
+	  $(".modal").removeClass('modal_in');
+	  //表示启动
+	  if(type==2){
+	    $(".trans-modal").addClass('show-trans-modal');
+	  }
+	}
+
+	function searchNodeAndWeb(){
+		$.get('searchNodeAndWeb', function (result) {
+			if(result.code == 2000){
+				alert("初始化成功");
+			}
+			alert(result.code);
+		}, 'json');
+	}
+</script>
+<script>
+	$(function () {
+	$('#init').click(function () {
+		Swal.fire({
+			type: 'question', // 弹框类型
+			title: '', //标题
+			text: "是否初始化！", //显示内容
+
+			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
+			confirmButtonText: '确定',// 确定按钮的 文字
+			showCancelButton: true, // 是否显示取消按钮
+			cancelButtonColor: '#d33', // 取消按钮的 颜色
+			cancelButtonText: "取消", // 取消按钮的 文字
+
+			focusCancel: true, // 是否聚焦 取消按钮
+			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+		}).then(function(isConfirm){
+			try {
+				//判断 是否 点击的 确定按钮
+				if (isConfirm.value) {
+					$(".trans-modal").addClass('show-trans-modal');
+					$.get('initNode', function () {
+					}, 'json');
+				}
+				else {
+					Swal.fire("取消", "点击了取消", "error");
+				}
+
+			} catch (e) {
+				alert(e);
+			}
+		});
+	});
+});
+
+setInterval(function() {
+	$.get('searchNodeAndWeb', function (result) {
+		if (result.code == 2000) {
+			$(".trans-modal").removeClass('show-trans-modal');
+			window.location.reload();
+		}
+	}, 'json');
+},7000);
+
+</script>
+

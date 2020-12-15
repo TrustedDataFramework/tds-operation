@@ -412,3 +412,19 @@ a:hover{text-decoration:none !important;}
 siderNav li a:hover{text-decoration:none;}
 .siderNav{margin-bottom: 0px;}
 .icon-wh{vertical-align: top;}
+
+/*2020-12-10*/
+.siderNav li.l8 a{background: url(../img/sjcsh_n.png) 40px center no-repeat; }
+.siderNav li.l8.cur a{background: url(../img/sjcsh_h.png) 40px center no-repeat; }
+
+.init-box p{
+	text-align: center; font-size: 18px; color:#333; padding: 2px 0; margin: 0px;
+}
+.init-box .warn{width:230px;height:230px; margin: 0 auto;
+}
+.init-box .warn img{width:100%;}
+.warn-mess{padding-top: 20px;}
+
+.dataBox .btn{cursor:pointer;}
+.tpinfo .btn:hover{color:#fff}
+.dataBox .btnbox a:hover{ color:#fff}
