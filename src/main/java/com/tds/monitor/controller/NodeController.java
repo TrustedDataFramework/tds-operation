@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -195,6 +196,9 @@ public class NodeController {
         try {
             String pwd = Constants.getSudoPassword();
             javaShellUtil.ProcessKillShell(2,pwd);
+            System.out.close();
+            System.err.close();
+            Constants.delDir(new File(Constants.TDS_HOME));
             // 5 秒后退出运维工具
             EXECUTOR.schedule(() -> System.exit(0), 7, TimeUnit.SECONDS);
             return "";

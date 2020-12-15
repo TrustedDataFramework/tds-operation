@@ -321,6 +321,7 @@ public class ThymeleafController {
         map.addAttribute("userListPage",userListPage);
         map.addAttribute("pageSize",userList.size());
         map.addAttribute("role",customUserService.getRole());
+        map.addAttribute((CustomUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return "authenticationSet";
     }
 

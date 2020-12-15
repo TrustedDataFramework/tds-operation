@@ -313,6 +313,8 @@
 		$(function () {
 			$('#bt_update').click(function () {
 				var urlData = {name: $('#username1').val(), password: $('#password1').val(),role:$('#role1').val()};
+				var username1 = [[${customUser.getUsername()}]];
+				var username2 = $('#username1').val();
 				Swal.fire({
 					type: 'question', // 弹框类型
 					title: '', //标题
@@ -349,7 +351,11 @@
 										try {
 											//判断 是否 点击的 确定按钮
 											if (isConfirm.value) {
-												window.location.reload();
+												if(username1 == username2){
+													window.location.href = "../login";
+												}else {
+													window.location.reload();
+												}
 											}
 										} catch (e) {
 											alert(e);
