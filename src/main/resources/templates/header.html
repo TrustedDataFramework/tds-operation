@@ -1,11 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
-	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-	<script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+
 </head>
 <body>
 <div>
@@ -26,10 +22,43 @@
   	  <div class="postRight">
   	  	  <button class="borderRadius5 btn btn-stop" id="stop"><span>停止</span></button>
 		  <button class="borderRadius5 btn btn-reset" id="restart"><span>重启</span></button>
-  	  </div>
+		  <button class="borderRadius5 btn btn-reset" onclick="showMo()" id="resetpass"><span>重置密码</span></button>
+	  </div>
   </div>
   </div>
+
+	  <div class="modal browser-password" id="modal2">
+		  <div class="modal-by-dialog modal-point modal-confirm-password">
+			  <a onclick="hideMo()" class="btnClose" style="color:#333333"></a>
+			  <h3 class="modal_title">密码确认</h3>
+			  <p class="modal_message">输入TDOS操作系统的密码</p>
+			  <form class="form">
+				  <div class="col clearfix">
+
+					  <div class="fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="password11"/></div>
+				  </div>
+				  <div class="col clearfix">
+
+					  <div class="fin"><input class="borderRadius5" type="password" placeholder="请确认密码" id="password12"/></div>
+				  </div>
+
+				  <div class="fbtnbox">
+					  <a  class="borderRadius5 fbtn" onclick="hideMo()" id="submit11">提交</a>
+				  </div>
+
+			  </form>
+		  </div>
+	  </div>
+<!--      <div class="reset-success">-->
+<!--		  <div class="succ-text">确认成功</div>-->
+<!--	  </div>-->
+<div class="alert n-alert"></div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
 <script th:inline="javascript">
 
 	$(document).ready(function () {
@@ -41,6 +70,35 @@
 			$("#stop").attr("style","display:none;");
 		}
 	});
+
+	$('#submit11').click(function () {
+		var password11 = $('#password11').val();
+		var password12 = $('#password12').val();
+		if(password11 != password12){
+			//alert("两次密码不一致");
+			return $('.alert').html('两次密码不一致').addClass('alert-danger').show().delay(1500).fadeOut();
+
+		}
+		if(password11 =="" || password12 == ""){
+			//alert("");
+			return $('.alert').html('请输入密码').addClass('alert-danger').show().delay(1500).fadeOut();
+
+		}
+		//$(".modal2").removeClass('modal_in');
+		var urlData = {password: $('#password11').val()};
+		document.getElementById("password11").innerHTML = "";
+		$.get('updatePassword', urlData, function (result) {
+			if(result.code == 2000){
+				showMess();
+				//window.location.reload();
+			}
+		}, 'json');
+	});
+
+	function showMess(){
+		$('.alert').html('操作成功').addClass('alert-success').show().delay(1500).fadeOut();
+		//
+	}
 
 	function setTime(){
 		var dt=new Date();
@@ -188,3 +246,16 @@
 	});
 </script>
 </html>
+
+<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script>
+	function showMo(){
+		$("#password11").val('');
+		$("#password12").val('');
+		$("#modal2").addClass('modal_in');
+	}
+
+	function hideMo(){
+		$("#modal2").removeClass('modal_in');
+	}
+</script>

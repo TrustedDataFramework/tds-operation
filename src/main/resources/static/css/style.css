@@ -1,4 +1,4 @@
-*{margin:0;padding:0;font-family: "微软雅黑";}
+*{margin:0;padding:0;}
 ul,li{list-style: none;}
 h1,h2,h3 ,h4,h5,h6{font-weight:normal;}
 .clearfix:after{
@@ -15,7 +15,8 @@ h1,h2,h3 ,h4,h5,h6{font-weight:normal;}
 a{text-decoration: none;}
 
 body, textarea, input, button, select, keygen, legend {
-	font:14px "Microsoft YaHei", Verdana, "宋体", sans-serif;
+	/*font:14px "Microsoft YaHei", Verdana, "宋体", sans-serif;*/
+	font:14px  Arial,sans-serif;
 	font-weight: normal;
 	color: #666666;
 	outline: 0;
@@ -156,7 +157,7 @@ body{width:100%;min-height:100%;}
 .boxdiv .title,.tabBox_summ .first_div .title{font-size: 24px;color:#000; padding:25px 54px; border-bottom:2px solid #dcdcdc;}
 .dataBox{text-align: center;}
 .dataBox form{padding-top: 30px;}
-.dataBox .btn{width:180px;height: 55px;text-align: center; line-height: 55px; font-size:24px;}
+.dataBox .btn{width:180px;height: 55px;text-align: center; line-height: 55px; font-size:24px; padding:0px;}
 .dataBox .btnbox{padding:51px 0 71px 0;}
 .dataBox .din{padding: 20px 0;}
 .dataBox .lab{font-size:20px;color:#000; display: inline-block; width: 160px; white-space: nowrap;}
@@ -224,7 +225,7 @@ a{cursor:pointer;}
 .modal.modal_in .modal-by-dialog {-webkit-transform: translate(0, 0);-ms-transform: translate(0, 0);-o-transform: translate(0, 0);transform: translate(0, 0);top:40%;}
 .modal .modal-by-dialog {
 	width: 530px;
-	height:440px;
+	height:590px;
 	position:fixed;margin-top:-220px;left: 50%;margin-left: -265px;background:#fff;	z-index: 999;
 	top:-100%;border-radius:5px;-webkit-border-radius:5px;-ms-border-radius:5px;-o-border-radius:5px;overflow:hidden;
 	-webkit-transform: translate(0, -30%);
@@ -236,7 +237,11 @@ a{cursor:pointer;}
 	-ms-transition: -o-transform 0.3s ease-out;
 	transition: transform 0.3s ease-out;
 }
+
+
+
 .modal_title{font-size:18px;color:#000; text-align: center; line-height: 50px;padding-top: 10px;}
+.modal_message{font-size:14px;color:#ff0000; text-align: center; line-height: 30px;padding-top: 10px;}
 .modal .flab{font-size:16px; color:#444; padding:15px 0;}
 .modal .form{padding: 0 30px;}
 .modal .fsel{border: 1px solid #dcdcdc; padding: 0 15px;}
@@ -391,7 +396,7 @@ a{cursor:pointer;}
 .browserInfo span{padding-right:30px;}
 
 /*2020-12-03 */
-.browser-password .modal-point{height:260px; margin-top:-130px}
+.browser-password .modal-point{height:300px; margin-top:-130px}
 .browser-password .modal-point .fin{margin-left:0px}
 .siderNav li.l7 a{background: url(../img/ywgj_n.png) 40px center no-repeat; }
 .siderNav li.l7.cur a{background: url(../img/ywgj_h.png) 40px center no-repeat; }
@@ -428,3 +433,39 @@ siderNav li a:hover{text-decoration:none;}
 .dataBox .btn{cursor:pointer;}
 .tpinfo .btn:hover{color:#fff}
 .dataBox .btnbox a:hover{ color:#fff}
+
+.reset-success{width:100%;height:100%;position: fixed;left:0px;top:0px;
+background: rgba(0,0,0,.5);z-index:999;}
+
+.succ-text{width: 200px;padding: 15px 0; font-size:18px;color:#333;
+  position: absolute; left:50%;margin-left: -100px;
+
+	-webkit-border-radius: 5px 5px 5px 5px;
+	-ms-border-radius: 5px 5px 5px 5px;
+	-moz-border-radius: 5px 5px 5px 5px;
+	border-radius: 5px 5px 5px 5px;
+	overflow: hidden;
+	background: #fff;
+	text-align: center;
+	top:50%;margin-top: -25px;
+}
+.sider{z-index:9;}
+
+.n-alert{width:0px;height: 0px; padding: 0px;}
+.alert-success,.alert-danger{position:fixed; width:300px;left:50%; margin-left: -150px;top:50%; margin-top:50%;; z-index: 9999; margin-top: -30px; padding: 15px ;
+	height:60px; line-height: 30px;}
+.alert-success,.alert-danger{text-align: center; font-size:18px;}
+
+.browser-password .modal-point{height: 350px;margin-top:-175px;}
+.modal.modal_in{display: block}
+button{border:0 none; outline:none}
+button:focus{border:0 none !important;outline: none;color: #fff !important}
+p{padding: 0px; margin: 0;}
+.ul_staBox .pt{height:auto;}
+
+.topInfo  .alert-success,.topInfo .alert-danger {min-width:300px}
+
+.modal .modal-point{height: 520px;margin-top: -260px;}
+.modal .modal-confirm-password{height:380px;margin-top: -190px;}
+.modal .modal-reset-level{height: 500px;margin-top: -250px;}
+.btndefault:hover{color:#fff}

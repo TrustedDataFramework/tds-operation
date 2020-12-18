@@ -56,7 +56,6 @@ public class NodeServiceImpl implements NodeService {
 
                 if (connectionUtil.login()) {
                     String shellResult = connectionUtil.executeSuccess("echo " + usepassword + " |sudo -S docker stop " + image);
-                    System.out.println(shellResult);
                     if (StringUtils.isBlank(shellResult)) {
                         result.setMessage("停止失败");
                         result.setCode(ResultCode.FAIL);

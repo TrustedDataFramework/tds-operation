@@ -20,7 +20,7 @@ public class JavaShellUtil {
     private static final String sendKondorShellName = basePath + "sendKondorFile.sh";
 
     private static final String shellName = "/bin/bash";
-    private static final String  shellParam = "-c";
+    private static final String shellParam = "-c";
 
     private static final String browserUrl = System.getProperty("user.home") + "/.tdos/etc/browser.sh ";
     private static final String killUrl = System.getProperty("user.home") + "/.tdos/etc/kill.sh ";
@@ -59,6 +59,12 @@ public class JavaShellUtil {
         return ProcessShell(cmd);
     }
 
+    public static String checkShell() {
+        String passwd = Constants.getSudoPassword();
+        String[] cmd = {"/bin/bash", shellParam, "echo " + passwd + "| sudo -S pwd"};
+        return ProcessShell(cmd);
+    }
+
     public static String ProcessBrowserShell(int state, String passwd) {
         String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S " + browserUrl + state};
         return ProcessShell(cmd);
@@ -70,22 +76,28 @@ public class JavaShellUtil {
     }
 
     public static String nodeShell() {
-        String[] cmd = {shellName, shellParam,  browserUrl + " 4"};
+        String[] cmd = {shellName, shellParam, browserUrl + " 4"};
         return ProcessShell(cmd);
     }
 
     public static String initdockerComposeShell(String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S docker-compose -f "+ dockerComposeUrl + "down"};
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S docker-compose -f " + dockerComposeUrl + "down"};
+        return ProcessShell(cmd);
+    }
+
+    public static String replaceComposeShell(String ip, String passwd) {
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S sed -i 's/localhost/" + ip + "/g' " + dockerComposeUrl};
+        System.out.println("------replaceComposeShell-----"+ Arrays.toString(cmd));
         return ProcessShell(cmd);
     }
 
     public static String initDbShell() {
-        String cmd = "rm -rf " +dbUrl;
+        String cmd = "rm -rf " + dbUrl;
         return ProcessShell(cmd);
     }
 
     public static String initContainersShell(String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S rm -rf "+ containersUrl};
+        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S rm -rf " + containersUrl};
         return ProcessShell(cmd);
     }
 
@@ -105,7 +117,7 @@ public class JavaShellUtil {
             }
             result = sb.toString();
         } catch (Exception e) {
-            result = e.getLocalizedMessage();
+            result = null;
             e.printStackTrace();
         }
         return result;

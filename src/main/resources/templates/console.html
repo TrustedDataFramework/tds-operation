@@ -7,8 +7,9 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="renderer" content="webkit">
-		<link rel="stylesheet" type="text/css" href="../css/style.css"/>
 		<link rel="stylesheet" type="text/css" href="css/pagination.css"/>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/style.css">
 
 		<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
@@ -265,7 +266,7 @@
 					regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
 
 			if(regEn.test(port)) {
-				alert("名称不能包含特殊字符.");
+				$('.alert').html('名称不能包含特殊字符').addClass('alert-danger').show().delay(1500).fadeOut();
 				return false;
 			}
 			var urlData = {nodeIP: $('#nodeIp').val(),nodePort: $('#nodePort').val(), nodeType: $('#nodetype').val(), userName: $('#username').val(),
@@ -603,7 +604,7 @@
 					//判断 是否 点击的 确定按钮
 					if (isConfirm.value) {
 						$.get('updateNode', urlData, function (result) {
-							$(".modal").css("display", "none");
+							$(".modal").removeClass('modal_in');
 							if(result){
 								Swal.fire({
 									type: 'success', // 弹框类型

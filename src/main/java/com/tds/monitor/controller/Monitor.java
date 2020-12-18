@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -47,26 +48,30 @@ public class   Monitor {
                     JSONObject result1 = result.getJSONObject("data");
                     Long height = result1.getLong("height");
                     String nBlockhash = getBlockHash(ip,height);
+                    if (StringUtils.isEmpty(nBlockhash)){
+                        return "";
+                    }
                     int confirmNum =0;
                     List<String> proposersList = getPeers();
                     if(proposersList.size()<3){
                         return APIResult.newSuccess(1);
                     }
-                    if(proposersList.size()>=3) {
-                        for (String str : proposersList) {
-                            String proposersBlockHash = getBlockHash(str, height);
-                            if(proposersBlockHash != null){
-                                if (proposersBlockHash.equals(nBlockhash)) {
-                                    confirmNum++;
-                                }
+                    for (String str : proposersList) {
+                        String proposersBlockHash = getBlockHash(str, height);
+                        if (StringUtils.isEmpty(proposersBlockHash)){
+                            return "";
+                        }
+                        if(proposersBlockHash != null){
+                            if (proposersBlockHash.equals(nBlockhash)) {
+                                confirmNum++;
                             }
                         }
-                        //不满足2/3一致则删除对于高度的区块
-                        if (divisionRoundingUp(proposersList.size() * 2, 3) > confirmNum)
-                            return APIResult.newFailResult(-1,height.toString());
                     }
+                    //不满足2/3一致则删除对于高度的区块
+                    if (divisionRoundingUp(proposersList.size() * 2, 3) > confirmNum)
+                        return APIResult.newFailResult(-1,height.toString());
                 }
-                return APIResult.newSuccess(0);
+                return APIResult.newSuccess(1);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -142,7 +147,7 @@ public class   Monitor {
 
     //整体监测
 
-    @Scheduled(cron="0/5 * *  * * ? ")
+    @Scheduled(cron="*/5 * *  * * ? ")
     public void monitorStatus() throws IOException {
         boolean ismail = false;
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
@@ -182,7 +187,7 @@ public class   Monitor {
     }
 
     public String getBlockHash(String ip,Long height){
-        String blockHash = " ";
+        String blockHash = "";
         try {
             String blockUrl = "http://"+ip+"/rpc/block/"+height;
             JSONObject jsonObject= JSON.parseObject(HttpRequestUtil.sendGet(blockUrl,""));
@@ -191,7 +196,8 @@ public class   Monitor {
                 blockHash = (String) jsonObject1.get("hash");
             }
         }catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
+            return blockHash;
         }
 
         return blockHash;

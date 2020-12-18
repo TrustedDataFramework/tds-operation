@@ -7,6 +7,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="renderer" content="webkit">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="css/style.css"/>
 		<link rel="stylesheet" type="text/css" href="css/pagination.css"/>
 
@@ -68,6 +69,8 @@
 				  <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入登录账号" id="username"/></div>
 				  <p class="flab">密码：</p>
 				  <div class="fin"><input class="borderRadius5" type="password" placeholder="请输入登录密码" id="password"/></div>
+				  <p class="flab">确认密码：</p>
+				  <div class="fin"><input class="borderRadius5" type="password" placeholder="请确认登录密码" id="passwordkey"/></div>
 				  <p class="flab">权限：</p>
 				  <div class="borderRadius5 fsel">
 					  <select id="role">
@@ -85,7 +88,7 @@
 
 	  <!--修改用户权限-->
 	  <div class="modal" id="modal1">
-		  <div class="modal-by-dialog">
+		  <div class="modal-by-dialog modal-reset-level">
 			  <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
 			  <h3 class="modal_title">权限设置</h3>
 			  <form class="form">
@@ -107,12 +110,13 @@
 			  </form>
 		  </div>
 	  </div>
-
+	  <div class="alert n-alert"></div>
 
 <script type="text/javascript">
 	function showModal(){
 		$("#username").val('');
 		$("#password").val('');
+		$("#passwordkey").val('');
 		$("#modal").addClass('modal_in');
 	}
 
@@ -183,27 +187,32 @@
 			$('#bt_submit').click(function () {
 				var name = $('#username').val();
 				var password = $('#password').val();
+				var passwordkey = $('#passwordkey').val();
 				var role = $('#role').val();
 				var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
 						regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
 
 				if(regEn.test(name) || regCn.test(password)) {
-					alert("名称不能包含特殊字符.");
-					return false;
+					$('.alert').html('名称不能包含特殊字符').addClass('alert-danger').show().delay(1500).fadeOut();
+					return
 				}
-				if (name == "" || password == "" || role == "") {
-					alert("请完善信息！");
-					return;
+				if (name == "" || password == "" || role == "" || passwordkey == "") {
+					$('.alert').html('请完善信息！').addClass('alert-danger').show().delay(1500).fadeOut();
+					return
+				}
+				if (password != passwordkey) {
+					$('.alert').html('两次密码不一致！').addClass('alert-danger').show().delay(1500).fadeOut();
+					return
 				}
 				if (password.length > 20 || password.length < 6) {
-					alert("请输入密码6-20位密码！");
-					return;
+					$('.alert').html('请输入密码6-20位密码！').addClass('alert-danger').show().delay(1500).fadeOut();
+					return
 				}
 				// let date=new Date();
 				// let newdate=date.toLocaleString('chinese', { hour12: false });
 				var urlData = {name: $('#username').val(), password: $('#password').val(), role: $('#role').val(),loginTime:""};
 				$.get('adduser', urlData, function (result) {
-					$("#modal").css("display", "none");
+					$(".modal").removeClass('modal_in');
 					if(result.code == 2000) {
 						Swal.fire({
 							type: 'success', // 弹框类型
@@ -229,13 +238,15 @@
 							}
 						});
 					}else{
-						alert("新增失败");
-						window.location.reload();
+						$('.alert').html('新增失败').addClass('alert-danger').show().delay(1500).fadeOut();
+						return
 					}
 				}, 'json');
 			});
 			$(' .bt_delete').click(function () {
 				var urlData = {name: $(this).attr('id')};
+				var username1 = [[${customUser.getUsername()}]];
+				var username2 = $(this).attr('id');
 				Swal.fire({
 					type: 'question', // 弹框类型
 					title: '', //标题
@@ -254,7 +265,7 @@
 						//判断 是否 点击的 确定按钮
 						if (isConfirm.value) {
 							$.get('deleteuser', urlData, function (result) {
-								$(".modal").css("display", "none");
+								$(".modal").removeClass('modal_in');
 								if(result.code == 2000) {
 									Swal.fire({
 										type: 'success', // 弹框类型
@@ -273,11 +284,15 @@
 										try {
 											//判断 是否 点击的 确定按钮
 											if (isConfirm.value) {
-												let page1 =0;
-												if(page >0){
-													page1 = page -1;
+												if(username1 == username2){
+													window.location.href = "../login";
+												}else {
+													let page1 = 0;
+													if (page > 0) {
+														page1 = page - 1;
+													}
+													pageChange(page1);
 												}
-												pageChange(page1);
 											}
 										} catch (e) {
 											alert(e);
@@ -333,7 +348,7 @@
 						//判断 是否 点击的 确定按钮
 						if (isConfirm.value) {
 							$.get('updateUser', urlData, function (result) {
-								$(".modal").css("display", "none");
+								$(".modal").removeClass('modal_in');
 									Swal.fire({
 										type: 'success', // 弹框类型
 										title: '', //标题

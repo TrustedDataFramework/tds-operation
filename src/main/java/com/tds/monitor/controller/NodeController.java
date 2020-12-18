@@ -13,10 +13,11 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.*;
@@ -151,7 +152,6 @@ public class NodeController {
     public Object getLocalIp(){
         Result result = new Result();
         try {
-            System.out.println("================="+LocalHostUtil.getLocalIP());
             result.setMessage("成功");
             result.setCode(ResultCode.SUCCESS);
             result.setData(LocalHostUtil.getLocalIP());
@@ -184,10 +184,22 @@ public class NodeController {
 
     //启动浏览器
     @GetMapping(value = {"/startWeb"})
-    public String startWeb(){
+    public String startWeb() throws SocketException, UnknownHostException {
         String password = Constants.getSudoPassword();
+//        String ip = LocalHostUtil.getLocalIP();
+//        if (!StringUtils.isEmpty(ip)){
+//            JavaShellUtil.replaceComposeShell(ip, password);
+//        }
         javaShellUtil.ProcessBrowserShell(1,password);
         return "";
+    }
+
+    //验证sudo密码
+    @GetMapping(value = {"/checkShell1"})
+    public String checkShell(){
+        String result = javaShellUtil.checkShell();
+        logger.info("==========="+result);
+        return result;
     }
 
     //初始化节点
@@ -196,15 +208,118 @@ public class NodeController {
         try {
             String pwd = Constants.getSudoPassword();
             javaShellUtil.ProcessKillShell(2,pwd);
+        }catch (Exception e) {
+            e.printStackTrace();
+//            throw e;
+        }finally {
             System.out.close();
             System.err.close();
-            Constants.delDir(new File(Constants.TDS_HOME));
+            Constants.delDir(new File(Constants.TDS_HOME),
+                    x -> x.getName().startsWith("jdk")
+                            || x.getName().equals("monitor.jar")
+                            || x.getName().equals("sunflower-core.jar")
+            );
             // 5 秒后退出运维工具
             EXECUTOR.schedule(() -> System.exit(0), 7, TimeUnit.SECONDS);
-            return "";
+        }
+        return "";
+    }
+
+    //修改密码
+    @GetMapping(value = {"/updatePassword"})
+    public Object updatePassword(@RequestParam("password")String password) throws IOException {
+        Result result = new Result();
+        String filePath = Constants.SUDO_PASSWORD_PATH; // 文件路径
+        FileWriter fileWriter =new FileWriter(filePath);
+        fileWriter.write("");
+        fileWriter.flush();
+        write(filePath, read(filePath)); // 读取修改文件
+        try {
+            fileAppender(filePath, password);
+            result.setCode(ResultCode.SUCCESS);
+            return result;
         }catch (Exception e) {
             throw e;
         }
+    }
+
+    public String read(String filePath) {
+        BufferedReader br = null;
+        String line = null;
+        StringBuffer buf = new StringBuffer();
+
+        try {
+            // 根据文件路径创建缓冲输入流
+            br = new BufferedReader(new FileReader(filePath));
+
+            // 循环读取文件的每一行, 对需要修改的行进行修改, 放入缓冲对象中
+            while ((line = br.readLine()) != null) {
+                // 此处根据实际需要修改某些行的内容
+                if (line.startsWith("a")) {
+                    buf.append(line).append(" start with a");
+                }                 else if (line.startsWith("b")) {
+                    buf.append(line).append(" start with b");
+                }
+                // 如果不用修改, 则按原来的内容回写
+                else {
+                    buf.append(line);
+                }
+                buf.append(System.getProperty("line.separator"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭流
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    br = null;
+                }
+            }
+        }
+
+        return buf.toString();
+    }
+
+    public void write(String filePath, String content) {
+        BufferedWriter bw = null;
+
+        try {
+            // 根据文件路径创建缓冲输出流
+            bw = new BufferedWriter(new FileWriter(filePath));
+            // 将内容写入文件中
+            bw.write(content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭流
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    bw = null;
+                }
+            }
+        }
+    }
+
+    public void fileAppender(String fileName,String content) throws IOException{
+
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        String line = null;
+        // 一行一行的读
+        StringBuilder sb = new StringBuilder();
+        sb.append(content);
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+            sb.append("\r\n");
+        }
+        reader.close();
+        //写回去
+        RandomAccessFile mm = new RandomAccessFile(fileName, "rw");
+        mm.writeBytes(sb.toString());
+        mm.close();
     }
 
     //查看节点和浏览器进程是否清除
@@ -229,22 +344,48 @@ public class NodeController {
         return result;
     }
 
+    //查看是否绑定节点
+    @GetMapping(value = {"/nodeType"})
+    public Object nodeType() throws Exception {
+        Result result = new Result();
+        try{
+            MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+            if(mapCacheUtil.getCacheItem("bindNode").toString() == null || mapCacheUtil.getCacheItem("bindNode").toString().isEmpty()){
+                result.setMessage("");
+                result.setCode(ResultCode.FAIL);
+            }else{
+                result.setCode(ResultCode.SUCCESS);
+            }
+        }catch (Exception e){
+            result.setCode(ResultCode.FAIL);
+        }
+        return result;
+    }
+
     //查看浏览器是否启动
     @GetMapping(value = {"/webStartOrNot"})
     public Object webStartOrNot() throws Exception {
-
         Result result = new Result();
-        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
-        String version = restTemplateUtil.getBrowserInfo(ip,8080);
-        if(version != null){
-            JSONObject jsonObject = JSONObject.parseObject(version);
-            String ver = jsonObject.getString("data");
-            result.setData(ver);
-            result.setMessage("成功");
-            result.setCode(ResultCode.SUCCESS);
-        }else{
-            result.setMessage("未运行");
+        try {
+            MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+            if(mapCacheUtil.getCacheItem("bindNode").toString() == null || mapCacheUtil.getCacheItem("bindNode").toString().isEmpty()){
+                result.setMessage("");
+                result.setCode(ResultCode.Warn);
+                return result;
+            }
+            String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
+            String version = restTemplateUtil.getBrowserInfo(ip,8080);
+            if(version != null){
+                JSONObject jsonObject = JSONObject.parseObject(version);
+                String ver = jsonObject.getString("data");
+                result.setData(ver);
+                result.setMessage("成功");
+                result.setCode(ResultCode.SUCCESS);
+            }else{
+                result.setMessage("未运行");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return result;
     }
@@ -283,7 +424,8 @@ public class NodeController {
     @GetMapping(value = {"/stopWeb"})
     public Object stopWeb(){
         String password = Constants.getSudoPassword();
-        javaShellUtil.ProcessBrowserShell(2,password);
+        logger.info("======================================="+password);
+        String s=javaShellUtil.ProcessBrowserShell(2,password);
         return "";
     }
 
