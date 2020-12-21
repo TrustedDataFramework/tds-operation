@@ -32,8 +32,6 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
     @Autowired
     RestTemplateUtil restTemplateUtil;
 
-    JavaShellUtil javaShellUtil;
-
     private static String pushUrl = "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
     public static String getJavaBin(){
@@ -42,7 +40,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
+        log.info("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");
         String ip = LocalHostUtil.getLocalIP();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         String bind = ip + ":7010";

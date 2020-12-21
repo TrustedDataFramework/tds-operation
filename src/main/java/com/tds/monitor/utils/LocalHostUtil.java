@@ -1,6 +1,8 @@
 package com.tds.monitor.utils;
 
 
+import lombok.extern.log4j.Log4j;
+
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -8,6 +10,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+@Log4j
 public class LocalHostUtil {
 
     /**
@@ -69,7 +72,7 @@ public class LocalHostUtil {
                 }
             }
         } catch (SocketException ex) {
-            System.out.println("获取ip地址异常");
+            log.info("获取ip地址异常");
             ip = "127.0.0.1";
             ex.printStackTrace();
         }

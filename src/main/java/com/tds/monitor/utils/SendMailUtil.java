@@ -1,10 +1,9 @@
 package com.tds.monitor.utils;
 
-import com.alibaba.fastjson.JSONObject;
 import com.tds.monitor.model.Mail;
+import lombok.extern.log4j.Log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +16,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+@Log4j
 @Component
 @EnableScheduling
 public class SendMailUtil {
@@ -92,8 +92,7 @@ public class SendMailUtil {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
-        System.out.println("发送完毕！");
+        log.info("发送完毕！");
 
         return true;
     }

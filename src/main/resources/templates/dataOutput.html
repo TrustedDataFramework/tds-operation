@@ -92,24 +92,6 @@
 				json.method = "export";
 				json.publicKey = publicKey;
 				window.location.href = "export/txrecordByPublicKey?json=" + encodeURI(JSON.stringify(json));
-
-				// $.ajax({
-				// 	url: '/export/txrecordByPublicKey',
-				// 	type: 'get',
-				// 	data: JSON.stringify(json),
-				// 	success: function (data) {
-				// 		if(data.code == 200) {
-				// 			alert("1");
-				// 		}else {
-				// 			alert("2")
-				// 		}
-				// 	},
-				// 	error: function (err) {
-				//
-				// 	}
-				// })
-
-
 			} else {
 				alert('请输入公钥信息');
 			}

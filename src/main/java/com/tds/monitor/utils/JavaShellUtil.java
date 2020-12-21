@@ -1,5 +1,7 @@
 package com.tds.monitor.utils;
 
+import lombok.extern.log4j.Log4j;
+
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
+@Log4j
 public class JavaShellUtil {
     //基本路径
     private static final String basePath = "/tmp/";
@@ -41,7 +43,7 @@ public class JavaShellUtil {
             List<String> strList = new ArrayList<String>();
             while ((line = br.readLine()) != null) {
                 strList.add(line);
-                System.out.println(line);
+                log.info(line);
             }
             for (int l = 1; l < strList.size(); l++) {
                 if (strList.get(l).indexOf(containername[0]) != -1 || strList.get(l).indexOf(containername[1]) != -1) {
@@ -49,7 +51,7 @@ public class JavaShellUtil {
                 }
             }
         } catch (Exception e) {
-            System.out.println("执行Shell命令时发生异常");
+            log.info("执行Shell命令时发生异常");
         }
         return tag == containername.length;
     }
@@ -79,27 +81,26 @@ public class JavaShellUtil {
         String[] cmd = {shellName, shellParam, browserUrl + " 4"};
         return ProcessShell(cmd);
     }
-
-    public static String initdockerComposeShell(String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S docker-compose -f " + dockerComposeUrl + "down"};
-        return ProcessShell(cmd);
-    }
-
-    public static String replaceComposeShell(String ip, String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S sed -i 's/localhost/" + ip + "/g' " + dockerComposeUrl};
-        System.out.println("------replaceComposeShell-----"+ Arrays.toString(cmd));
-        return ProcessShell(cmd);
-    }
-
-    public static String initDbShell() {
-        String cmd = "rm -rf " + dbUrl;
-        return ProcessShell(cmd);
-    }
-
-    public static String initContainersShell(String passwd) {
-        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S rm -rf " + containersUrl};
-        return ProcessShell(cmd);
-    }
+//
+//    public static String initdockerComposeShell(String passwd) {
+//        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S docker-compose -f " + dockerComposeUrl + "down"};
+//        return ProcessShell(cmd);
+//    }
+//
+//    public static String replaceComposeShell(String ip, String passwd) {
+//        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S sed -i 's/localhost/" + ip + "/g' " + dockerComposeUrl};
+//        return ProcessShell(cmd);
+//    }
+//
+//    public static String initDbShell() {
+//        String cmd = "rm -rf " + dbUrl;
+//        return ProcessShell(cmd);
+//    }
+//
+//    public static String initContainersShell(String passwd) {
+//        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S rm -rf " + containersUrl};
+//        return ProcessShell(cmd);
+//    }
 
     public static String ProcessShell(String... shellCommand) {
         String result = "";
@@ -107,7 +108,7 @@ public class JavaShellUtil {
             Process ps = Runtime.getRuntime().exec(shellCommand);
             int status = ps.waitFor();
             if (status != 0) {
-                System.out.println("Failed to call shell's command ");
+                log.info("Failed to call shell's command ");
             }
             BufferedReader br = new BufferedReader(new InputStreamReader(ps.getInputStream()));
             StringBuffer sb = new StringBuffer();
@@ -150,7 +151,7 @@ public class JavaShellUtil {
             //读取Shell的输出内容，并添加到stringBuffer中
             while (bufferedReader != null && (line = bufferedReader.readLine()) != null) {
                 stringBuffer.append(line).append("\r\n");
-                System.out.println(line);
+                log.info(line);
             }
         } catch (Exception ioe) {
             stringBuffer.append("执行Shell命令时发生异常：\r\n").append(ioe.getMessage()).append("\r\n");

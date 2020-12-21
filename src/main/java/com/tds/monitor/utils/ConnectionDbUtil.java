@@ -4,12 +4,14 @@ package com.tds.monitor.utils;
 
 import com.tds.monitor.model.Result;
 import com.tds.monitor.model.ResultCode;
+import lombok.extern.log4j.Log4j;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Log4j
 public class ConnectionDbUtil {
     private static String url ="jdbc:postgresql://";
     private String endpoint;
@@ -92,7 +94,7 @@ public class ConnectionDbUtil {
             conn= DriverManager.getConnection(url+endpoint+"/"+databaseName, dbUsername, dbPassword);
             flg = true;
             if (flg){
-                System.out.println("认证成功！");
+                log.info("认证成功！");
             }
             statement = conn.createStatement();
         } catch (SQLException e) {

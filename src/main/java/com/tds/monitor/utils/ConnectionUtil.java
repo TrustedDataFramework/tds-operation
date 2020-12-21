@@ -3,6 +3,7 @@ package com.tds.monitor.utils;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -11,6 +12,7 @@ import java.io.*;
 
 import java.io.IOException;
 
+@Log4j
 public class ConnectionUtil {
     //字符编码默认是utf-8
     private static String  DEFAULTCHART="UTF-8";
@@ -41,7 +43,7 @@ public class ConnectionUtil {
             conn.connect();//连接
             flg=conn.authenticateWithPassword(userName, userPwd);//认证
             if (flg){
-                System.out.println("认证成功！");
+                log.info("认证成功！");
             }
         } catch (IOException e) {
             e.printStackTrace();

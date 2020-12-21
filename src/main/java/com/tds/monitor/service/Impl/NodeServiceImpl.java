@@ -39,7 +39,6 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public Object stop(String ipPort) {
-        List<String> strList = new ArrayList<String>();
         Result result = new Result();
         try {
             Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
@@ -84,7 +83,6 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public Object restart(String ipPort) {
-        List<String> strList = new ArrayList<String>();
         Result result = new Result();
         try {
             Nodes node = nodeDao.findNodesByNodeIPAndNodePort(ipPort.split(":")[0], ipPort.split(":")[1]).get();
