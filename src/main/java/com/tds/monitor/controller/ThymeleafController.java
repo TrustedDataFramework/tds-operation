@@ -235,7 +235,7 @@ public class ThymeleafController {
         if (nodeList != null) {
             List<String> list = new ArrayList<>();
             List<Nodes> nodesListPage = new ArrayList<>();
-            if (nodeList.size() - pageNum * 10 <= 10 && nodeList.size() - pageNum * 10 >= 0) {
+            if(nodeList.size() - pageNum * 10 <= 10 && nodeList.size() - pageNum * 10 >= 0) {
                 for (int i = pageNum * 10; i < nodeList.size(); i++) {
                     nodesListPage.add(nodeList.get(i));
                 }
@@ -359,7 +359,6 @@ public class ThymeleafController {
     @RequestMapping("/deleteuser")
     public String deleteuser(@ModelAttribute User user){
         Result rs = new Result();
-        List<User> userList = userDao.findAll();
         if (userDao.findByName(user.getName()).isPresent()){
             userDao.deleteByName(user.getName());
             rs.setCode(ResultCode.SUCCESS);
@@ -391,12 +390,10 @@ public class ThymeleafController {
     public String bindNode(@RequestParam("nodeStr") String nodeStr){
         Result rs = new Result();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-        if (mapCacheUtil.getCacheItem("bindNode") == null){
-            mapCacheUtil.putCacheItem("bindNode",nodeStr);
-        }else {
+        if (mapCacheUtil.getCacheItem("bindNode") != null) {
             mapCacheUtil.removeCacheItem("bindNode");
-            mapCacheUtil.putCacheItem("bindNode",nodeStr);
         }
+        mapCacheUtil.putCacheItem("bindNode",nodeStr);
 
         rs.setCode(ResultCode.SUCCESS);
         rs.setMessage("绑定成功");
@@ -433,7 +430,7 @@ public class ThymeleafController {
 
     @ResponseBody
     @RequestMapping("/editmail")
-    public String editMail(@ModelAttribute Mail mail) throws IOException {
+    public String editMail(@ModelAttribute Mail mail){
         Result rs = new Result();
         if(mailDao.findAll().size() == 0){
             mailDao.save(mail);
@@ -452,7 +449,7 @@ public class ThymeleafController {
     @GetMapping(value = {"/printLog"})
     @ResponseBody
     public Object printLog(@RequestParam("startTime")String startTime,
-                           @RequestParam("endTime")String endTime,HttpServletResponse response){
+                           @RequestParam("endTime")String endTime){
         Result result = new Result();
         startTime = startTime.replace(" ","T");
         endTime = endTime.replace(" ","T");
@@ -476,13 +473,12 @@ public class ThymeleafController {
                             result.setMessage("成功");
                             result.setData(shellResult);
                             result.setCode(ResultCode.SUCCESS);
-                            return result;
-                            } else {
+                        } else {
                                 result.setMessage("失败");
                                 result.setCode(ResultCode.FAIL);
-                                return result;
-                            }
                         }
+                        return result;
+                    }
 
 
                 } catch (Exception e) {
@@ -518,20 +514,11 @@ public class ThymeleafController {
             return username;
         }
 
-        public String getUsepassword() {
-            return usepassword;
-        }
-
         public String getIp() {
             return ip;
         }
 
-        public String getIpPort() {
-            return ipPort;
-        }
-
-
-        public GetNodeinfo invoke() throws IOException {
+        public GetNodeinfo invoke(){
             List<Nodes> nodeList = nodeDao.findAll();
             ip = null;
             if (nodeList != null) {

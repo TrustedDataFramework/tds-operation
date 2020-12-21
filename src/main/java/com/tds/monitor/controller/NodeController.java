@@ -13,11 +13,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.*;
@@ -31,12 +29,7 @@ public class NodeController {
     @Autowired
     RestTemplateUtil restTemplateUtil;
 
-    @Autowired
-    private NodeDao nodeDao;
-
     JavaShellUtil javaShellUtil;
-
-    private static final Logger logger = LoggerFactory.getLogger(NodeController.class);
 
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
@@ -165,7 +158,7 @@ public class NodeController {
 
     //检测浏览器
     @GetMapping(value = {"/detectExplorer"})
-    public Object detectExplorer() throws Exception {
+    public Object detectExplorer(){
         Result result = new Result();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
@@ -184,7 +177,7 @@ public class NodeController {
 
     //启动浏览器
     @GetMapping(value = {"/startWeb"})
-    public String startWeb() throws SocketException, UnknownHostException {
+    public String startWeb(){
         String password = Constants.getSudoPassword();
 //        String ip = LocalHostUtil.getLocalIP();
 //        if (!StringUtils.isEmpty(ip)){
@@ -198,7 +191,6 @@ public class NodeController {
     @GetMapping(value = {"/checkShell1"})
     public String checkShell(){
         String result = javaShellUtil.checkShell();
-        logger.info("==========="+result);
         return result;
     }
 
@@ -346,7 +338,7 @@ public class NodeController {
 
     //查看是否绑定节点
     @GetMapping(value = {"/nodeType"})
-    public Object nodeType() throws Exception {
+    public Object nodeType(){
         Result result = new Result();
         try{
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
@@ -364,7 +356,7 @@ public class NodeController {
 
     //查看浏览器是否启动
     @GetMapping(value = {"/webStartOrNot"})
-    public Object webStartOrNot() throws Exception {
+    public Object webStartOrNot(){
         Result result = new Result();
         try {
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
@@ -395,8 +387,6 @@ public class NodeController {
     public Object webKillOrNot(){
         String password = Constants.getSudoPassword();
         String resu = javaShellUtil.exlporerShell(password);
-//        resu = resu.substring(0,resu.indexOf("\\"));
-//        int i = Integer.getInteger(resu);
         Result result = new Result();
         if(resu.equals("1\n")){
             result.setCode(ResultCode.SUCCESS);
@@ -424,8 +414,7 @@ public class NodeController {
     @GetMapping(value = {"/stopWeb"})
     public Object stopWeb(){
         String password = Constants.getSudoPassword();
-        logger.info("======================================="+password);
-        String s=javaShellUtil.ProcessBrowserShell(2,password);
+        javaShellUtil.ProcessBrowserShell(2,password);
         return "";
     }
 

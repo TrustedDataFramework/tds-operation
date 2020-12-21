@@ -5,22 +5,17 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.*;
 import com.tds.monitor.utils.ApiResult.APIResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 
