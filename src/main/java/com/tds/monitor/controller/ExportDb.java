@@ -92,7 +92,7 @@ public class ExportDb {
                 }
             }
             // 设置下载时客户端Excel的名称
-            String filename =new SimpleDateFormat("yyyyMMdd").format(new Date()) + "-publicKey.xls";
+            String filename =new SimpleDateFormat("yyyyMMdd").format(new Date()) + "-publicKey.csv";
             //设置下载的文件
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/vnd.ms-excel");

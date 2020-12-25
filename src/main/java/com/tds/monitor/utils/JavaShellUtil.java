@@ -21,7 +21,7 @@ public class JavaShellUtil {
     //发送文件到Kondor系统的Shell的文件名(绝对路径)
     private static final String sendKondorShellName = basePath + "sendKondorFile.sh";
 
-    private static final String shellName = "/bin/bash";
+    private static final String shellName = "/bin/bash ";
     private static final String shellParam = "-c";
 
     private static final String browserUrl = System.getProperty("user.home") + "/.tdos/etc/browser.sh ";
@@ -81,6 +81,11 @@ public class JavaShellUtil {
         String[] cmd = {shellName, shellParam, browserUrl + " 4"};
         return ProcessShell(cmd);
     }
+
+//    public static String printLog(String startTime,String endTime) {
+//        String[] cmd = {shellName, shellParam, "echo " +  + "sed -n '/"+startTime+"/,/"+endTime+"/p' "+Constants.TDS_LOG};
+//        return ProcessShell(cmd);
+//    }
 //
 //    public static String initdockerComposeShell(String passwd) {
 //        String[] cmd = {shellName, shellParam, "echo " + passwd + "| sudo -S docker-compose -f " + dockerComposeUrl + "down"};

@@ -73,6 +73,7 @@
 	  	 	 <div class="space"></div>
 	  	 </div>
 	  </div>
+	  <div class="alert n-alert"></div>
    </body>
 
 </html>
@@ -93,7 +94,7 @@
 				json.publicKey = publicKey;
 				window.location.href = "export/txrecordByPublicKey?json=" + encodeURI(JSON.stringify(json));
 			} else {
-				alert('请输入公钥信息');
+				$('.alert').html('请输入公钥信息').addClass('alert-danger').show().delay(1500).fadeOut();
 			}
 		});
 	});

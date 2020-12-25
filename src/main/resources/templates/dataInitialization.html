@@ -83,9 +83,6 @@
 	  </div>
 
 
-   </body>
-
-</html>
 
 <script type="text/javascript">
 var type = ''
@@ -118,7 +115,17 @@ var type = ''
 		}, 'json');
 	}
 </script>
-<script>
+<script th:inline="javascript">
+	$(document).ready(function () {
+		var role = [[${role}]];
+		if(role == "ROLE_REVIEWER" || role == "ROLE_EDITOR"){
+			//document.getElementById("operation").style.visibility="hidden";//隐藏
+			//document.getElementById("operations").style.visibility="hidden";//隐藏
+			$(" #init").attr("style","display:none;");
+		}
+	});
+
+
 	$(function () {
 	$('#init').click(function () {
 		$.ajax({url:"checkShell1",success:function(result){
@@ -171,3 +178,6 @@ var type = ''
 
 </script>
 
+   </body>
+
+</html>

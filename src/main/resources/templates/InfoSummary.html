@@ -48,7 +48,7 @@
 		  	 	 	 		<p class="pt">事务池大小</p>
 		  	 	 	 		<p class="num" th:text="(${result.transactionPoolSize}==''?'0':${result.transactionPoolSize}) + (${result.transactionPoolSize}==null?'0':${result.transactionPoolSize})"></p>
 		  	 	 	 	</div>
-		  	 	 	 	<div class="col">
+		  	 	 	 	<div class="col" id="consensus">
 		  	 	 	 		<p class="pt">当前难度</p>
 		  	 	 	 		<p class="plevel" th:text="${result.currentDifficulty}==''?'':${result.currentDifficulty}"></p>
 		  	 	 	 	</div>
@@ -90,9 +90,7 @@
 	  	 	 <div class="space"></div>
 	  	 </div>
 	  </div>
-   </body>
 
-</html>
 <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script>
 	var index = 0
@@ -147,3 +145,18 @@
 		})
 	},1000);
 </script>
+
+
+	  <script th:inline="javascript">
+		  $(document).ready(function () {
+			  var consensus = [[${consensus}]];
+			  if(consensus != "pow"){
+				  //document.getElementById("operation").style.visibility="hidden";//隐藏
+				  //document.getElementById("operations").style.visibility="hidden";//隐藏
+				  $(" #consensus").attr("style","display:none;");
+			  }
+		  });
+	  </script>
+   </body>
+
+</html>

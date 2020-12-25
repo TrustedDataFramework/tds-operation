@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html  xmlns:th="http://www.thymeleaf.org">
 	<head lang="en">
 		<meta charset="UTF-8">
 		<title>浏览器监测</title>
@@ -78,9 +78,8 @@
 	  </div>
 
 	  <div class="alert n-alert"></div>
-   </body>
 
-</html>
+
 <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script>
 	var ip;
@@ -268,3 +267,19 @@
 		}
 	},15000);
 </script>
+
+	  <script th:inline="javascript">
+		  $(document).ready(function () {
+			  var role = [[${role}]];
+			  if(role == "ROLE_EDITOR"){
+				  //document.getElementById("operation").style.visibility="hidden";//隐藏
+				  //document.getElementById("operations").style.visibility="hidden";//隐藏
+				  $(" .browser-btn").attr("style","display:none;");
+			  }
+		  });
+	  </script>
+
+
+   </body>
+
+</html>

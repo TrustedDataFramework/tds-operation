@@ -133,8 +133,10 @@
 			warning = 'warning';
 		}
 		$('#bt_download').click(function () {
-			let startTime = $('#startTime').val();
+			let startTime = $('#startTime').val().substring(0,18);
+			startTime = startTime.replace('T',' ')
 			let endTime = $('#endTime').val();
+			endTime = endTime.replace('T',' ')
 			if(startTime>endTime){
 				alert("时间选择错误");
 				return;
@@ -142,7 +144,7 @@
 				alert("时间不能为空");
 				return;
 			}
-			var urlData = {startTime: $('#startTime').val(), endTime: $('#endTime').val()};
+			var urlData = {startTime: startTime, endTime: endTime};
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题

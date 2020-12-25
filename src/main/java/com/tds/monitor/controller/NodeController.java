@@ -1,7 +1,6 @@
 package com.tds.monitor.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.model.Nodes;
 import com.tds.monitor.model.Result;
 import com.tds.monitor.model.ResultCode;
@@ -10,8 +9,6 @@ import com.tds.monitor.service.Impl.ApplicationRunnerImpl;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.*;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

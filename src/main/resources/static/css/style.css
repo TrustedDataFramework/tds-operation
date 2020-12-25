@@ -155,7 +155,7 @@ body{width:100%;min-height:100%;}
 .boxdiv{width:100%;background:#fff; margin-top:30px}
 .first_div {margin-top: 170px;}
 .boxdiv .title,.tabBox_summ .first_div .title{font-size: 24px;color:#000; padding:25px 54px; border-bottom:2px solid #dcdcdc;}
-.dataBox{text-align: center;}
+.dataBox{text-align: center; width: 1250px;height: 500px}
 .dataBox form{padding-top: 30px;}
 .dataBox .btn{width:180px;height: 55px;text-align: center; line-height: 55px; font-size:24px; padding:0px;}
 .dataBox .btnbox{padding:51px 0 71px 0;}

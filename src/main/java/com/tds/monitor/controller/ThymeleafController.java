@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +67,7 @@ public class ThymeleafController {
         }
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         TDSInfo info = new TDSInfo();
+        String consensus = "";
         //节点详情
         Nodes nodeinfo = new Nodes();
         if (mapCacheUtil.getCacheItem("bindNode") != null){
@@ -75,6 +77,7 @@ public class ThymeleafController {
                 get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)).getJSONObject("data");
             }
             if (get_info != null && get_info.size() != 0){
+                consensus = get_info.getString("consensus");
                 info = JSON.toJavaObject(get_info, TDSInfo.class);
                 info.setCpu(String.format("%.2f", Float.parseFloat(info.getCpu())) + "%");
                 BigDecimal memoryUsed = new BigDecimal(info.getMemoryUsed());
@@ -94,6 +97,7 @@ public class ThymeleafController {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
             }
         }
+        map.addAttribute("consensus",consensus);
         map.addAttribute("info", nodeinfo);
         map.addAttribute("result", info);
         map.addAttribute("role",customUserService.getRole());
@@ -102,9 +106,9 @@ public class ThymeleafController {
 
     @RequestMapping("/home")
     public String home1(ModelMap map) throws Exception {
-        CustomUser customUser = (CustomUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         TDSInfo info = new TDSInfo();
+        String consensus = "";
         //节点详情
         Nodes nodeinfo = new Nodes();
         if (mapCacheUtil.getCacheItem("bindNode") != null){
@@ -114,6 +118,7 @@ public class ThymeleafController {
                 get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)).getJSONObject("data");
             }
             if (get_info != null && get_info.size() != 0){
+                consensus = get_info.getString("consensus");
                 info = JSON.toJavaObject(get_info, TDSInfo.class);
                 if(info.getCpu().compareTo("0")<0){
                     info.setCpu("0.1%");
@@ -137,6 +142,7 @@ public class ThymeleafController {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
             }
         }
+        map.addAttribute("consensus",consensus);
         map.addAttribute("info", nodeinfo);
         map.addAttribute("result", info);
         map.addAttribute("role",customUserService.getRole());
@@ -217,14 +223,9 @@ public class ThymeleafController {
     }
 
     @GetMapping("/dataInitialization")
-    public String dataInitialization() {
+    public String dataInitialization(ModelMap map) {
+        map.addAttribute("role",customUserService.getRole());
         return "dataInitialization";
-    }
-
-    @RequestMapping("/test1")
-    public String test1(){
-        String node = javaShellUtil.nodeShell();
-        return node;
     }
 
 
@@ -307,7 +308,7 @@ public class ThymeleafController {
     @GetMapping("/authenticationSet")
     public String authenticationSet(ModelMap map,
                                     @RequestParam(defaultValue = "0",value = "page")Integer pageNum){
-        List<User> userListPage = new ArrayList<User>();
+         List<User> userListPage = new ArrayList<User>();
         List<User> userList = userDao.findAll();
         if(userList.size()-pageNum*10<=10&&userList.size()-pageNum*10>=0){
             for(int i = pageNum*10;i<userList.size();i++){
@@ -331,7 +332,8 @@ public class ThymeleafController {
     }
 
     @GetMapping("/monitorBrowser")
-    public String monitorBrowser() {
+    public String monitorBrowser(ModelMap map) {
+        map.addAttribute("role",customUserService.getRole());
         return "monitorBrowser";
     }
 
@@ -451,20 +453,22 @@ public class ThymeleafController {
     public Object printLog(@RequestParam("startTime")String startTime,
                            @RequestParam("endTime")String endTime){
         Result result = new Result();
-        startTime = startTime.replace(" ","T");
-        endTime = endTime.replace(" ","T");
+//        startTime = startTime.replace(" ","T");
+//        endTime = endTime.replace(" ","T");
         MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
                 try {
                     GetNodeinfo getNodeinfo = new GetNodeinfo(mapCacheUtil.getCacheItem("bindNode").toString()).invoke();
+                    //String shellResult = JavaShellUtil.printLog(startTime,endTime);
                     String username = getNodeinfo.username;
                     String usepassword = getNodeinfo.usepassword;
                     String ip = getNodeinfo.ip;
                     ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, usepassword);
                     if (connectionUtil.login()) {
                         if (connectionUtil.login()) {
-                            String shellResult = connectionUtil.executeSuccess("echo " + usepassword + " |sudo -S docker logs -t --since='"+startTime+"' --until='"+endTime+"' "+ image);
+                            String shellResult = connectionUtil.executeSuccess("echo " + usepassword + " |sudo -S sed -n '/"+startTime+"/,/"+endTime+"/'p "+Constants.TDS_LOG);
+                            //String shellResult = connectionUtil.executeSuccess("echo " + usepassword + " |sudo -S docker logs -t --since='"+startTime+"' --until='"+endTime+"' "+ image);
                             if (StringUtils.isBlank(shellResult)) {
                                 result.setMessage("查询失败");
                                 result.setCode(ResultCode.FAIL);
