@@ -1,7 +1,5 @@
 package com.tds.monitor.service.Impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.dao.UserDao;
 import com.tds.monitor.model.Nodes;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,33 +49,35 @@ public class NodeServiceImpl implements NodeService {
             }
             ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, usepassword);
             if (connectionUtil.login()) {
-
-                if (connectionUtil.login()) {
-                    String shellResult = connectionUtil.executeSuccess("echo " + usepassword + " |sudo -S docker stop " + image);
-                    if (StringUtils.isBlank(shellResult)) {
-                        result.setMessage("停止失败");
-                        result.setCode(ResultCode.FAIL);
-                        return result;
-                    }
-                    result.setMessage("成功");
-                    result.setCode(ResultCode.SUCCESS);
-                    return result;
-                } else {
-                    result.setMessage("连接失败");
+                String userHome = getUserHome(ip, username, usepassword);
+                String shellResult = connectionUtil.execute("echo " + usepassword + " |sudo -S "  + userHome + "/.tdos/etc/kill.sh 1");
+                if (StringUtils.isBlank(shellResult)) {
+                    result.setMessage("停止失败");
                     result.setCode(ResultCode.FAIL);
                     return result;
                 }
+                result.setMessage("成功");
+                result.setCode(ResultCode.SUCCESS);
+            } else {
+                result.setMessage("连接失败");
+                result.setCode(ResultCode.FAIL);
             }
-
-
+            return result;
         } catch (Exception e) {
             result.setMessage("错误");
             result.setCode(ResultCode.FAIL);
             return result;
         }
-        result.setMessage("失败");
-        result.setCode(ResultCode.FAIL);
-        return result;
+    }
+
+    public String getUserHome(String ip,String username,String usepassword) {
+        ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, usepassword);
+        if (connectionUtil.login()) {
+            String result = connectionUtil.execute("echo " + usepassword + " |sudo -S " + "env|grep ^HOME= | cut -c 6-");
+            result = result.substring(0, result.indexOf("\n"));
+            return result;
+        }
+        return "";
     }
 
     @Override
@@ -99,22 +98,29 @@ public class NodeServiceImpl implements NodeService {
             }
             ConnectionUtil connectionUtil = new ConnectionUtil(ip, username, usepassword);
             if (connectionUtil.login()) {
-
-                if (connectionUtil.login()) {
-                    String shellResult = connectionUtil.executeSuccess("echo " + usepassword + " |sudo -S docker restart " + image);
-                    if (StringUtils.isBlank(shellResult)) {
-                        result.setMessage("重启失败");
-                        result.setCode(ResultCode.FAIL);
-                        return result;
-                    }
+                String userHome = getUserHome(ip, username, usepassword);
+                String shellResult = connectionUtil.execute("echo " + usepassword + " | sudo -S "  + userHome + "/.tdos/etc/kill.sh 1");
+                if (StringUtils.isNotBlank(shellResult)) {
+                    String[] cmds = new String[]{
+                            "nohup", ApplicationRunnerImpl.getJavaBin1(userHome), "-jar",userHome+"/.tdos/sunflower-core.jar",
+                            "--spring.config.location=" + userHome+"/.tdos/etc/config.yml",
+                    };
+                    Thread t = new Thread(() -> {
+                        try {
+                            connectionUtil.executeSuccess(StringUtils.join(cmds," "));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    t.start();
                     result.setMessage("成功");
                     result.setCode(ResultCode.SUCCESS);
                     return result;
-                } else {
-                    result.setMessage("连接失败");
-                    result.setCode(ResultCode.FAIL);
-                    return result;
                 }
+            } else {
+                result.setMessage("连接失败");
+                result.setCode(ResultCode.FAIL);
+                return result;
             }
 
 

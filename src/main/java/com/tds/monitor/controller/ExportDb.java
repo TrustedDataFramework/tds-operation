@@ -36,7 +36,7 @@ public class ExportDb {
             titleRow.createCell(0).setCellValue("事务版本");
             titleRow.createCell(1).setCellValue("事务的类型");
             titleRow.createCell(2).setCellValue("事务构造时间");
-            titleRow.createCell(3).setCellValue("事务的序号");
+            titleRow.createCell(3).setCellValue("  事务的序号");
             titleRow.createCell(4).setCellValue("事务发送者");
             titleRow.createCell(5).setCellValue("手续费价格");
             titleRow.createCell(6).setCellValue("转账金额");

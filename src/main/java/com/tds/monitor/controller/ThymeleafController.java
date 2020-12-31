@@ -248,17 +248,18 @@ public class ThymeleafController {
             for (int i = 0; i < nodeList.size(); i++) {
                 String heightUrl = "http://" + nodeList.get(i).getNodeIP() + ":" + nodeList.get(i).getNodePort() + "/rpc/stat";
                 if (HttpRequestUtil.sendGet(heightUrl, "") == "") {
-                    MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
-                    if (mapCacheUtil.getCacheItem("bindNode") != null) {
-                        String node = javaShellUtil.nodeShell();
-                        if (node.equals("true\n")) {
-                            nodeList.get(i).setNodeState("正在启动中");
-                        } else {
-                            nodeList.get(i).setNodeState("未运行");
-                        }
-                    }else {
+//                    MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+//                    String ip = nodeList.get(i).getNodeIP() + ":" + nodeList.get(i).getNodePort();
+//                    if (mapCacheUtil.getCacheItem("bindNode").equals(ip)) {
+//                        String node = javaShellUtil.nodeShell();
+//                        if (node.equals("true\n")) {
+//                            nodeList.get(i).setNodeState("正在启动中");
+//                        } else {
+//                            nodeList.get(i).setNodeState("未运行");
+//                        }
+//                    }else {
                         nodeList.get(i).setNodeState("未运行");
-                    }
+//                    }
                 } else {
                     nodeList.get(i).setNodeState("运行中");
                     nodeList.get(i).setNodeVersion(JSON.parseObject(JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, "")).get("data").toString()).get("version").toString());

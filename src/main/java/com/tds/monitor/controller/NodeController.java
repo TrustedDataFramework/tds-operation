@@ -67,28 +67,28 @@ public class NodeController {
         try {
             if (mapCacheUtil.getCacheItem("bindNode") != null){
                 String ip = mapCacheUtil.getCacheItem("bindNode").toString().split(":")[0];
-                if(ip.equals(LocalHostUtil.getLocalIP())){
+                if(ip.equals(LocalHostUtil.getLocalIP())) {
                     String pwd = Constants.getSudoPassword();
-                    JavaShellUtil.ProcessKillShell(1,pwd);
-                        String[] cmds = new String[]{
-                                "nohup", ApplicationRunnerImpl.getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
-                                "--spring.config.location=" + Constants.YML_PATH,
-                        };
-                        Thread t = new Thread(() -> {
-                            try {
-                                Process process = Runtime.getRuntime().exec(cmds);
-                                // 把子进程日志打到当前进程
-                                IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
-                                // 把子进程错误日志打到当前进程
-                                IOUtils.copy(process.getErrorStream(), new FileOutputStream(Constants.TDS_ERROR));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        t.start();
-                        result.setMessage("成功");
-                        result.setCode(ResultCode.SUCCESS);
-                        return result;
+                    JavaShellUtil.ProcessKillShell(1, pwd);
+                    String[] cmds = new String[]{
+                            "nohup", ApplicationRunnerImpl.getJavaBin(), "-jar", Constants.TDS_JAR_PATH,
+                            "--spring.config.location=" + Constants.YML_PATH,
+                    };
+                    Thread t = new Thread(() -> {
+                        try {
+                            Process process = Runtime.getRuntime().exec(cmds);
+                            // 把子进程日志打到当前进程
+                            IOUtils.copy(process.getInputStream(), new FileOutputStream(Constants.TDS_LOG));
+                            // 把子进程错误日志打到当前进程
+                            IOUtils.copy(process.getErrorStream(), new FileOutputStream(Constants.TDS_ERROR));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    t.start();
+                    result.setMessage("成功");
+                    result.setCode(ResultCode.SUCCESS);
+                    return result;
                     }else {
                     return nodeService.restart(mapCacheUtil.getCacheItem("bindNode").toString());
                 }

@@ -24,10 +24,10 @@
 	  	 <div class="mainBox">
 	  	 	 <div class="tabBox tabBox_authSet">
 		  	 	 <div class="borderRadius5 bosshdow  first_div">
-<!--		  	 	 	<div class="addBtnBox">-->
-<!--						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span>添加新节点</span></button>-->
+		  	 	 	<div class="addBtnBox">
+						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span>添加新节点</span></button>
 
-<!--					</div>-->
+					</div>
 
 					 <!--新增节点弹出框-->
 
@@ -64,12 +64,12 @@
 											 <span class="flab">密码：</span>
 											 <div class=" fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="password"/></div>
 										 </div>
-<!--										 <button class="borderRadius5 btndefault btnLink" id="connection1">测试连接</button>-->
-<!--										 <div class="moda-le">-->
-<!--											 <h5 style="color: green;display: none" id="wait">请等待...</h5>-->
-<!--											 <h5 style="color: green;display: none" id="success">连接成功</h5>-->
-<!--											 <h5 style="color: red;display: none" id="fail">连接失败</h5>-->
-<!--										 </div>-->
+										 <button class="borderRadius5 btndefault btnLink" id="connection1">测试连接</button>
+										 <div class="moda-le">
+											 <h5 class="h-result" style="color: green;display: none" id="wait">请等待...</h5>
+											 <h5 class="h-result" style="color: green;display: none" id="success">连接成功</h5>
+											 <h5 class="h-result"  style="color: red;display: none" id="fail">连接失败</h5>
+										 </div>
 									 </div>
 								 </div>
 								 <div class="fbtnbox">
@@ -116,12 +116,12 @@
 											 <span class="flab">密码：</span>
 											 <div class=" fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="update_password" /></div>
 										 </div>
-<!--										 <button class="borderRadius5 btndefault btnLink" id="connection">测试连接</button>-->
-<!--										 <div class="moda-le">-->
-<!--											 <h5 style="color: green;display: none" id="wait_1">请等待...</h5>-->
-<!--											 <h5 style="color: green;display: none" id="success_1">连接成功</h5>-->
-<!--											 <h5 style="color: red;display: none" id="fail_1">连接失败</h5>-->
-<!--										 </div>-->
+										 <button class="borderRadius5 btndefault btnLink" id="connection">测试连接</button>
+										 <div class="moda-le">
+											 <h5 class="h-result" style="color: green;display: none" id="wait_1">请等待...</h5>
+											 <h5 class="h-result" style="color: green;display: none" id="success_1">连接成功</h5>
+											 <h5 class="h-result" style="color: red;display: none" id="fail_1">连接失败</h5>
+										 </div>
 									 </div>
 								 </div>
 								 <div class="fbtnbox">
@@ -220,6 +220,7 @@
 		$("#username").val('');
 		$("#password").val('');
 		$("#modal").addClass('modal_in');
+		$(".moda-le").find(".h-result").css({'display':'none'})
 	}
 
 	function showModal1(){
@@ -233,6 +234,7 @@
 			$("#update_username").val(result.userName);
 			$("#update_password").val(result.password);
 		}, 'json');
+		$(".moda-le").find(".h-result").css({'display':'none'})
 	}
 
 	function hideModal(){

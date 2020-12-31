@@ -38,6 +38,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
         return Paths.get(Constants.JAVA_HOME, "bin", "java").toString();
     }
 
+    public static String getJavaBin1(String userHome){
+        return Paths.get(userHome+"/.tdos/jdk-11.0.2", "bin", "java").toString();
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("通过实现ApplicationRunner接口，在spring boot项目启动后打印参数");

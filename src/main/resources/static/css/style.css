@@ -465,7 +465,7 @@ p{padding: 0px; margin: 0;}
 
 .topInfo  .alert-success,.topInfo .alert-danger {min-width:300px}
 
-.modal .modal-point{height: 520px;margin-top: -260px;}
+.modal .modal-point{height: 550px;margin-top: -260px;}
 .modal .modal-confirm-password{height:380px;margin-top: -190px;}
 .modal .modal-reset-level{height: 500px;margin-top: -250px;}
 .btndefault:hover{color:#fff}
