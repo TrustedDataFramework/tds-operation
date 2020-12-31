@@ -33,3 +33,7 @@ out/
 .vscode/
 
 .DS_Store
+
+## log
+nohup.out
+spring-shell.log
