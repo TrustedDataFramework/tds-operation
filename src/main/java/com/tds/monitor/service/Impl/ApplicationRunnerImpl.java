@@ -35,16 +35,14 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
 
     private static String pushUrl = "https://tdos-store.oss-cn-beijing.aliyuncs.com/whiteList.json";
 
+    public static void main(String[] args) {
+        System.out.println();
+    }
+
     public static String getJavaBin(){
-        File f = Paths.get(Constants.JAVA_HOME, "bin", "java").toFile();
-        if(f.exists()){
-            return Paths.get(Constants.JAVA_HOME, "bin", "java").toString();
-        }
-        Optional<String> javaBin = Optional.ofNullable(System.getenv("JAVA_HOME"))
-                .filter(x -> !x.isEmpty())
-                .filter(x -> Paths.get(x, "bin", "java").toFile().exists())
-                .map(x -> Paths.get(x, "bin", "java").toString());
-        return javaBin.orElse("java");
+        return Paths.get(
+                System.getProperties().getProperty("java.home"),
+                "bin", "java").toString();
     }
 
     public static String getJavaBin1(String userHome){
