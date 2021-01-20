@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head lang="en">
   <meta charset="UTF-8">
-  <title>预警信息</title>
+  <title th:text="#{index.alarm}">预警信息</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,11 +23,11 @@
 	  <div class="tabBox">
 		  <div class="borderRadius5 bosshdow pointInfo first_div">
 			  <div class="col">
-				  <h4 class="ht">当前节点发送邮箱</h4>
+				  <h4 class="ht" th:text="#{index.sendingCurrentNode}">当前节点发送邮箱</h4>
 				  <p th:text="${mail.getSender()}">88888888888@126.com</p>
 			  </div>
 			  <div class="col">
-				  <h4 class="ht">当前节点接收邮箱</h4>
+				  <h4 class="ht" th:text="#{index.receivingCurrentNode}">当前节点接收邮箱</h4>
 				  <p th:text="${mail.getReceiver()}">88888888888@126.com</p>
 			  </div>
 
@@ -35,29 +35,29 @@
 
 		  </div>
 		  <div class="borderRadius5 bosshdow boxdiv">
-			  <h3 class="title">修改邮箱信息</h3>
+			  <h3 class="title" th:text="#{index.modifyEmail}">修改邮箱信息</h3>
 			  <div class="dataBox">
 					  <div class="din">
-						  <label class="lab">绑定发送邮箱：</label>
-						  <input class="borderRadius5 editIn" placeholder="地址信息" id="txt_send"/>
+						  <label class="lab" th:text="#{index.bindSendingMailbox}">绑定发送邮箱：</label>
+						  <input class="borderRadius5 editIn" th:placeholder="#{index.addressInformation}" id="txt_send"/>
 					  </div>
 					  <div class="din din-mess">
 						  <label class="lab"></label>
-						  <p class="n_tips">当前支持outlook邮箱作为发送邮箱</p>
+						  <p class="n_tips" th:text="#{index.currently}">当前支持outlook邮箱作为发送邮箱</p>
 					  </div>
 					  <div class="din">
-						  <label class="lab">发送邮箱密码：</label>
+						  <label class="lab" th:text="#{index.sendingEmailPassword}">发送邮箱密码：</label>
 						  <input type="password" class="borderRadius5 editIn" id="txt_password"/>
 					  </div>
 					  <div class="din din-mess">
 						  <label class="lab"></label>
-						  <p class="n_tips">此密码选项为发送邮箱密码</p>
+						  <p class="n_tips" th:text="#{index.theSendingMailboxPassword}">此密码选项为发送邮箱密码</p>
 					  </div>
 					  <div class="din">
-						  <label class="lab">绑定接收邮箱：</label>
+						  <label class="lab" th:text="#{index.bindReceivingMailbox}">绑定接收邮箱：</label>
 						  <input class="borderRadius5 editIn" placeholder="" id="txt_receiver" />
 					  </div>
-					  <div class="btnbox"><button class="btndefault borderRadius5 btn" id="bt_editmail">确认修改</button></div>
+					  <div class="btnbox"><button class="btndefault borderRadius5 btn" id="bt_editmail" th:text="#{index.confirmUpdate}">确认修改</button></div>
 			  </div>
 		  </div>
 	  </div>
@@ -73,8 +73,51 @@
   $("#topInfo").load("/header")
 
 </script>
-
+<script src="js/jquery.i18n.properties.min.js" type="text/javascript" charset="utf-8"></script>
 <script th:inline="javascript">
+	//项目路径
+	ctx = [[${#request.getContextPath()}]];
+
+	//初始化i18n插件
+	try {
+		$.i18n.properties({
+			path: ctx + '/i18n/',
+			name: 'index',
+			language: [[${#locale.language+'_'+#locale.country}]],
+			mode: "both"
+		});
+	} catch (e) {
+		console.error(e);
+	}
+
+	//初始化i18n方法
+	function i18n(labelKey) {
+		try {
+			return $.i18n.prop(labelKey);
+		} catch (e) {
+			console.error(e);
+			return labelKey;
+		}
+	}
+
+	if([[${#locale.language}]]=="en"){
+
+		$("#sider").addClass('sider_en');
+		$("#topInfo").addClass('topInfo_en')
+		$('.modal').addClass('modal_console_en')
+		$('.dataBox').addClass('dataBox_warn_warnInfo')
+	}
+
+	let sendingMailboxIncorrect = i18n("index.sendingMailboxIncorrect")
+	let mailboxIsIncorrect = i18n("index.mailboxIsIncorrect")
+	let inputPasswordFor = i18n("index.inputPasswordFor")
+	let confirmBindMailbox = i18n("index.confirmBindMailbox")
+	let bindingSuccessfully = i18n("index.bindingSuccessfully")
+	let clickedCancel = i18n("index.clickedCancel")
+	let cancel = i18n("index.cancel")
+	let ok = i18n("index.ok")
+
+
 	$("#txt_send").val([[${mail.getSender()}]]);
 	$("#txt_password").val([[${mail.getPassword()}]]);
 	$("#txt_receiver").val([[${mail.getReceiver()}]]);
@@ -85,18 +128,18 @@
 			var receiver = document.getElementById("txt_receiver").value;
 			var password = document.getElementById("txt_password").value;
 			if (!emailReg.test(send)) {
-				Swal.fire("", "发送邮箱格式不正确", "error");
+				Swal.fire("", sendingMailboxIncorrect, "error");
 				// alert("发送邮箱格式不正确!");
 				// swal("", "test", "success");
 				return;
 			};
 			if (!emailReg.test(receiver)) {
-				Swal.fire("", "接受邮箱格式不正确", "error");
+				Swal.fire("", mailboxIsIncorrect, "error");
 				// alert("接受邮箱格式不正确!");
 				return;
 			};
 			if (password == "" || password == null){
-				Swal.fire("", "请输入密码", "error");
+				Swal.fire("", inputPasswordFor, "error");
 				return;
 			}
 			var warning;
@@ -109,13 +152,13 @@
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题
-				text: "是否绑定邮箱！", //显示内容
+				text: confirmBindMailbox, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-				confirmButtonText: '确定',// 确定按钮的 文字
+				confirmButtonText: ok,// 确定按钮的 文字
 				showCancelButton: true, // 是否显示取消按钮
 				cancelButtonColor: '#d33', // 取消按钮的 颜色
-				cancelButtonText: "取消", // 取消按钮的 文字
+				cancelButtonText: cancel, // 取消按钮的 文字
 
 				focusCancel: true, // 是否聚焦 取消按钮
 				reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -130,13 +173,13 @@
 								Swal.fire({
 									type: 'success', // 弹框类型
 									title: '', //标题
-									text: "绑定成功！", //显示内容
+									text: bindingSuccessfully, //显示内容
 
 									confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-									confirmButtonText: '确定',// 确定按钮的 文字
+									confirmButtonText: ok,// 确定按钮的 文字
 									showCancelButton: false, // 是否显示取消按钮
 									cancelButtonColor: '#d33', // 取消按钮的 颜色
-									cancelButtonText: "取消", // 取消按钮的 文字
+									cancelButtonText: cancel, // 取消按钮的 文字
 
 									focusCancel: true, // 是否聚焦 取消按钮
 									reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -155,7 +198,7 @@
 
 					}
 					else {
-						Swal.fire("取消", "点击了取消", "error");
+						Swal.fire(cancel, clickedCancel, "error");
 					}
 				} catch (e) {
 					alert(e);

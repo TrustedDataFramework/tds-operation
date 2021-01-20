@@ -164,9 +164,9 @@ public class NodeController {
             JSONObject jsonObject = JSONObject.parseObject(version);
             String ver = jsonObject.getString("data");
             result.setData(ver);
-            result.setMessage("运行中");
+            result.setMessage("1");
         }else{
-            result.setMessage("未运行");
+            result.setMessage("2");
         }
         result.setCode(ResultCode.SUCCESS);
         return result;

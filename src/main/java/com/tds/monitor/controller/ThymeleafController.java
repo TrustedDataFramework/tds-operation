@@ -10,6 +10,7 @@ import com.tds.monitor.security.IsUser;
 import com.tds.monitor.service.CustomUser;
 import com.tds.monitor.service.Impl.CustomUserServiceImpl;
 import com.tds.monitor.utils.*;
+import jdk.vm.ci.meta.Local;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,12 +88,12 @@ public class ThymeleafController {
                 byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
                 String mess = new String(message);
                 if (JSON.parseObject(mess).getString("mining").equals("true")) {
-                    info.setMinings("是");
+                    info.setMinings("1");
                 } else {
-                    info.setMinings("否");
+                    info.setMinings("2");
                 }
                 info.setP2pAddress(info.getP2pAddress().substring(0,info.getP2pAddress().indexOf(":")));
-                map.addAttribute("isrun","运行中");
+                map.addAttribute("isrun","1");
             }else {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
             }
@@ -133,11 +134,11 @@ public class ThymeleafController {
                 byte[] message = Files.readAllBytes(Paths.get(System.getProperty("user.home"), ".tdos", "etc", "config.json"));
                 String mess = new String(message);
                 if (JSON.parseObject(mess).getString("mining").equals("true")) {
-                    info.setMinings("是");
+                    info.setMinings("1");
                 } else {
-                    info.setMinings("否");
+                    info.setMinings("2");
                 }
-                map.addAttribute("isrun","运行中");
+                map.addAttribute("isrun","1");
             }else {
                 info = JSON.toJavaObject((JSONObject)JSONObject.toJSON(new TDSInfo()), TDSInfo.class);
             }
@@ -156,6 +157,8 @@ public class ThymeleafController {
 
     @RequestMapping("/header")
     public String header(ModelMap map) {
+        //节点详情
+        Nodes nodeinfo = new Nodes();
         try {
             map.addAttribute((CustomUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             map.addAttribute("dateNow", new java.util.Date().getTime());
@@ -163,6 +166,7 @@ public class ThymeleafController {
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
             JSONObject get_info;
             String p2pAddress = "";
+            String mining = "";
             TDSInfo info;
             if (mapCacheUtil.getCacheItem("bindNode") != null) {
                 nodeinfoList.add(mapCacheUtil.getCacheItem("bindNode").toString());
@@ -171,12 +175,11 @@ public class ThymeleafController {
                     if (get_info != null && get_info.size() != 0) {
                         info = JSON.toJavaObject(get_info, TDSInfo.class);
                         p2pAddress =  info.getP2pAddress().substring(0,info.getP2pAddress().indexOf(":"));
+                        mining = info.getMinings();
                     }
                 }
             }
             map.addAllAttributes(nodeinfoList);
-            //节点详情
-            Nodes nodeinfo = new Nodes();
             String version = "";
             JSONObject jsonObject = (JSONObject) JSONObject.toJSON(NodeinfoController.getVersion());
             if ((int) jsonObject.get("code") == 200) {
@@ -185,23 +188,31 @@ public class ThymeleafController {
                 nodeinfo.setNodeIP(mapCacheUtil.getCacheItem("bindNode").toString());
                 String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
                 List<Nodes> nodeList = nodeDao.findAll();
+
+//                if(LocalHostUtil.getLocalIP().equals(mapCacheUtil.getCacheItem("bindNode"))){
+//                    if(mining.equals("true")){
+//                        nodeinfo.setNodeType("2");
+//                    }nodeinfo.setNodeType("1");
+//                }else {
                 for (int i = 0; i < nodeList.size(); i++) {
                     if (nodeList.get(i).getNodeIP().equals(bindNodeiphost[0]) && nodeList.get(i).getNodePort().equals(bindNodeiphost[1])) {
                         if (nodeList.get(i).getNodeType().equals("1")) {
-                            nodeinfo.setNodeType("全节点");
+                            nodeinfo.setNodeType("1");
                             break;
                         }
-                        nodeinfo.setNodeType("矿工节点");
+                        nodeinfo.setNodeType("2");
                         break;
                     }
                 }
+//                }
                 map.addAttribute("info", nodeinfo);
-                map.addAttribute("isrun", "运行中");
+                map.addAttribute("isrun", "1");
             } else {
                 if(mapCacheUtil.getCacheItem("bindNode") != null){
+                    nodeinfo.setNodeIP(mapCacheUtil.getCacheItem("bindNode").toString());
                     String node = javaShellUtil.nodeShell();
                     if (node.equals("true\n")) {
-                        map.addAttribute("isrun", "正在启动中");
+                        map.addAttribute("isrun", "2");
                     }
                 } else {
                     nodeinfo.setNodeIP(jsonObject.getString("message"));
@@ -213,8 +224,10 @@ public class ThymeleafController {
             map.addAttribute("role", customUserService.getRole());
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            map.addAttribute("info", nodeinfo);
+            return "header";
         }
-        return "header";
     }
 
     @GetMapping("/sider")
@@ -258,10 +271,10 @@ public class ThymeleafController {
 //                            nodeList.get(i).setNodeState("未运行");
 //                        }
 //                    }else {
-                        nodeList.get(i).setNodeState("未运行");
+                        nodeList.get(i).setNodeState("2");
 //                    }
                 } else {
-                    nodeList.get(i).setNodeState("运行中");
+                    nodeList.get(i).setNodeState("1");
                     nodeList.get(i).setNodeVersion(JSON.parseObject(JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, "")).get("data").toString()).get("version").toString());
                 }
             }

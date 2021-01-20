@@ -110,10 +110,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner {
                     node.setNodeIP(ip);
                     node.setNodePort("7010");
                     node.setNodeType(mining);
-                    if (!nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
+                    if (nodeDao.findNodesByNodeIPAndNodePort(ip, "7010").isPresent()) {
+                        nodeDao.deleteByNodeIPAndNodePort(ip,"7010");
                         log.info("=============================保存节点信息");
-                        nodeDao.save(node);
-                    }
+                    }nodeDao.save(node);
                 }
             }
         }

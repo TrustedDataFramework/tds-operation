@@ -2,7 +2,7 @@
 <html  xmlns:th="http://www.thymeleaf.org">
 	<head lang="en">
 		<meta charset="UTF-8">
-		<title>浏览器监测</title>
+		<title th:text="#{index.browserMonitoring}">浏览器监测</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,20 +25,20 @@
 	  	 <div class="mainBox">
 	  	 	 <div class="tabBox tabBox_out browser_box">
 		  	 	 <div class="borderRadius5 bosshdow boxdiv first_div">
-		  	 	 	<h3 class="title">监测浏览器</h3>
+		  	 	 	<h3 class="title" th:text="#{index.browserMonitoring}">监测浏览器</h3>
 		  	 	 	<div class="dataBox">
 		  	 	 	   <div class="browser-info">
 <!--						   <p>IP:<span id="ip"></span></p>-->
 <!--						   <p>端口：8080</p>-->
-						   <p>版本：<span id="version"></span></p>
-						   <p>运行状态：<span id="status"></span></p>
+						   <p><span th:text="#{index.version}">版本：</span><span id="version"></span></p>
+						   <p><span th:text="#{index.runningStatus}">运行状态：</span><span id="status"></span></p>
 						</div>
 		 
 						<div class="btnbox">
-							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(1)">停止</a>
-							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(2)">启动</a>
-							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(3)">重启</a>
-							<a class="btndefault borderRadius5 browser-btn" id="search">访问</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(1)" th:text="#{index.stop}">停止</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(2)" th:text="#{index.start}">启动</a>
+							<a class="btndefault borderRadius5 browser-btn" onclick="showModal(3)" th:text="#{index.restart}">重启</a>
+							<a class="btndefault borderRadius5 browser-btn" id="search" th:text="#{index.visit}">访问</a>
 						</div>
 		  	 	 		
 		  	 	 	</div>
@@ -81,7 +81,8 @@
 
 
 <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-<script>
+<script src="js/jquery.i18n.properties.min.js" type="text/javascript" charset="utf-8"></script>
+<script  th:inline="javascript">
 	var ip;
  	$("#sider").load("/sider",function(){
  		$(".siderNav .l7").addClass('cur')
@@ -96,31 +97,76 @@
 	});
 
 	$("#topInfo").load("/header")
+
+	//项目路径
+	ctx = [[${#request.getContextPath()}]];
+
+	//初始化i18n插件
+	try {
+		$.i18n.properties({
+			path: ctx + '/i18n/',
+			name: 'index',
+			language: [[${#locale.language+'_'+#locale.country}]],
+			mode: "both"
+		});
+	} catch (e) {
+		console.error(e);
+	}
+
+	//初始化i18n方法
+	function i18n(labelKey) {
+		try {
+			return $.i18n.prop(labelKey);
+		} catch (e) {
+			console.error(e);
+			return labelKey;
+		}
+	}
+
+	if([[${#locale.language}]]=="en"){
+
+		$(".sider").addClass('sider_en');
+		$("#topInfo").addClass('topInfo_en')
+		$('.modal').addClass('modal_console_en')
+	}
+
+	let unboundNode = i18n("index.unboundNode")
+	let adminPasswordError = i18n("index.adminPasswordError")
+	let ok = i18n("index.ok")
+	let stopTimeout = i18n("index.stopTimeout")
+	let notRunning = i18n("index.notRunning")
+	let startBrowser = i18n("index.startBrowser")
+	let stoppingWait = i18n("index.stoppingWait")
+	let startingWait = i18n("index.startingWait")
+	let restartingWait = i18n("index.restartingWait")
+	let startupTimeout = i18n("index.startupTimeout")
+	let restartTimeout = i18n("index.restartTimeout")
+
 	function showModal(num){
 		$.ajax({url:"nodeType",success:function(result1){
 			if(result1.code != 2000){
-				$('.alert').html('未绑定节点').addClass('alert-danger').show().delay(1500).fadeOut();
+				$('.alert').html(unboundNode).addClass('alert-danger').show().delay(1500).fadeOut();
 				return;
 			}
 				type = num;
 				$.ajax({url:"checkShell1",success:function(result){
 						if(result == null || result == ""){
 							console.log(result)
-							$('.alert').html('管理员密码错误').addClass('alert-danger').show().delay(1500).fadeOut();
+							$('.alert').html(adminPasswordError).addClass('alert-danger').show().delay(1500).fadeOut();
 							return;
 						}
 						if(type == 1){
-							$(".mess").text("正在停止，请稍后...")
+							$(".mess").text(stoppingWait)
 							$(".trans-modal").addClass('show-trans-modal');
 							$.get('stopWeb', function (result) {
 							}, 'json');
 						}else if(type == 2){
-							$(".mess").text("正在启动，请稍后...")
+							$(".mess").text(startingWait)
 							$(".trans-modal").addClass('show-trans-modal');
 							$.get('startWeb', function (result) {
 							}, 'json');
 						}else if(type == 3){
-							$(".mess").text("正在重启，请稍后...")
+							$(".mess").text(restartingWait)
 							$(".trans-modal").addClass('show-trans-modal');
 							$.get('restartWeb', function (result) {
 							}, 'json');
@@ -158,44 +204,21 @@
 			if(result.code == 2000){
 				document.getElementById("version").innerHTML = result.data;
 			}
-			document.getElementById("status").innerHTML = result.message;
+			if([[${#locale.language}]] == "en"){
+				if(result.message == 1){
+					document.getElementById("status").innerHTML = "running";
+				}else{
+					document.getElementById("status").innerHTML = "not running";
+				}
+			}else {
+				if (result.message == 1) {
+					document.getElementById("status").innerHTML = "运行中";
+				} else {
+					document.getElementById("status").innerHTML = "未运行";
+				}
+			}
 		}, 'json');
 	}
-
-	// $('#submit').click(function () {
-	// 	var urlData = {password: $('#password').val()};
-	// 	$(".modal").removeClass('modal_in');
-	// 	//表示启动
-	// 	$(".trans-modal").addClass('show-trans-modal');
-	// 	if(type == 1) {
-	// 		$.get('startWeb', urlData, function (result) {
-	// 		}, 'json');
-	// 	}else if (type ==2){
-	// 		$.get('stopWeb',urlData, function (result) {
-	// 		}, 'json');
-	// 	}else if(type == 3){
-	// 		$.get('restartWeb',urlData, function (result) {
-	// 		}, 'json');
-	// 	}
-	// });
-
-	// $('#startWeb').click(function () {
-	// 	$(".trans-modal").addClass('show-trans-modal');
-	// 	$.get('startWeb', function (result) {
-	// 	}, 'json');
-	// })
-	//
-	// $('#stopWeb').click(function () {
-	// 	$(".trans-modal").addClass('show-trans-modal');
-	// 	$.get('stopWeb', function (result) {
-	// 	}, 'json');
-	// })
-	//
-	// $('#restartWeb').click(function () {
-	// 	$(".trans-modal").addClass('show-trans-modal');
-	// 	$.get('restartWeb', function (result) {
-	// 	}, 'json');
-	// })
 
 	$('#search').click(function () {
 		$.get('webStartOrNot', function (result) {
@@ -203,7 +226,7 @@
 				let path = "http://" + ip + ":8181"
 				window.open(path, "_blank");
 			} else {
-				$('.alert').html('请启动浏览器').addClass('alert-danger').show().delay(1500).fadeOut();
+				$('.alert').html(startBrowser).addClass('alert-danger').show().delay(1500).fadeOut();
 			}
 		}, 'json');
 	})
@@ -215,12 +238,12 @@
 				if (result.code == 2000) {
 					$(".trans-modal").removeClass('show-trans-modal');
 					document.getElementById("version").innerHTML = "";
-					document.getElementById("status").innerHTML = "未运行";
+					document.getElementById("status").innerHTML = notRunning;
 					type = '';
 					num = '';
 				}
 				if(parseInt(num)>60){
-					$('.alert').html('停止超时').addClass('alert-danger').show().delay(1500).fadeOut();
+					$('.alert').html(stopTimeout).addClass('alert-danger').show().delay(1500).fadeOut();
 					$(".trans-modal").removeClass('show-trans-modal');
 					type = '';
 					num = '';
@@ -232,12 +255,24 @@
 				if (result.code == 2000) {
 					$(".trans-modal").removeClass('show-trans-modal');
 					document.getElementById("version").innerHTML = result.data;
-					document.getElementById("status").innerHTML = result.message;
+					if([[${#locale.language}]] == "en"){
+						if(result.message == "成功"){
+							document.getElementById("status").innerHTML = "running";
+						}else{
+							document.getElementById("status").innerHTML = "not running";
+						}
+					}else {
+						if (result.message == "未运行") {
+							document.getElementById("status").innerHTML = "未运行";
+						} else {
+							document.getElementById("status").innerHTML = "运行中";
+						}
+					}
 					type = '';
 					num = '';
 				}
 				if(parseInt(num)>60){
-					$('.alert').html('启动超时').addClass('alert-danger').show().delay(1500).fadeOut();
+					$('.alert').html(startupTimeout).addClass('alert-danger').show().delay(1500).fadeOut();
 					$(".trans-modal").removeClass('show-trans-modal');
 					type = '';
 					num = '';
@@ -258,7 +293,7 @@
 					num = '';
 				}
 				if(parseInt(num)>100){
-					$('.alert').html('重启超时').addClass('alert-danger').show().delay(1500).fadeOut();
+					$('.alert').html(restartTimeout).addClass('alert-danger').show().delay(1500).fadeOut();
 					$(".trans-modal").removeClass('show-trans-modal');
 					type = '';
 					num = '';

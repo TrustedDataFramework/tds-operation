@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .deleteCookies()
                 .and()
-                .authorizeRequests().antMatchers("/login", "/static/login.html","/css/**","/js/**","/img/**","/font-awesome-4.7.0/**","/h2/**").permitAll()
+                .authorizeRequests().antMatchers("/login", "/static/login.html","/css/**","/js/**","/img/**","/font-awesome-4.7.0/**","/h2/**","/changeLang").permitAll()
                 .anyRequest().authenticated()
                 .and().headers().frameOptions().sameOrigin()
                 /*

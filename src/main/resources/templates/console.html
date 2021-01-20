@@ -1,181 +1,181 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-	<head lang="en">
-		<meta charset="UTF-8">
-		<title>控制台</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="renderer" content="webkit">
-		<link rel="stylesheet" type="text/css" href="css/pagination.css"/>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-		<link rel="stylesheet" type="text/css" href="css/style.css">
+<head lang="en">
+	<meta charset="UTF-8">
+	<title th:text="#{index.console}">控制台</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="renderer" content="webkit">
+	<link rel="stylesheet" type="text/css" href="css/pagination.css"/>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
 
-		<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
-	</head>
-      
-   <body class="body_main">
-   	  <!--左边菜单-->
-      <div id="sider" class="sider"></div>
-	  <div class="wrapMain">
-	  	 <!--头部-->
-	  	 <div class="topInfo" id="topInfo">	</div>
-	  	 <div class="mainBox">
-	  	 	 <div class="tabBox tabBox_authSet">
-		  	 	 <div class="borderRadius5 bosshdow  first_div">
-		  	 	 	<div class="addBtnBox">
-						<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span>添加新节点</span></button>
+	<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+</head>
 
+<body class="body_main">
+<!--左边菜单-->
+<div id="sider" class="sider"></div>
+<div class="wrapMain">
+	<!--头部-->
+	<div class="topInfo" id="topInfo">	</div>
+	<div class="mainBox">
+		<div class="tabBox tabBox_authSet">
+			<div class="borderRadius5 bosshdow  first_div">
+				<div class="addBtnBox">
+					<button class="borderRadius5 btndefault btnAdd"  onclick="showModal()" id="add"><span th:text="#{index.console}">添加新节点</span></button>
+
+				</div>
+
+				<!--新增节点弹出框-->
+
+				<div class="modal" id="modal">
+					<div class="modal-by-dialog modal-point">
+						<a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
+						<h3 class="modal_title" th:text="#{index.addNode}">新增节点</h3>
+						<div class="form">
+							<div class="col clearfix">
+								<p class="flab" th:text="#{index.nodeIP}">节点IP：</p>
+								<div class="fin"><input class="borderRadius5" type="text" th:placeholder="#{index.inputNodeIP}" id="nodeIp"/></div>
+							</div>
+							<div class="col clearfix">
+								<p class="flab" th:text="#{index.nodePort}">节点PORT：</p>
+								<div class=" fin"><input class="borderRadius5" type="text" th:placeholder="#{index.inputNodePort}" id="nodePort"/></div>
+							</div>
+							<div class="col clearfix">
+								<p class="flab" th:text="#{index.nodeType}">节点类型：</p>
+								<div class="borderRadius5 fsel">
+									<select id="nodetype">
+										<option th:value=1 th:text="#{index.fullNode}">全节点</option>
+										<option th:value=2 th:text="#{index.consensusNode}">矿工节点</option>
+									</select>
+								</div>
+							</div>
+							<div class="sshInfo">
+								<h3 class="pt" th:text="#{index.sSHRemoteConnection}">SSH远程连接数据</h3>
+								<div class="clearfix">
+									<div class="sshcol">
+										<span class="flab" th:text="#{index.userName}">用户名：</span>
+										<div class=" fin"><input class="borderRadius5" type="text" th:placeholder="#{index.pleaseUserName}" id="username"/></div>
+									</div>
+									<div class="sshcol sshcol-pas">
+										<span class="flab" th:text="#{index.password}">密码：</span>
+										<div class=" fin"><input class="borderRadius5" type="password" th:placeholder="#{index.signInPassword}" id="password"/></div>
+									</div>
+									<button class="borderRadius5 btndefault btnLink" id="connection1" th:text="#{index.testConnection}">测试连接</button>
+									<div class="moda-le">
+										<h5 class="h-result" style="color: green;display: none" id="wait" th:text="#{index.pleaseWait}">请等待...</h5>
+										<h5 class="h-result" style="color: green;display: none" id="success" th:text="#{index.connectionSuccessful}">连接成功</h5>
+										<h5 class="h-result"  style="color: red;display: none" id="fail" th:text="#{index.connectionFailed}">连接失败</h5>
+									</div>
+								</div>
+							</div>
+							<div class="fbtnbox">
+								<a  class="borderRadius5 fbtn" id="bt_submit" th:text="#{index.commit}">提交</a>
+							</div>
+
+						</div>
 					</div>
 
-					 <!--新增节点弹出框-->
+				</div>
 
-					 <div class="modal" id="modal">
-						 <div class="modal-by-dialog modal-point">
-							 <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
-							 <h3 class="modal_title">新增节点</h3>
-							 <div class="form">
-								 <div class="col clearfix">
-									 <p class="flab">节点IP：</p>
-									 <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入节点IP" id="nodeIp"/></div>
-								 </div>
-								 <div class="col clearfix">
-									 <p class="flab">节点PORT：</p>
-									 <div class=" fin"><input class="borderRadius5" type="text" placeholder="请输入节点PORT" id="nodePort"/></div>
-								 </div>
-								 <div class="col clearfix">
-									 <p class="flab">节点类型：</p>
-									 <div class="borderRadius5 fsel">
-										 <select id="nodetype">
-											 <option th:value=1>全节点</option>
-											 <option th:value=2>矿工节点</option>
-										 </select>
-									 </div>
-								 </div>
-								 <div class="sshInfo">
-									 <h3 class="pt">SSH远程连接数据</h3>
-									 <div class="clearfix">
-										 <div class="sshcol">
-											 <span class="flab">用户名：</span>
-											 <div class=" fin"><input class="borderRadius5" type="text" placeholder="请输入用户名" id="username"/></div>
-										 </div>
-										 <div class="sshcol sshcol-pas">
-											 <span class="flab">密码：</span>
-											 <div class=" fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="password"/></div>
-										 </div>
-										 <button class="borderRadius5 btndefault btnLink" id="connection1">测试连接</button>
-										 <div class="moda-le">
-											 <h5 class="h-result" style="color: green;display: none" id="wait">请等待...</h5>
-											 <h5 class="h-result" style="color: green;display: none" id="success">连接成功</h5>
-											 <h5 class="h-result"  style="color: red;display: none" id="fail">连接失败</h5>
-										 </div>
-									 </div>
-								 </div>
-								 <div class="fbtnbox">
-									 <a  class="borderRadius5 fbtn" id="bt_submit">提交</a>
-								 </div>
+				<!--编辑节点弹出框-->
 
-							 </div>
-						 </div>
+				<div class="modal" id="modal1">
+					<div class="modal-by-dialog modal-point">
+						<a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
+						<h3 class="modal_title" th:text="#{index.addNode}">编辑节点</h3>
+						<div class="form">
+							<div class="col clearfix">
+								<p class="flab" th:text="#{index.nodeIP}">节点IP：</p>
+								<div class="fin"><input class="borderRadius5" type="text" th:placeholder="#{index.inputNodeIP}" id="update_nodeIp" readonly="readonly"/></div>
+							</div>
+							<div class="col clearfix">
+								<p class="flab" th:text="#{index.nodePort}">节点PORT：</p>
+								<div class=" fin"><input class="borderRadius5" type="text" th:placeholder="#{index.inputNodePort}" id="update_nodePort" readonly="readonly"/></div>
+							</div>
+							<div class="col clearfix">
+								<p class="flab" th:text="#{index.nodeType}">节点类型：</p>
+								<div class="borderRadius5 fsel">
+									<select id="update_nodetype">
+										<option th:value=1 th:text="#{index.fullNode}">全节点</option>
+										<option th:value=2 th:text="#{index.consensusNode}">矿工节点</option>
+									</select>
+								</div>
+							</div>
+							<div class="sshInfo">
+								<h3 class="pt" th:text="#{index.sSHRemoteConnection}">SSH远程连接数据</h3>
+								<div class="clearfix">
+									<div class="sshcol">
+										<span class="flab" th:text="#{index.userName}">用户名：</span>
+										<div class=" fin"><input class="borderRadius5" type="text" th:placeholder="#{index.pleaseUserName}" id="update_username"/></div>
+									</div>
+									<div class="sshcol sshcol-pas">
+										<span class="flab" th:text="#{index.password}">密码：</span>
+										<div class=" fin"><input class="borderRadius5" type="password" th:placeholder="#{index.signInPassword}" id="update_password" /></div>
+									</div>
+									<button class="borderRadius5 btndefault btnLink" id="connection" th:text="#{index.testConnection}">测试连接</button>
+									<div class="moda-le">
+										<h5 class="h-result" style="color: green;display: none" id="wait_1" th:text="#{index.pleaseWait}">请等待...</h5>
+										<h5 class="h-result" style="color: green;display: none" id="success_1" th:text="#{index.connectionSuccessful}">连接成功</h5>
+										<h5 class="h-result" style="color: red;display: none" id="fail_1" th:text="#{index.connectionFailed}">连接失败</h5>
+									</div>
+								</div>
+							</div>
+							<div class="fbtnbox">
+								<a  class="borderRadius5 fbtn" onclick="hideModal()" id="update_submit" th:text="#{index.commit}">提交</a>
+							</div>
 
-					 </div>
+						</div>
+					</div>
 
-					 <!--编辑节点弹出框-->
-
-					 <div class="modal" id="modal1">
-						 <div class="modal-by-dialog modal-point">
-							 <a onclick="hideModal()" class="btnClose" style="color:#333333"></a>
-							 <h3 class="modal_title">编辑节点</h3>
-							 <div class="form">
-								 <div class="col clearfix">
-									 <p class="flab">节点IP：</p>
-									 <div class="fin"><input class="borderRadius5" type="text" placeholder="请输入节点IP" id="update_nodeIp" readonly="readonly"/></div>
-								 </div>
-								 <div class="col clearfix">
-									 <p class="flab">节点PORT：</p>
-									 <div class=" fin"><input class="borderRadius5" type="text" placeholder="请输入节点PORT" id="update_nodePort" readonly="readonly"/></div>
-								 </div>
-								 <div class="col clearfix">
-									 <p class="flab">节点类型：</p>
-									 <div class="borderRadius5 fsel">
-										 <select id="update_nodetype">
-											 <option th:value=1>全节点</option>
-											 <option th:value=2>矿工节点</option>
-										 </select>
-									 </div>
-								 </div>
-								 <div class="sshInfo">
-									 <h3 class="pt">SSH远程连接数据</h3>
-									 <div class="clearfix">
-										 <div class="sshcol">
-											 <span class="flab">用户名：</span>
-											 <div class=" fin"><input class="borderRadius5" type="text" placeholder="请输入用户名" id="update_username"/></div>
-										 </div>
-										 <div class="sshcol sshcol-pas">
-											 <span class="flab">密码：</span>
-											 <div class=" fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="update_password" /></div>
-										 </div>
-										 <button class="borderRadius5 btndefault btnLink" id="connection">测试连接</button>
-										 <div class="moda-le">
-											 <h5 class="h-result" style="color: green;display: none" id="wait_1">请等待...</h5>
-											 <h5 class="h-result" style="color: green;display: none" id="success_1">连接成功</h5>
-											 <h5 class="h-result" style="color: red;display: none" id="fail_1">连接失败</h5>
-										 </div>
-									 </div>
-								 </div>
-								 <div class="fbtnbox">
-									 <a  class="borderRadius5 fbtn" onclick="hideModal()" id="update_submit">提交</a>
-								 </div>
-
-							 </div>
-						 </div>
-
-					 </div>
+				</div>
 
 
-<!--						<button class="borderRadius5 btndefault btnAdd"><span>添加新节点</span></button></div>-->
-		  	 	 	<table class="t_tab">
-		  	 	 		<thead>
-		  	 	 			<tr ><th>序号</th><th>节点信息</th><th>节点版本</th><th>运行状态</th><th>节点类型</th><th width="30%"  class="operation">操作</th></tr>
-		  	 	 		</thead>
-		  	 	 		<tbody>
-		  	 	 			<tr th:each="node,nodeState: ${nodesListPage}">
-								<td th:text="${nodeState.index+1}"></td>
-								<td th:text="${node.getNodeIP()}+':'+${node.getNodePort()}"></td>
-								<td th:text="${node.getNodeVersion()}"></td>
-								<td th:text="${node.getNodeState()}"></td>
-								<td th:switch="${node.getNodeType()}">
-									<p th:case=1>全节点</p>
-									<p th:case=2>矿工节点</p>
-								</td>
-		  	 	 				<td class="borderRadius5 bt_ad" >
-		  	 	 					<a class="abtn_btn bt_bind"  th:if="${node.getNodeIP()}+':'+${node.getNodePort()} != ${nodeip} "th:id="${node.getNodeIP()}+':'+${node.getNodePort()}">绑定</a>
-									<a th:if="${node.getNodeIP()}+':'+${node.getNodePort()} == ${nodeip} "  class="abtn_btn bt_unbind" th:id="${node.getNodeIP()}+':'+${node.getNodePort()}">解绑</a>
-		  	 	 					<a class="abtn_btn bt_update" th:if="${node.getNodeIP()}+':'+${node.getNodePort()} != ${nodeip} " onclick="showModal1()" th:id="${node.getNodeIP()}+':'+${node.getNodePort()} ">编辑</a>
-		  	 	 					<a class="abtn_btn bt_delete"  th:id="${node.getNodeIP()}+':'+${node.getNodePort()}" >删除</a>
-		  	 	 				</td>
-		  	 	 			</tr>
-		  	 	 			
-		  	 	 		</tbody>
-		  	 	 	</table>
-		  	 	 	
-		  	 	 </div>
-		  	 	 <div class="ht-page"></div>
-	  	 	 </div>
-	  	 	 <div class="space"></div>
-	  	 </div>
-	  </div>
-	  </div>
+				<!--						<button class="borderRadius5 btndefault btnAdd"><span>添加新节点</span></button></div>-->
+				<table class="t_tab">
+					<thead>
+					<tr ><th th:text="#{index.serialNumber}">序号</th><th th:text="#{index.nodeInformation}">节点信息</th><th th:text="#{index.nodeVersion2}">节点版本</th><th th:text="#{index.runningStatus}">运行状态</th><th th:text="#{index.nodeType}">节点类型</th><th width="30%"  class="operation" th:text="#{index.action}">操作</th></tr>
+					</thead>
+					<tbody>
+					<tr th:each="node,nodeState: ${nodesListPage}">
+						<td th:text="${nodeState.index+1}"></td>
+						<td th:text="${node.getNodeIP()}+':'+${node.getNodePort()}"></td>
+						<td th:text="${node.getNodeVersion()}"></td>
+						<td th:text="${node.getNodeState()}  == 1 ? #{index.running} : #{index.notRunning}"></td>
+						<td th:switch="${node.getNodeType()}">
+							<p th:case=1 th:text="#{index.fullNode}">全节点</p>
+							<p th:case=2 th:text="#{index.consensusNode}">矿工节点</p>
+						</td>
+						<td class="borderRadius5 bt_ad" >
+							<a class="abtn_btn bt_bind"  th:if="${node.getNodeIP()}+':'+${node.getNodePort()} != ${nodeip} "th:id="${node.getNodeIP()}+':'+${node.getNodePort()}" th:text="#{index.bind}">绑定</a>
+							<a th:if="${node.getNodeIP()}+':'+${node.getNodePort()} == ${nodeip} "  class="abtn_btn bt_unbind" th:id="${node.getNodeIP()}+':'+${node.getNodePort()}" th:text="#{index.unbind}">解绑</a>
+							<a class="abtn_btn bt_update" th:if="${node.getNodeIP()}+':'+${node.getNodePort()} != ${nodeip} " onclick="showModal1()" th:id="${node.getNodeIP()}+':'+${node.getNodePort()} " th:text="#{index.edit}">编辑</a>
+							<a class="abtn_btn bt_delete"  th:id="${node.getNodeIP()}+':'+${node.getNodePort()}" th:text="#{index.delete}">删除</a>
+						</td>
+					</tr>
+
+					</tbody>
+				</table>
+
+			</div>
+			<div class="ht-page"></div>
+		</div>
+		<div class="space"></div>
+	</div>
+</div>
+</div>
 <script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/pagination.js" type="text/javascript" charset="utf-8"></script>
 <script>
-	
- 	$("#sider").load("/sider",function(){
- 		$(".siderNav .l2").addClass('cur')
- 	});
- 	
- 	$("#topInfo").load("/header")
+
+	$("#sider").load("/sider",function(){
+		$(".siderNav .l2").addClass('cur')
+	});
+
+	$("#topInfo").load("/header")
 
 	var page1 = [[${pageSize}]]%10;
 	var page2;
@@ -184,35 +184,27 @@
 	}else{
 		page2 = Math.round([[${pageSize}]]/10)
 	}
-     /*
-         * 定义回掉函数
-         * @param  number:跳转页
-         * */
-        function pageChange(i) {
-            //alert("index is :" + i);
-            //Pagination.Page($(".ht-page"), i, 300, 10);
-			window.location.href = "[[@{../console(page)}]]="+i;
-        }
-        
-        Pagination.init($(".ht-page"), pageChange);
-		let page = getQuery("page");
-		if(page>0){
-			Pagination.Page($(".ht-page"), page2,[[${pageSize}]], 10);
-		}
-		else{
-			Pagination.Page($(".ht-page"), 0,[[${pageSize}]], 10);
+	/*
+        * 定义回掉函数
+        * @param  number:跳转页
+        * */
+	function pageChange(i) {
+		//alert("index is :" + i);
+		//Pagination.Page($(".ht-page"), i, 300, 10);
+		window.location.href = "[[@{../console(page)}]]="+i;
+	}
 
-		}
- 	
- 	   /*定义获取参数的方法*/
- 	  function getQuery(para){
+
+
+	/*定义获取参数的方法*/
+	function getQuery(para){
 		var reg = new RegExp("(^|&)"+para +"=([^&]*)(&|$)");
 		var r = window.location.search.substr(1).match(reg);
 		if(r!=null){
-		return unescape(r[2]);
+			return unescape(r[2]);
 		}
 		return null;
-	 }
+	}
 
 	function showModal(){
 		$("#nodeIp").val('');
@@ -240,9 +232,9 @@
 	function hideModal(){
 		$(".modal").removeClass('modal_in');
 	}
- 	
-</script>
 
+</script>
+<script src="js/jquery.i18n.properties.min.js" type="text/javascript" charset="utf-8"></script>
 <script th:inline="javascript">
 	var warning;
 	if(!!window.ActiveXObject || "ActiveXObject" in window){
@@ -250,25 +242,99 @@
 	}else{
 		warning = 'warning';
 	}
+
+	//项目路径
+	ctx = [[${#request.getContextPath()}]];
+
+	//初始化i18n插件
+	try {
+		$.i18n.properties({
+			path: ctx + '/i18n/',
+			name: 'index',
+			language: [[${#locale.language+'_'+#locale.country}]],
+			mode: "both"
+		});
+	} catch (e) {
+		console.error(e);
+	}
+
+	//初始化i18n方法
+	function i18n(labelKey) {
+		try {
+			return $.i18n.prop(labelKey);
+		} catch (e) {
+			console.error(e);
+			return labelKey;
+		}
+	}
+
+	console.log('dd'+[[${#locale.language}]])
+	if([[${#locale.language}]]=="en"){
+
+		$(".sider").addClass('sider_en');
+		$("#topInfo").addClass('topInfo_en')
+		$('.modal').addClass('modal_console_en')
+	}
+
+	let language = [[${#locale.language}]]
+	Pagination.init($(".ht-page"), pageChange);
+	let page = getQuery("page");
+	if(page>0){
+		Pagination.Page($(".ht-page"), language,page2,[[${pageSize}]], 10);
+	}
+	else{
+		Pagination.Page($(".ht-page"),language, 0,[[${pageSize}]], 10);
+
+	}
+
+	let cancel = i18n("index.cancel")
+	let ok = i18n("index.ok")
+	let clickedCancel = i18n("index.clickedCancel")
+	let incorrectIPAddress = i18n("index.incorrectIPAddress")
+	let inputPort = i18n("index.inputPort")
+	let containSpecialCharacters = i18n("index.containSpecialCharacters")
+	let addOrNot = i18n("index.addOrNot")
+	let success = i18n("index.success")
+	let sameNode = i18n("index.sameNode")
+	let deleteFor = i18n("index.deleteFor")
+	let successfullyDeleted = i18n("index.successfullyDeleted")
+	let confirmBind = i18n("index.confirmBind")
+	let bindingSucceeded = i18n("index.bindingSucceeded")
+	let confirmUnbind = i18n("index.confirmUnbind")
+	let unbindingSucceeded = i18n("index.unbindingSucceeded")
+
+	let completeInformationFor = i18n("index.completeInformationFor")
+	let confirmUpdateFor = i18n("index.confirmUpdateFor")
+	let failed = i18n("index.failed")
+	let pleaseBindNode = i18n("index.pleaseBindNode")
+	let connectionTimedOut = i18n("index.connectionTimedOut")
+	let consensusNode = i18n("index.consensusNode")
+	let fullNode = i18n("index.fullNode")
+
+
+
+
 	$(function () {
+
+
 		$('#bt_submit').click(function () {
 			var re = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
 			var r = re.test($('#nodeIp').val());
 			if (!r)
 			{
-				Swal.fire("", "IP地址不正确", "error");
+				Swal.fire("", incorrectIPAddress, "error");
 				return;
 			}
 			var port = $('#nodePort').val();
 			if (port == "" || port == null){
-				Swal.fire("", "请输入port", "error");
+				Swal.fire("", inputPort, "error");
 				return;
 			}
 			var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
 					regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
 
 			if(regEn.test(port)) {
-				$('.alert').html('名称不能包含特殊字符').addClass('alert-danger').show().delay(1500).fadeOut();
+				$('.alert').html(containSpecialCharacters).addClass('alert-danger').show().delay(1500).fadeOut();
 				return false;
 			}
 			var urlData = {nodeIP: $('#nodeIp').val(),nodePort: $('#nodePort').val(), nodeType: $('#nodetype').val(), userName: $('#username').val(),
@@ -277,7 +343,7 @@
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题
-				text: "是否添加！", //显示内容
+				text: addOrNot, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
 				confirmButtonText: '确定',// 确定按钮的 文字
@@ -296,13 +362,13 @@
 								Swal.fire({
 									type: 'success', // 弹框类型
 									title: '', //标题
-									text: "添加成功！", //显示内容
+									text: success, //显示内容
 
 									confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-									confirmButtonText: '确定',// 确定按钮的 文字
+									confirmButtonText: ok,// 确定按钮的 文字
 									showCancelButton: false, // 是否显示取消按钮
 									cancelButtonColor: '#d33', // 取消按钮的 颜色
-									cancelButtonText: "取消", // 取消按钮的 文字
+									cancelButtonText: cancel, // 取消按钮的 文字
 
 									focusCancel: true, // 是否聚焦 取消按钮
 									reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -317,13 +383,13 @@
 									}
 								});
 							}else{
-								Swal.fire("", "已存在相同节点", "error");
+								Swal.fire("", sameNode, "error");
 							}
 						}, 'json');
 
 					}
 					else {
-						Swal.fire("取消", "点击了取消", "error");
+						Swal.fire(cancel, clickedCancel, "error");
 					}
 				} catch (e) {
 					alert(e);
@@ -337,13 +403,13 @@
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题
-				text: "是否删除！", //显示内容
+				text: deleteFor, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-				confirmButtonText: '确定',// 确定按钮的 文字
+				confirmButtonText: ok,// 确定按钮的 文字
 				showCancelButton: true, // 是否显示取消按钮
 				cancelButtonColor: '#d33', // 取消按钮的 颜色
-				cancelButtonText: "取消", // 取消按钮的 文字
+				cancelButtonText: cancel, // 取消按钮的 文字
 
 				focusCancel: true, // 是否聚焦 取消按钮
 				reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -356,13 +422,13 @@
 								Swal.fire({
 									type: 'success', // 弹框类型
 									title: '', //标题
-									text: "删除成功！", //显示内容
+									text: successfullyDeleted, //显示内容
 
 									confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-									confirmButtonText: '确定',// 确定按钮的 文字
+									confirmButtonText: ok,// 确定按钮的 文字
 									showCancelButton: false, // 是否显示取消按钮
 									cancelButtonColor: '#d33', // 取消按钮的 颜色
-									cancelButtonText: "取消", // 取消按钮的 文字
+									cancelButtonText: cancel, // 取消按钮的 文字
 
 									focusCancel: true, // 是否聚焦 取消按钮
 									reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -385,7 +451,7 @@
 
 					}
 					else {
-						Swal.fire("取消", "点击了取消", "error");
+						Swal.fire(cancel, clickedCancel, "error");
 					}
 				} catch (e) {
 					alert(e);
@@ -399,13 +465,13 @@
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题
-				text: "是否绑定！", //显示内容
+				text: confirmBind, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-				confirmButtonText: '确定',// 确定按钮的 文字
+				confirmButtonText: ok,// 确定按钮的 文字
 				showCancelButton: true, // 是否显示取消按钮
 				cancelButtonColor: '#d33', // 取消按钮的 颜色
-				cancelButtonText: "取消", // 取消按钮的 文字
+				cancelButtonText: cancel, // 取消按钮的 文字
 
 				focusCancel: true, // 是否聚焦 取消按钮
 				reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -418,13 +484,13 @@
 								Swal.fire({
 									type: 'success', // 弹框类型
 									title: '', //标题
-									text: "绑定成功！", //显示内容
+									text: bindingSucceeded, //显示内容
 
 									confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-									confirmButtonText: '确定',// 确定按钮的 文字
+									confirmButtonText: ok,// 确定按钮的 文字
 									showCancelButton: false, // 是否显示取消按钮
 									cancelButtonColor: '#d33', // 取消按钮的 颜色
-									cancelButtonText: "取消", // 取消按钮的 文字
+									cancelButtonText: cancel, // 取消按钮的 文字
 
 									focusCancel: true, // 是否聚焦 取消按钮
 									reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -442,7 +508,7 @@
 						}, 'json');
 
 					} else {
-						Swal.fire("取消", "点击了取消", "error");
+						Swal.fire(cancel, clickedCancel, "error");
 					}
 				} catch (e) {
 					alert(e);
@@ -455,13 +521,13 @@
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题
-				text: "是否解绑！", //显示内容
+				text: confirmUnbind, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-				confirmButtonText: '确定',// 确定按钮的 文字
+				confirmButtonText: ok,// 确定按钮的 文字
 				showCancelButton: true, // 是否显示取消按钮
 				cancelButtonColor: '#d33', // 取消按钮的 颜色
-				cancelButtonText: "取消", // 取消按钮的 文字
+				cancelButtonText: cancel, // 取消按钮的 文字
 
 				focusCancel: true, // 是否聚焦 取消按钮
 				reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -474,12 +540,12 @@
 								Swal.fire({
 									type: 'success', // 弹框类型
 									title: '', //标题
-									text: "解绑成功！", //显示内容
+									text: unbindingSucceeded, //显示内容
 									confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-									confirmButtonText: '确定',// 确定按钮的 文字
+									confirmButtonText: ok,// 确定按钮的 文字
 									showCancelButton: false, // 是否显示取消按钮
 									cancelButtonColor: '#d33', // 取消按钮的 颜色
-									cancelButtonText: "取消", // 取消按钮的 文字
+									cancelButtonText: cancel, // 取消按钮的 文字
 
 									focusCancel: true, // 是否聚焦 取消按钮
 									reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -498,7 +564,7 @@
 
 					}
 					else {
-						Swal.fire("取消", "点击了取消", "error");
+						Swal.fire(cancel, clickedCancel, "error");
 					}
 				} catch (e) {
 					alert(e);
@@ -531,7 +597,7 @@
 			var username = $('#update_username').val();
 			var password = $('#update_password').val();
 			if (username == ""){
-				Swal.fire("", "请完善远程信息", "error");
+				Swal.fire("", completeInformationFor, "error");
 				return;
 			}else {
 				var urlData = {
@@ -559,13 +625,13 @@
 			var r = re.test($('#nodeIp').val());
 			if (!r)
 			{
-				Swal.fire("", "IP地址不正确", "error");
+				Swal.fire("", incorrectIPAddress, "error");
 				return;
 			}
 			var username = $('#username').val();
 			var password = $('#password').val();
 			if (username == ""){
-				Swal.fire("", "请完善远程信息", "error");
+				Swal.fire("", completeInformationFor, "error");
 				return;
 			}
 			var urlData = {ip: $('#nodeIp').val(),username: $('#username').val(), password: $('#password').val()};
@@ -591,13 +657,13 @@
 			Swal.fire({
 				type: warning, // 弹框类型
 				title: '', //标题
-				text: "是否更新！", //显示内容
+				text: confirmUpdateFor, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-				confirmButtonText: '确定',// 确定按钮的 文字
+				confirmButtonText: ok,// 确定按钮的 文字
 				showCancelButton: true, // 是否显示取消按钮
 				cancelButtonColor: '#d33', // 取消按钮的 颜色
-				cancelButtonText: "取消", // 取消按钮的 文字
+				cancelButtonText: cancel, // 取消按钮的 文字
 
 				focusCancel: true, // 是否聚焦 取消按钮
 				reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -611,13 +677,13 @@
 								Swal.fire({
 									type: 'success', // 弹框类型
 									title: '', //标题
-									text: "更新成功！", //显示内容
+									text: success, //显示内容
 
 									confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-									confirmButtonText: '确定',// 确定按钮的 文字
+									confirmButtonText: ok,// 确定按钮的 文字
 									showCancelButton: false, // 是否显示取消按钮
 									cancelButtonColor: '#d33', // 取消按钮的 颜色
-									cancelButtonText: "取消", // 取消按钮的 文字
+									cancelButtonText: cancel, // 取消按钮的 文字
 
 									focusCancel: true, // 是否聚焦 取消按钮
 									reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
@@ -632,13 +698,13 @@
 									}
 								});
 							}else {
-								Swal.fire("", "失败", "error");
+								Swal.fire("", failed, "error");
 							}
 						}, 'json');
 
 					}
 					else {
-						Swal.fire("取消", "点击了取消", "error");
+						Swal.fire(cancel, clickedCancel, "error");
 					}
 
 				} catch (e) {
@@ -657,12 +723,12 @@
 			data: "",
 			success: function (result) {
 				if (result.code == 5000){
-					$("#ip").html("请绑定节点");
+					$("#ip").html(pleaseBindNode);
 					$("#version").val("");
 					$("#isrun").val("");
 					$("#type").val("");
 				}else if (result.code == 3000) {
-					$("#ip").html("连接超时");
+					$("#ip").html(connectionTimedOut);
 					$("#version").val("");
 					$("#isrun").val("");
 					$("#type").val("");
@@ -671,17 +737,17 @@
 					$("#version").html(result.version);
 					$("#isrun").html(result.status);
 					if (result.type == 1){
-						$("#type").html("全节点");
+						$("#type").html(fullNode);
 					}else {
-						$("#type").html("矿工节点");
+						$("#type").html(consensusNode);
 					}
 
 				}
 			}
 		})
-	},3000);
+	},30000);
 </script>
 
-   </body>
+</body>
 
 </html>

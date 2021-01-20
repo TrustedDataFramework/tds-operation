@@ -1,28 +1,33 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
+	<script src="js/public.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
 <div>
   <div class="tpinfo userInfo">
-  	   <p>当前访问时间：<span id = "time"></span></p>
+	  <p><span th:text="#{index.currentTime}">当前访问时间:</span><span id = "time"></span></p>
   	   <div class="userFun">
   	   	   <a class="yh" th:text="${customUser.getUsername()}"></a>
-  	   	   <a href="/logout" class="tc">退出</a>
+  	   	   <a href="/layout" class="tc"  th:text="#{index.exit}">退出</a>
+		   <div class="d-language">
+			   <a class="active" onclick="change('zh_cn')">CN</a>
+			   <span>/</span>
+			   <a onclick="change('en_us')">EN</a>
+		   </div>
   	   </div>
   </div>
   <div class="tpinfo tPointInfo">
   	  
-  	  <p class="ppo">当前节点：<span th:text="${info.getNodeIP()}"></span></p>
-  	  <p>节点版本：<span th:text="${version}"></span></p>
-	  <p>网络ID：<span th:text="${p2pAddress}"></span></p>
-  	  <p>运行状态：<span th:text="${isrun}"></span></p>
-  	  <p>节点类型：<span th:text="${info.getNodeType()}"></span></p>
+	  <p class="ppo"><span th:text="#{index.currentNode}">当前节点：</span><span th:text="${info.getNodeIP()} == '请绑定节点'? #{index.pleaseBindNode} : ${info.getNodeIP()}"></span></p>
+	  <p><span th:text="#{index.nodeVersion1}">节点版本：</span><span th:text="${version}"></span></p>
+	  <p><span th:text="#{index.networkId}">网络ID：</span><span th:text="${p2pAddress}"></span></p>
+	  <p><span th:text="#{index.runningStatus}">运行状态</span>：<span th:text="${isrun}  == 1 ? #{index.running} : ''"></span></p>
+	  <p><span th:text="#{index.nodeType}">节点类型</span>：<span th:text="${info.getNodeType()}  == 1 ? #{index.fullNode} : #{index.consensusNode}"></span></p>
   	  <div class="postRight">
-  	  	  <button class="borderRadius5 btn btn-stop" id="stop"><span>停止</span></button>
-		  <button class="borderRadius5 btn btn-reset" id="restart"><span>重启</span></button>
-		  <button class="borderRadius5 btn btn-reset" onclick="showMo()" id="resetpass"><span>重置密码</span></button>
+  	  	  <button class="borderRadius5 btn btn-stop" id="stop"><span th:text="#{index.stop}">停止</span></button>
+		  <button class="borderRadius5 btn btn-reset" id="restart"><span th:text="#{index.restart}">重启</span></button>
+		  <button class="borderRadius5 btn btn-reset" onclick="showMo()" id="resetpass"><span th:text="#{index.resetPassword}">重置密码</span></button>
 	  </div>
   </div>
   </div>
@@ -30,20 +35,20 @@
 	  <div class="modal browser-password" id="modal2">
 		  <div class="modal-by-dialog modal-point modal-confirm-password">
 			  <a onclick="hideMo()" class="btnClose" style="color:#333333"></a>
-			  <h3 class="modal_title">密码确认</h3>
-			  <p class="modal_message">输入TDOS操作系统的密码</p>
+			  <h3 class="modal_title" th:text="#{index.confirmPassword}">密码确认</h3>
+			  <p class="modal_message" th:text="#{index.InputOperatingSystem}">输入TDOS操作系统的密码</p>
 			  <form class="form">
 				  <div class="col clearfix">
 
-					  <div class="fin"><input class="borderRadius5" type="password" placeholder="请输入密码" id="password11"/></div>
+					  <div class="fin"><input class="borderRadius5" type="password" th:placeholder="#{index.signInPassword}" id="password11"/></div>
 				  </div>
 				  <div class="col clearfix">
 
-					  <div class="fin"><input class="borderRadius5" type="password" placeholder="请确认密码" id="password12"/></div>
+					  <div class="fin"><input class="borderRadius5" type="password" th:placeholder="#{index.confirmPassword}" id="password12"/></div>
 				  </div>
 
 				  <div class="fbtnbox">
-					  <a  class="borderRadius5 fbtn" onclick="hideMo()" id="submit11">提交</a>
+					  <a  class="borderRadius5 fbtn" onclick="hideMo()" id="submit11" th:text="#{index.commit}">提交</a>
 				  </div>
 
 			  </form>
@@ -59,7 +64,42 @@
 <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script src="https://cdn.bootcss.com/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+<script src="js/jquery.i18n.properties.min.js" type="text/javascript" charset="utf-8"></script>
 <script th:inline="javascript">
+	//项目路径
+	ctx = [[${#request.getContextPath()}]];
+
+	//初始化i18n插件
+	try {
+		$.i18n.properties({
+			path: ctx + '/i18n/',
+			name: 'index',
+			language: [[${#locale.language+'_'+#locale.country}]],
+			mode: "both"
+		});
+	} catch (e) {
+		console.error(e);
+	}
+
+	//初始化i18n方法
+	function i18n(labelKey) {
+		try {
+			return $.i18n.prop(labelKey);
+		} catch (e) {
+			console.error(e);
+			return labelKey;
+		}
+	}
+		let inconsistent = i18n("index.inconsistent")
+		let signInPassword = i18n("index.signInPassword")
+		let success = i18n("index.success")
+		let ok = i18n("index.ok")
+		let clickedCancel = i18n("index.clickedCancel")
+		let cancel = i18n("index.cancel")
+		let confirmStop = i18n("index.confirmStop")
+		let doYou = i18n("index.doYou")
+		let pleaseBindNode = i18n("index.pleaseBindNode")
+		let failed = i18n("index.failed")
 
 	$(document).ready(function () {
 		var role = [[${role}]];
@@ -76,12 +116,12 @@
 		var password12 = $('#password12').val();
 		if(password11 != password12){
 			//alert("两次密码不一致");
-			return $('.alert').html('两次密码不一致').addClass('alert-danger').show().delay(1500).fadeOut();
+			return $('.alert').html(inconsistent).addClass('alert-danger').show().delay(1500).fadeOut();
 
 		}
 		if(password11 =="" || password12 == ""){
 			//alert("");
-			return $('.alert').html('请输入密码').addClass('alert-danger').show().delay(1500).fadeOut();
+			return $('.alert').html(signInPassword).addClass('alert-danger').show().delay(1500).fadeOut();
 
 		}
 		//$(".modal2").removeClass('modal_in');
@@ -96,7 +136,7 @@
 	});
 
 	function showMess(){
-		$('.alert').html('操作成功').addClass('alert-success').show().delay(1500).fadeOut();
+		$('.alert').html(success).addClass('alert-success').show().delay(1500).fadeOut();
 		//
 	}
 
@@ -137,12 +177,12 @@
 		Swal.fire({
 			type: warning, // 弹框类型
 			title: '', //标题
-			text: "是否停止！", //显示内容
+			text: confirmStop, //显示内容
 			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-			confirmButtonText: '确定',// 确定按钮的 文字
+			confirmButtonText: ok,// 确定按钮的 文字
 			showCancelButton: true, // 是否显示取消按钮
 			cancelButtonColor: '#d33', // 取消按钮的 颜色
-			cancelButtonText: "取消", // 取消按钮的 文字
+			cancelButtonText: cancel, // 取消按钮的 文字
 			focusCancel: true, // 是否聚焦 取消按钮
 			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
 		}).then(function(isConfirm){
@@ -156,18 +196,24 @@
 						data: "",
 						success: function (result) {
 							if (result.code == 5000){
-								Swal.fire('', result.message, 'error');
+								if(result.message == "成功"){
+									Swal.fire('', success, 'error');
+								}else if (result.message == "请绑定节点"){
+									Swal.fire('', pleaseBindNode, 'error');
+								}else if (result.message == "失败"){
+									Swal.fire('', failed, 'error');
+								}
 								return;
 							}
 							Swal.fire({
 								type: 'success', // 弹框类型
 								title: '', //标题
-								text: "成功！", //显示内容
+								text: success, //显示内容
 								confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-								confirmButtonText: '确定',// 确定按钮的 文字
+								confirmButtonText: ok,// 确定按钮的 文字
 								showCancelButton: false, // 是否显示取消按钮
 								cancelButtonColor: '#d33', // 取消按钮的 颜色
-								cancelButtonText: "取消", // 取消按钮的 文字
+								cancelButtonText: cancel, // 取消按钮的 文字
 								focusCancel: true, // 是否聚焦 取消按钮
 								reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
 							}).then(function(isConfirm){
@@ -181,7 +227,7 @@
 					})
 				}
 				else {
-					Swal.fire("取消", "点击了取消", "error");
+					Swal.fire(cancel, clickedCancel, "error");
 				}
 			} catch (e) {
 				alert(e);
@@ -193,12 +239,12 @@
 		Swal.fire({
 			type: warning, // 弹框类型
 			title: '', //标题
-			text: "是否重启！", //显示内容
+			text: doYou, //显示内容
 			confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-			confirmButtonText: '确定',// 确定按钮的 文字
+			confirmButtonText: ok,// 确定按钮的 文字
 			showCancelButton: true, // 是否显示取消按钮
 			cancelButtonColor: '#d33', // 取消按钮的 颜色
-			cancelButtonText: "取消", // 取消按钮的 文字
+			cancelButtonText: cancel, // 取消按钮的 文字
 			focusCancel: true, // 是否聚焦 取消按钮
 			reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
 		}).then(function(isConfirm){
@@ -212,18 +258,24 @@
 						data: "",
 						success: function (result) {
 							if (result.code == 5000){
-								Swal.fire('', result.message, 'error');
+								if(result.message == "成功"){
+									Swal.fire('', success, 'error');
+								}else if (result.message == "请绑定节点"){
+									Swal.fire('', pleaseBindNode, 'error');
+								}else if (result.message == "失败"){
+									Swal.fire('', failed, 'error');
+								}
 								return;
 							}
 							Swal.fire({
 								type: 'success', // 弹框类型
 								title: '', //标题
-								text: "成功！", //显示内容
+								text: success, //显示内容
 								confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-								confirmButtonText: '确定',// 确定按钮的 文字
+								confirmButtonText: ok,// 确定按钮的 文字
 								showCancelButton: false, // 是否显示取消按钮
 								cancelButtonColor: '#d33', // 取消按钮的 颜色
-								cancelButtonText: "取消", // 取消按钮的 文字
+								cancelButtonText: cancel, // 取消按钮的 文字
 								focusCancel: true, // 是否聚焦 取消按钮
 								reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
 							}).then(function(isConfirm){
@@ -237,7 +289,7 @@
 					})
 				}
 				else {
-					Swal.fire("取消", "点击了取消", "error");
+					Swal.fire(cancel, clickedCancel, "error");
 				}
 			} catch (e) {
 				alert(e);

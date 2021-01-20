@@ -2,13 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head lang="en">
 		<meta charset="UTF-8">
-		<title>信息概要</title>
+		<title th:text="#{index.information}">信息概要</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="renderer" content="webkit"/>
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+
 	</head>
       
    <body class="body_main">
@@ -21,7 +24,7 @@
 	  	 <div class="mainBox">
 	  	 	 <div class="tabBox tabBox_summ">
 		  	 	 <div class="borderRadius5 bosshdow  first_div ">
-		  	 	 	 <h3 class="title">监控信息<a href="#" data-toggle="tooltip" title="当前只支持一个节点查看" data-p data-trigger="hover" data-placement="right">
+		  	 	 	 <h3 class="title"  th:text="#{index.monitoringInformation}">监控信息<a href="#" data-toggle="tooltip" th:title="#{index.supported}" data-p data-trigger="hover" data-placement="right">
 						 <img class="icon-wh" src="../img/wh.png"/>
 					 </a></h3>
 		  	 	 	 <div class="monitorInfo">
@@ -29,59 +32,59 @@
 		  	 	 	 		<div class="line"></div>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt">每天出块数量</p>
+		  	 	 	 		<p class="pt" th:text="#{index.numberOfBlocks}">每天出块数量</p>
 							<p class="num" th:text="${result.blocksPerDay}==''?'0':${result.blocksPerDay}"></p>
 						</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt">区块高度</p>
+		  	 	 	 		<p class="pt" th:text="#{index.blockHeight}">区块高度</p>
 		  	 	 	 		<p class="num" th:text="${result.height}==''?'0':${result.height}"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt">平均出块时间</p>
+		  	 	 	 		<p class="pt" th:text="#{index.averageBlockTime}">平均出块时间</p>
 		  	 	 	 		<p class="num" th:text="${result.averageBlockInterval}==''?'0':${result.averageBlockInterval}+'&nbsp;S'"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt">平均gas单价</p>
+		  	 	 	 		<p class="pt" th:text="#{index.averageGasPrice}">平均gas单价</p>
 		  	 	 	 		<p class="num" th:text="${result.averageGasPrice}==''?'0':${result.averageGasPrice}"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt">事务池大小</p>
+		  	 	 	 		<p class="pt" th:text="#{index.memory}">事务池大小</p>
 		  	 	 	 		<p class="num" th:text="(${result.transactionPoolSize}==''?'0':${result.transactionPoolSize}) + (${result.transactionPoolSize}==null?'0':${result.transactionPoolSize})"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col" id="consensus">
-		  	 	 	 		<p class="pt">当前难度</p>
+		  	 	 	 		<p class="pt" th:text="#{index.currentDifficulty}">当前难度</p>
 		  	 	 	 		<p class="plevel" th:text="${result.currentDifficulty}==''?'':${result.currentDifficulty}"></p>
 		  	 	 	 	</div>
 		  	 	 	 	
 		  	 	 	 </div>
 		  	 	 </div>
 		  	 	 <div class="borderRadius5 bosshdow boxdiv">
-		  	 	 	<h3 class="title">预警状态</h3>
+		  	 	 	<h3 class="title" th:text="#{index.alarmStatus}">预警状态</h3>
 		  	 	 	<div class="dataBox">
 		  	 	 		<ul class="ul_staBox">
 		  	 	 			<li>
-								<p class="pt" >cpu状态</p>
+								<p class="pt" th:text="#{index.cpuStatus}">cpu状态</p>
 								<div class="sta_icon" ><span th:text="${result.cpu}==''?'0':${result.cpu}"></span></div>
 		  	 	 			</li>
 		  	 	 			<li>
-		  	 	 				<p class="pt">内存</p>
+		  	 	 				<p class="pt" th:text="#{index.memoryUsage}">内存</p>
 		  	 	 				<div class="sta_icon"><span th:text="${result.memory}==''?'0':${result.memory}"></span></div>
 		  	 	 			</li>
 		  	 	 			<li>
-		  	 	 				<p class="pt">卡块情况</p>
+		  	 	 				<p class="pt" th:text="#{index.block}">卡块情况</p>
 		  	 	 				<div class="sta_icon"><span id="blockStatus"></span></div>
 		  	 	 			</li>
 							<li>
-								<p class="pt">分叉情况</p>
+								<p class="pt" th:text="#{index.fork}">分叉情况</p>
 								<div class="sta_icon"><span id ="bifurcation"></span></div>
 							</li>
 		  	 	 			<li>
-		  	 	 				<p class="pt">运行状态</p>
-		  	 	 				<div class="sta_icon"><span th:text="${isrun}   "></span></div>
+		  	 	 				<p class="pt" th:text="#{index.runningStatus}">运行状态</p>
+		  	 	 				<div class="sta_icon"><span th:text="${isrun}  == 1 ? #{index.running} : ''"></span></div>
 		  	 	 			</li>
 		  	 	 			<li>
-		  	 	 				<p class="pt">矿工检测</p>
-								<div class="sta_icon"><span th:text="${result.getMinings()}"></span></div>
+		  	 	 				<p class="pt" th:text="#{index.minnerDetection}">矿工检测</p>
+								<div class="sta_icon"><span th:text="${result.getMinings()} == 1 ? #{index.yes} : #{index.no}"></span></div>
 		  	 	 			</li>
 		  	 	 		</ul>
 		  	 	 	</div>
@@ -91,7 +94,6 @@
 	  	 </div>
 	  </div>
 
-<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 <script>
 	var index = 0
  	$("#sider").load("/sider",function(){
@@ -114,7 +116,44 @@
  	
 </script>
 
-<script type="text/javascript">
+
+<script src="js/jquery.i18n.properties.min.js" type="text/javascript" charset="utf-8"></script>
+
+<script th:inline="javascript">
+
+	//项目路径
+	ctx = [[${#request.getContextPath()}]];
+
+	//初始化i18n插件
+	try {
+		$.i18n.properties({
+			path: ctx + '/i18n/',
+			name: 'index',
+			language: [[${#locale.language+'_'+#locale.country}]],
+			mode: "both"
+		});
+	} catch (e) {
+		console.error(e);
+	}
+
+	//初始化i18n方法
+	function i18n(labelKey) {
+		try {
+			return $.i18n.prop(labelKey);
+		} catch (e) {
+			console.error(e);
+			return labelKey;
+		}
+	}
+
+	let yes = i18n("index.yes")
+	let no = i18n("index.no")
+
+	if([[${#locale.language}]]=="en"){
+		$(".sider").addClass('sider_en');
+		$("#topInfo").addClass('topInfo_en')
+	}
+	let toBeConfirmed = i18n("index.toBeConfirmed")
 	var t2 = window.setInterval(function() {
 		$.ajax({
 			type: "GET",
@@ -123,13 +162,13 @@
 			data: "",
 			success: function (result) {
 				if (result.code == -1) {
-					document.getElementById("bifurcation").innerHTML = "是";
+					document.getElementById("bifurcation").innerHTML = yes;
 				} else if (result.code  == 0) {
-					document.getElementById("bifurcation").innerHTML = "待确认";
+					document.getElementById("bifurcation").innerHTML = toBeConfirmed;
 				} else if (result.code  == -2) {
 					document.getElementById("bifurcation").innerHTML = "";
 				} else {
-					document.getElementById("bifurcation").innerHTML = "否";
+					document.getElementById("bifurcation").innerHTML = no;
 				}
 			}
 		}),
@@ -140,7 +179,14 @@
 			url: "/block",
 			data: "",
 			success: function (result) {
-				document.getElementById("blockStatus").innerHTML = result;
+				if (result == -1) {
+					document.getElementById("blockStatus").innerHTML = yes;
+				} else if (result == 0) {
+					document.getElementById("blockStatus").innerHTML = toBeConfirmed;
+				} else {
+					document.getElementById("blockStatus").innerHTML = no;
+				}
+
 			}
 		})
 	},1000);

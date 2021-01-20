@@ -101,6 +101,13 @@ dependencies {
     compile fileTree(dir:'lib',include:['*.jar'])
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compile group: 'com.h2database', name: 'h2', version: '1.4.187'
+//    // https://mvnrepository.com/artifact/org.webjars/jquery-i18n-properties
+//    compile group: 'org.webjars', name: 'jquery-i18n-properties', version: '1.10.2'
+//// https://mvnrepository.com/artifact/org.webjars.bower/jquery
+//    compile group: 'org.webjars.bower', name: 'jquery', version: '3.5.1'
+//// https://mvnrepository.com/artifact/org.webjars/webjars-locator-core
+//    compile group: 'org.webjars', name: 'webjars-locator-core', version: '0.46'
+
 
 }
 

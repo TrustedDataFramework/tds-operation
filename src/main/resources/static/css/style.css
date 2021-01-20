@@ -135,7 +135,7 @@ body{width:100%;min-height:100%;}
 .userInfo{background:#fff; line-height: 70px; height:70px;}
 .userInfo > p{font-size:18px; color:#555;}
 .userInfo .userFun{position: absolute;right: 60px; top:0px}
-.userInfo .yh{background: url(../img/ic_user.png)left center no-repeat; padding: 11px 0 11px 60px;}
+.userInfo .yh{background: url(../img/ic_user.png)left center no-repeat; padding: 15px 0 15px 60px;}
 .userInfo .tc{background: url(../img/ic_exit.png)left center no-repeat; padding: 5px 0 5px 28px; margin-left: 52px;}
 
 .mainBox{height: 100%;  margin: 0 auto;
@@ -208,8 +208,8 @@ body{width:100%;min-height:100%;}
 .tabBox_authSet .first_div{ margin-top: 165px;}
 .t_tab tbody tr:nth-of-type(odd){background:#F6F7FB;}
 
-.t_tab .abtn_btn{width:75px;height: 30px; display: inline-block; margin: 0 8px; font-size:16px;color: #fff; background:#3182FF;
-	text-align: center; line-height: 30px;}
+.t_tab .abtn_btn{min-width:50px;padding:0 12px;height: 30px; display: inline-block; margin: 0 8px; font-size:16px;color: #fff; background:#3182FF;
+	text-align: center; line-height: 30px;border-radius:5px 5px 5px 5px;-webkit-border-radius:5px 5px 5px 5px;}
 
 /*弹出框*/
 a{cursor:pointer;}
@@ -469,3 +469,63 @@ p{padding: 0px; margin: 0;}
 .modal .modal-confirm-password{height:380px;margin-top: -190px;}
 .modal .modal-reset-level{height: 500px;margin-top: -250px;}
 .btndefault:hover{color:#fff}
+
+/*头部添加语言切换*/
+.d-language{display:inline-block; vertical-align:middle}
+.d-language{margin-left:30px}
+.d-language a{margin:0 5px}
+.d-language a.active{color:#3182FF;}
+
+/*2021-01-19*/
+.body_login{min-height:720px}
+
+{}
+
+.sider_en .siderNav{margin-top:70px; height:calc(100% - 70px); height: -moz-calc(100% - 70px);height: -webkit-calc(100% - 70px); overflow-y:auto }
+.sider_en .siderNav li a{display:block;height: 60px;line-height:60px;font-size:16px;color:#666;cursor: pointer;}
+.sider_en .siderNav li.cur{color:#000; background:#F6F7FB; position: relative;}
+.sider_en .siderNav li.cur:after{content:''; width:4px;height:100%;position: absolute;top:0px;right:0px;
+	background:#26E898;}
+.sider_en .siderNav li span{padding-left:60px;}
+.sider_en .siderNav li.l1 a{background: url(../img/sxxgy_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l2 a{background: url(../img/skzt_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l3 a{background: url(../img/srzxx_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l4 a{background: url(../img/syjxx_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l5 a{background: url(../img/sjqsz_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l6 a{background: url(../img/sdc_n.png) 20px center no-repeat; }
+
+.sider_en .siderNav li.l1.cur a{background: url(../img/sxxgy_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l2.cur a{background: url(../img/skzt_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l3.cur a{background: url(../img/srzxx_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l4.cur a{background: url(../img/syjxx_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l5.cur a{background: url(../img/sjqsz_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l6.cur a{background: url(../img/sdc_h.png) 20px center no-repeat; }
+
+.siderNav li.l7 a{background: url(../img/ywgj_n.png) 20px center no-repeat; }
+.siderNav li.l7.cur a{background: url(../img/ywgj_h.png) 20px center no-repeat; }
+
+.siderNav li.l8 a{background: url(../img/sjcsh_n.png) 20px center no-repeat; }
+.siderNav li.l8.cur a{background: url(../img/sjcsh_h.png) 20px center no-repeat; }
+.topInfo_en .tpinfo .btn{ padding: 0 8px}
+
+/*console*/
+.modal_console_en .sshcol{width:100%;float: none;margin-bottom: 12px}
+.modal_console_en .modal-point .sshcol .flab{width:90px}
+.modal_console_en .modal-point .sshcol .fin{padding-left: 90px; margin-left: 0px}
+.modal_console_en .modal-point .sshcol-pas .flab{width:90px}
+.modal_console_en .sshcol-pas{ margin-left: 0px}
+.modal_console_en .modal-point .sshcol-pas .fin{padding-left: 90px; margin-left: 0px}
+.modal_console_en .modal-point .btnLink{width:30%;margin: 0 auto; float: none}
+.modal_console_en .modal-point{height: 610px;margin-top: -300px}
+
+.modal.modal_in .modal-by-dialog{top:auto}
+.modal.modal_in{height:auto;top:0px;bottom:0px; overflow-x:hidden; overflow-y:auto;}
+.modal .modal-by-dialog{position:relative;left:auto; margin:60px auto; }
+
+/*warnInfo*/
+.dataBox_warn_warnInfo .lab{width:240px}
+.body_login .d-language{position: absolute; right:30px;top:30px}
+.sider_en .patName{font-size: 18px}
+
+.topInfo_en .tpinfo p{ padding-right:12px}
+.topInfo_en .tpinfo .ppo{padding-left:20px}

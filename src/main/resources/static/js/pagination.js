@@ -3,7 +3,7 @@ var Pagination = {
     init: function(obj, callback, topFlag) {
         this.bindListener(obj, callback, topFlag);
     },
-    createHtml: function(pageIndex, recordCount, pageSize) {
+    createHtml: function(language,pageIndex, recordCount, pageSize) {
         var pageCount = Math.ceil(recordCount / pageSize);
         var showPageCount = this.showPageCount;
         var MaxCount = 10000000000;
@@ -16,6 +16,7 @@ var Pagination = {
             pageIndex = pageCount - 1;
         }
         /*html.push("<span class=\"total\">共" + recordCount + "条</span>");*/
+        console.log(language)
         if (pageIndex > 0) {
             html.push("<span class=\"previous\"><a href=\"javascript:;\" page= " + (pageIndex - 1) + " data-rec=\"上一页\"></a></span>");
         } else {
@@ -67,8 +68,13 @@ var Pagination = {
         } else {
             html.push("<span class=\"disable next\"></span>");
         }
-        html.push("<span class=\"total total_page\">共" + pageCount + "页</span>");
-        html.push("<span class=\"page_jump\">到</span><input id='pageInput' class='pageInput' oldpage='' maxlength='" + pageCount + "' type='text' ><span class=\"page_jump\">页</span><button type='button' id='pagebtn' class='pagebtn'>确定</button>");
+        if(language == "en"){
+            html.push("<span class=\"total total_page\">total " + pageCount + " page </span>");
+            html.push("<span class=\"page_jump\">to</span><input id='pageInput' class='pageInput' oldpage='' maxlength='" + pageCount + "' type='text' ><span class=\"page_jump\">page</span><button type='button' id='pagebtn' class='pagebtn'>ok</button>");
+        }else{
+            html.push("<span class=\"total total_page\">共" + pageCount + "页</span>");
+            html.push("<span class=\"page_jump\">到</span><input id='pageInput' class='pageInput' oldpage='' maxlength='" + pageCount + "' type='text' ><span class=\"page_jump\">页</span><button type='button' id='pagebtn' class='pagebtn'>确定</button>");
+        }
         return html.join("");
     },
     bindListener: function(obj, callback, topFlag) {
@@ -174,8 +180,8 @@ var Pagination = {
             pageInput.attr('oldpage', pageInput.val());
         }
     },
-    Page: function(obj, pageIndex, recordCount, pageSize) {
+    Page: function(obj,language, pageIndex, recordCount, pageSize) {
         obj.empty();
-        obj.html(this.createHtml(pageIndex, recordCount, pageSize));
+        obj.html(this.createHtml(language,pageIndex, recordCount, pageSize));
     }
 };
