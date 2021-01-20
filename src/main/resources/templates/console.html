@@ -310,6 +310,7 @@
 	let connectionTimedOut = i18n("index.connectionTimedOut")
 	let consensusNode = i18n("index.consensusNode")
 	let fullNode = i18n("index.fullNode")
+	let incorrectPortAddress = i18n("index.incorrectPortAddress")
 
 
 
@@ -334,8 +335,8 @@
 					regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
 
 			if(regEn.test(port)) {
-				$('.alert').html(containSpecialCharacters).addClass('alert-danger').show().delay(1500).fadeOut();
-				return false;
+				Swal.fire("", incorrectPortAddress, "error");
+				return;
 			}
 			var urlData = {nodeIP: $('#nodeIp').val(),nodePort: $('#nodePort').val(), nodeType: $('#nodetype').val(), userName: $('#username').val(),
 				password: $('#password').val(), dbIP: $('#dbip').val(), dbPort: $('#dbport').val(), databaseName: $('#database').val(),
@@ -346,10 +347,10 @@
 				text: addOrNot, //显示内容
 
 				confirmButtonColor: '#3085d6',// 确定按钮的 颜色
-				confirmButtonText: '确定',// 确定按钮的 文字
+				confirmButtonText: ok,// 确定按钮的 文字
 				showCancelButton: true, // 是否显示取消按钮
 				cancelButtonColor: '#d33', // 取消按钮的 颜色
-				cancelButtonText: "取消", // 取消按钮的 文字
+				cancelButtonText: cancel, // 取消按钮的 文字
 
 				focusCancel: true, // 是否聚焦 取消按钮
 				reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消

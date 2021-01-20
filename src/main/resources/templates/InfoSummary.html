@@ -33,23 +33,23 @@
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
 		  	 	 	 		<p class="pt" th:text="#{index.numberOfBlocks}">每天出块数量</p>
-							<p class="num" th:text="${result.blocksPerDay}==''?'0':${result.blocksPerDay}"></p>
+							<p class="num" th:text="${result.blocksPerDay}==''?'0':${result.blocksPerDay}" id="blocksPerDay"></p>
 						</div>
 		  	 	 	 	<div class="col">
 		  	 	 	 		<p class="pt" th:text="#{index.blockHeight}">区块高度</p>
-		  	 	 	 		<p class="num" th:text="${result.height}==''?'0':${result.height}"></p>
+		  	 	 	 		<p class="num" th:text="${result.height}==''?'0':${result.height}" id="blockHeight"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
 		  	 	 	 		<p class="pt" th:text="#{index.averageBlockTime}">平均出块时间</p>
-		  	 	 	 		<p class="num" th:text="${result.averageBlockInterval}==''?'0':${result.averageBlockInterval}+'&nbsp;S'"></p>
+		  	 	 	 		<p class="num" th:text="${result.averageBlockInterval}==''?'0':${result.averageBlockInterval}+'&nbsp;S'" id="blockTime"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
 		  	 	 	 		<p class="pt" th:text="#{index.averageGasPrice}">平均gas单价</p>
-		  	 	 	 		<p class="num" th:text="${result.averageGasPrice}==''?'0':${result.averageGasPrice}"></p>
+		  	 	 	 		<p class="num" th:text="${result.averageGasPrice}==''?'0':${result.averageGasPrice}" id="gasPrice"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
 		  	 	 	 		<p class="pt" th:text="#{index.memory}">事务池大小</p>
-		  	 	 	 		<p class="num" th:text="(${result.transactionPoolSize}==''?'0':${result.transactionPoolSize}) + (${result.transactionPoolSize}==null?'0':${result.transactionPoolSize})"></p>
+		  	 	 	 		<p class="num" th:text="(${result.transactionPoolSize}==''?'0':${result.transactionPoolSize}) + (${result.transactionPoolSize}==null?'0':${result.transactionPoolSize})" id="blockSize"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col" id="consensus">
 		  	 	 	 		<p class="pt" th:text="#{index.currentDifficulty}">当前难度</p>
@@ -80,7 +80,7 @@
 							</li>
 		  	 	 			<li>
 		  	 	 				<p class="pt" th:text="#{index.runningStatus}">运行状态</p>
-		  	 	 				<div class="sta_icon"><span th:text="${isrun}  == 1 ? #{index.running} : ''"></span></div>
+		  	 	 				<div class="sta_icon"><span th:text="${isrun}  == 1 ? #{index.running} :  #{index.notRunning}"></span></div>
 		  	 	 			</li>
 		  	 	 			<li>
 		  	 	 				<p class="pt" th:text="#{index.minnerDetection}">矿工检测</p>
@@ -190,6 +190,24 @@
 			}
 		})
 	},1000);
+
+	var t2 = window.setInterval(function() {
+		$.ajax({
+			type: "GET",
+			contentType: "application/json",
+			url: "/getInformation",
+			data: "",
+			success: function (result) {
+				if (result.code == 2000) {
+					document.getElementById("blocksPerDay").innerHTML = result.data.blocksPerDay;
+					document.getElementById("blockHeight").innerHTML = result.data.height;
+					document.getElementById("blockTime").innerHTML = result.data.blockInterval+"s";
+					document.getElementById("gasPrice").innerHTML = result.data.averageGasPrice;
+					document.getElementById("blockSize").innerHTML = result.data.transactionPoolSize;
+				}
+			}
+		})
+	},5000);
 </script>
 
 

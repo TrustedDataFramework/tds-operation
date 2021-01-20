@@ -19,11 +19,11 @@
   </div>
   <div class="tpinfo tPointInfo">
   	  
-	  <p class="ppo"><span th:text="#{index.currentNode}">当前节点：</span><span th:text="${info.getNodeIP()} == '请绑定节点'? #{index.pleaseBindNode} : ${info.getNodeIP()}"></span></p>
-	  <p><span th:text="#{index.nodeVersion1}">节点版本：</span><span th:text="${version}"></span></p>
-	  <p><span th:text="#{index.networkId}">网络ID：</span><span th:text="${p2pAddress}"></span></p>
-	  <p><span th:text="#{index.runningStatus}">运行状态</span>：<span th:text="${isrun}  == 1 ? #{index.running} : ''"></span></p>
-	  <p><span th:text="#{index.nodeType}">节点类型</span>：<span th:text="${info.getNodeType()}  == 1 ? #{index.fullNode} : #{index.consensusNode}"></span></p>
+	  <p class="ppo"><span th:text="#{index.currentNode}">当前节点:</span><span th:text="${info.getNodeIP()} == '请绑定节点'? #{index.pleaseBindNode} : ${info.getNodeIP()}"></span></p>
+	  <p><span th:text="#{index.nodeVersion1}">节点版本:</span><span th:text="${version}"></span></p>
+	  <p><span th:text="#{index.networkId}">网络ID:</span><span th:text="${p2pAddress}"></span></p>
+	  <p><span th:text="#{index.runningStatus}">运行状态</span>:<span th:text="${isrun}  == 1 ? #{index.running} : ''"></span></p>
+	  <p><span th:text="#{index.nodeType}">节点类型</span>:<span th:text="${info.getNodeType()}  == 1 ? #{index.fullNode} : (${info.getNodeType()}  == 2 ? #{index.consensusNode} : ${info.getNodeType()})"></span></p>
   	  <div class="postRight">
   	  	  <button class="borderRadius5 btn btn-stop" id="stop"><span th:text="#{index.stop}">停止</span></button>
 		  <button class="borderRadius5 btn btn-reset" id="restart"><span th:text="#{index.restart}">重启</span></button>
@@ -280,7 +280,7 @@
 								reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
 							}).then(function(isConfirm){
 								try {
-									window.location.reload();
+									setTimeout(function(){window.location.reload()},8000);
 								} catch (e) {
 									alert(e);
 								}

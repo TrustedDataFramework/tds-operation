@@ -51,7 +51,7 @@ body{width:100%;min-height:100%;}
 	border-radius:40px;
 	overflow: hidden;
 	margin:0 auto;
-	background:#fff; position:absolute;margin-top:-350px; top:50%; left:50%; margin-left: -600px;
+	background:#fff; /*position:absolute;margin-top:-350px; top:50%; left:50%; margin-left: -600px;*/
 
 
 
@@ -501,11 +501,11 @@ p{padding: 0px; margin: 0;}
 .sider_en .siderNav li.l5.cur a{background: url(../img/sjqsz_h.png) 20px center no-repeat; }
 .sider_en .siderNav li.l6.cur a{background: url(../img/sdc_h.png) 20px center no-repeat; }
 
-.siderNav li.l7 a{background: url(../img/ywgj_n.png) 20px center no-repeat; }
-.siderNav li.l7.cur a{background: url(../img/ywgj_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l7 a{background: url(../img/ywgj_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l7.cur a{background: url(../img/ywgj_h.png) 20px center no-repeat; }
 
-.siderNav li.l8 a{background: url(../img/sjcsh_n.png) 20px center no-repeat; }
-.siderNav li.l8.cur a{background: url(../img/sjcsh_h.png) 20px center no-repeat; }
+.sider_en .siderNav li.l8 a{background: url(../img/sjcsh_n.png) 20px center no-repeat; }
+.sider_en .siderNav li.l8.cur a{background: url(../img/sjcsh_h.png) 20px center no-repeat; }
 .topInfo_en .tpinfo .btn{ padding: 0 8px}
 
 /*console*/
@@ -529,3 +529,7 @@ p{padding: 0px; margin: 0;}
 
 .topInfo_en .tpinfo p{ padding-right:12px}
 .topInfo_en .tpinfo .ppo{padding-left:20px}
+
+.body_login{ min-height: 100%;display: table}
+.login-page{min-height: 720px;height: 100%; display: table-cell; vertical-align: middle}
+.formbox{position: relative}

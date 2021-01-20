@@ -1,5 +1,6 @@
 package com.tds.monitor.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tds.monitor.model.Nodes;
 import com.tds.monitor.model.Result;
@@ -136,6 +137,28 @@ public class NodeController {
     @GetMapping(value = {"/updateNode"})
     public boolean updateNode(@ModelAttribute Nodes node) {
         return nodeService.updateNode(node);
+    }
+
+    @GetMapping(value = {"/getInformation"})
+    public Result getInformation() {
+        Result result = new Result();
+        MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
+        JSONObject get_info = new JSONObject();
+        if (mapCacheUtil.getCacheItem("bindNode") != null){
+            String url_node = mapCacheUtil.getCacheItem("bindNode").toString();
+            if (HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)!=""){
+                get_info = JSON.parseObject(HttpRequestUtil.sendGet(String.format("http://%s/rpc/stat", url_node), null)).getJSONObject("data");
+                result.setCode(ResultCode.SUCCESS);
+                result.setData(get_info);
+            }else{
+                result.setCode(ResultCode.FAIL);
+                result.setData(get_info);
+            }
+        }else{
+            result.setCode(ResultCode.FAIL);
+            result.setData(get_info);
+        }
+        return result;
     }
 
     @GetMapping(value = {"/getLocalIp"})
