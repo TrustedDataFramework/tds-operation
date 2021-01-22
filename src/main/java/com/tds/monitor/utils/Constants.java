@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.function.Predicate;
 
 public class Constants {
+    // 递归删除，Predicate 为 true 的内容不会被删除
     public static void delDir(File f, Predicate<File> excludes) {
         // 判断是否是一个目录, 不是的话跳过, 直接删除; 如果是一个目录, 先将其内容清空.
         if(excludes.test(f)){

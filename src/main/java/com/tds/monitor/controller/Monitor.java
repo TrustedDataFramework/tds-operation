@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tds.monitor.dao.MailDao;
+import com.tds.monitor.model.Mail;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.*;
 import com.tds.monitor.utils.ApiResult.APIResult;
@@ -16,17 +18,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 
 @Component
-public class   Monitor {
+public class  Monitor {
     private static final Logger logger = LoggerFactory.getLogger(Monitor.class);
     @Autowired
     public NodeServiceImpl nodeService;
 
     @Autowired
     public RestTemplateUtil restTemplateUtil;
+
+    @Autowired
+    private MailDao mailDao;
+
 
 
     //分叉监测
@@ -48,18 +57,16 @@ public class   Monitor {
                     }
                     int confirmNum =0;
                     List<String> proposersList = getPeers();
-                    if(proposersList.size()<3){
+                    if(proposersList.size()<2){
                         return APIResult.newSuccess(1);
                     }
                     for (String str : proposersList) {
                         String proposersBlockHash = getBlockHash(str, height);
-                        if (StringUtils.isEmpty(proposersBlockHash)){
+                        if (proposersBlockHash == null || StringUtils.isEmpty(proposersBlockHash)){
                             return "";
                         }
-                        if(proposersBlockHash != null){
-                            if (proposersBlockHash.equals(nBlockhash)) {
-                                confirmNum++;
-                            }
+                        if (proposersBlockHash.equals(nBlockhash)) {
+                            confirmNum++;
                         }
                     }
                     //不满足2/3一致则删除对于高度的区块
@@ -89,18 +96,34 @@ public class   Monitor {
             }
             if(new ObjectMapper().convertValue(checkBifurcate(),APIResult.class).getCode() == -1){
                 logger.info("Wrong Block Height: "+ nHeight);
+                ismail = true;
                 if (ismail){
+                    List<Mail> mail = mailDao.findAll();
+                    Mail mail1 = mail.get(0);
                     StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
                     messageText.append("<span>通知:</span></br>");
                     messageText.append("<span>您绑定的节点出现分叉！</span></br>");
-                    new SendMailUtil().sendMailOutLook("通知",messageText.toString());
+                    new SendMailUtil().sendMailOutLook("通知",messageText.toString(),mail1);
                 }
             }
         }
     }
+//
+//    public static void main(String[] args) throws ParseException {
+//        String heightUrl = "http://192.168.1.62:7010/rpc/block/-1";
+//        JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, ""));
+//        JSONObject result1 = result.getJSONObject("data");
+//        System.out.println(result1.getString("createdAt"));
+//
+//            Instant ins = Instant.parse("2021-01-21T09:29:38Z");
+//            // unix 秒
+//        System.out.println(ins.getEpochSecond());
+//        long now = System.currentTimeMillis() / 1000;
+//        System.out.println(now - ins.getEpochSecond());
+//    }
 
     //卡块监测
-    public static int checkBlockIsStuck(boolean ismail){
+    public static int checkBlockIsStuck(boolean ismail,Mail mail1){
         try {
             MapCacheUtil mapCacheUtil = MapCacheUtil.getInstance();
             if (mapCacheUtil.getCacheItem("bindNode") != null) {
@@ -108,36 +131,41 @@ public class   Monitor {
                 String ip = mapCacheUtil.getCacheItem("bindNode").toString();
                 String heightUrl = "http://" + ip + "/rpc/stat";
                 JSONObject result = JSON.parseObject(HttpRequestUtil.sendGet(heightUrl, ""));
-                if(result == null){
-                    return -1;
-                }
-                JSONObject result1 = result.getJSONObject("data");
-                if (result1 == null)
-                    return -1;
-                if (mapCacheUtil.getCacheItem("BlockHeight") == null) {
-                    if ((int) result.get("code") == 200) {
-                        mapCacheUtil.putCacheItem("BlockHeight", result1.getLong("height"));
-                    }
+                if (result == null) {
                     return 0;
                 }
-                String height = mapCacheUtil.getCacheItem("BlockHeight").toString();
-                if (!height.equals(result1.getLong("height"))) {
+                JSONObject resultAee = result.getJSONObject("data");
+                String allowUnauthorized = resultAee.getString("allowUnauthorized");
+                int averageBlockInterval = resultAee.getInteger("averageBlockInterval");
+                String timeUrl = "http://" + ip + "/rpc/block/-1";
+                JSONObject resultTime = JSON.parseObject(HttpRequestUtil.sendGet(timeUrl, ""));
+                JSONObject result1 = resultTime.getJSONObject("data");
+                if (result1 == null) {
+                    return 0;
+                }
+                if (!allowUnauthorized.equals("true")) {
                     return 1;
-                }else {
-                    if (ismail){
-                        StringBuffer messageText=new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
+                } else {
+                    String time = result1.getString("createdAt");
+                    Instant ins = Instant.parse(time);
+                    // unix 秒
+                    long now = System.currentTimeMillis() / 1000;
+                    if(now - ins.getEpochSecond()>averageBlockInterval*10){
+                        ismail = true;
+                    }
+                    if (ismail) {
+                        StringBuffer messageText = new StringBuffer();//内容以html格式发送,防止被当成垃圾邮件
                         messageText.append("<span>警告:</span></br>");
                         messageText.append("<span>您绑定的节点存在卡块风险！请检查！！！</span></br>");
-                        new SendMailUtil().sendMailOutLook("通知",messageText.toString());
+                        new SendMailUtil().sendMailOutLook("通知", messageText.toString(),mail1);
+                        return -1;
                     }
-                    return -1;
                 }
             }
-            mapCacheUtil.removeCacheItem("BlockHeight");
-            return -1;
         }catch (Exception e){
             throw e;
         }
+        return 0;
     }
 
     //整体监测
@@ -150,8 +178,10 @@ public class   Monitor {
             String[] bindNodeiphost = mapCacheUtil.getCacheItem("bindNode").toString().split(":");
             JSONObject result = restTemplateUtil.getNodeInfo(bindNodeiphost[0],7010);
             if (result != null && !result.equals("")) {
+                List<Mail> mail = mailDao.findAll();
+                Mail mail1 = mail.get(0);
                 recoveryBifurcate(ismail);
-                checkBlockIsStuck(ismail);
+                checkBlockIsStuck(ismail,mail1);
             }
         }
     }
@@ -203,4 +233,6 @@ public class   Monitor {
         return (int)Math.ceil(number);
 
     }
+
+
 }

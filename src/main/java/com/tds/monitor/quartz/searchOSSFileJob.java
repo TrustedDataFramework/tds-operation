@@ -9,6 +9,7 @@ import com.tds.monitor.utils.RestTemplateUtil;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ import java.util.List;
 
 
 @Log4j
+@Component
 public class searchOSSFileJob {
 
     @Autowired
@@ -29,7 +31,7 @@ public class searchOSSFileJob {
 
     @Autowired
     ApplicationRunnerImpl applicationRunnerImpl;
-    @Scheduled(cron = "0 0 */3 * * ?")//每三小时执行一次
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void searchWhiteArray() throws IOException {
         try {
             if (!isLock) {
@@ -39,7 +41,7 @@ public class searchOSSFileJob {
                 log.info("=============开始读取oss文件");
                 String ip = LocalHostUtil.getLocalIP();
                 log.info("=============查看节点是否启动");
-                String result = restTemplateUtil.getBrowserInfo(ip, 7010);
+                JSONObject result = restTemplateUtil.getNodeInfo(ip, 7010);
                 log.info("=============节点已经启动，查看注册码");
                 if (result != null || !result.equals("")) {
                     //获取路径注册码
@@ -48,6 +50,7 @@ public class searchOSSFileJob {
                     String mes = new String(all).trim();
                     //获取白名单
                     log.info("==============================获取白名单");
+                    String pwd = Constants.getSudoPassword();
                     JSONObject jsonObject = ApplicationRunnerImpl.getWhiteArrays();
                     List list = new ArrayList();
                     for (Object o : jsonObject.getJSONArray("whiteArrays")) {
@@ -60,11 +63,15 @@ public class searchOSSFileJob {
                         Date localTime = df.parse(df.format(new Date()));
                         Date endTime = df.parse(jsonObject.getString("endTime"));
                         if (localTime.after(endTime)) {
-                            String pwd = Constants.getSudoPassword();
                             String kill = JavaShellUtil.ProcessKillShell(1,pwd);
                             if (kill != null || !kill.equals("")) {
                                 log.info("==============停止节点成功");
                             }
+                        }
+                    }else{
+                        String kill = JavaShellUtil.ProcessKillShell(1,pwd);
+                        if (kill != null || !kill.equals("")) {
+                            log.info("==============停止节点成功");
                         }
                     }
                 }

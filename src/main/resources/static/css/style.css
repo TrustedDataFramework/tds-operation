@@ -155,7 +155,7 @@ body{width:100%;min-height:100%;}
 .boxdiv{width:100%;background:#fff; margin-top:30px}
 .first_div {margin-top: 170px;}
 .boxdiv .title,.tabBox_summ .first_div .title{font-size: 24px;color:#000; padding:25px 54px; border-bottom:2px solid #dcdcdc;}
-.dataBox{text-align: center; width: 1250px;height: 500px}
+.dataBox{text-align: center; min-width: 1250px;height: 500px}
 .dataBox form{padding-top: 30px;}
 .dataBox .btn{width:180px;height: 55px;text-align: center; line-height: 55px; font-size:24px; padding:0px;}
 .dataBox .btnbox{padding:51px 0 71px 0;}
@@ -244,9 +244,9 @@ a{cursor:pointer;}
 .modal_message{font-size:14px;color:#ff0000; text-align: center; line-height: 30px;padding-top: 10px;}
 .modal .flab{font-size:16px; color:#444; padding:15px 0;}
 .modal .form{padding: 0 30px;}
-.modal .fsel{border: 1px solid #dcdcdc; padding: 0 15px;}
+.modal .fsel{border: 1px solid #dcdcdc; padding: 10px 15px; width:95%;box-sizing: border-box;-webkit-box-sizing: border-box;}
 .modal .form input{font-size:16px;color: #444; width:95%; border:0 none;padding:10px 2.5%;border: 1px solid #dcdcdc;}
-.modal .form select{ background: transparent;width:100%; padding: 10px 0;border:0 none}
+.modal .form select{ background: transparent;width:100%; border:0 none;height:26px;}
 .modal .fbtnbox{text-align: center; padding-top: 25px;}
 .modal .fbtn{width:130px; height: 50px;line-height:50px;display: inline-block;color:#fff; font-size: 18px;background:#3182FF;}
 .modal .btnClose{width: 40px;height: 40px;background: url(../img/btn_close.png) center no-repeat;position: absolute; top:20px;right: 30px;
@@ -259,8 +259,8 @@ a{cursor:pointer;}
 .modal-point .flab{width:110px; float:left;padding:11px 0;white-space:nowrap;}
 .modal-point .col{padding:15px 20px 0 20px;}
 .modal-point .fin{ margin-left:110px;}
-.modal-point .fsel{margin-left:110px; padding:0;}
-.modal-point .fsel select{padding:10px 15px;}
+.modal-point .fsel{margin-left:110px; padding:10px 15px;width:75%; box-sizing: border-box; -webkit-box-sizing: border-box;}
+.modal-point .fsel select{padding:0px;height: 26px}
 .modal-point .pt{font-size:18px;color:#444; padding:15px 0;}
 .modal-point .sshInfo{border-top:1px solid #dcdcdc; margin-top:15px;padding:0 20px 15px;border-bottom:1px solid #dcdcdc; }
 
@@ -382,7 +382,7 @@ a{cursor:pointer;}
 	display: flex;
 }
 
-.browser_box .browser-btn{display: inset-block; vertical-align:middle; padding:8px 20px; margin:10px 8px;}
+.browser_box .browser-btn{display: inline-block; width: auto;vertical-align:middle; padding:8px 20px; margin:10px 8px;}
 .browser_box .browser-info{
 	background:#F2F2F2; text-align: left; padding:20px 30px;
 	margin: 0 30px; margin-top: 20px;font-size:0px;
@@ -425,7 +425,7 @@ siderNav li a:hover{text-decoration:none;}
 .init-box p{
 	text-align: center; font-size: 18px; color:#333; padding: 2px 0; margin: 0px;
 }
-.init-box .warn{width:230px;height:230px; margin: 0 auto;
+.init-box .warn{width:230px;height:230px; margin: 0 auto; margin-top: 20px;
 }
 .init-box .warn img{width:100%;}
 .warn-mess{padding-top: 20px;}
@@ -452,9 +452,18 @@ background: rgba(0,0,0,.5);z-index:999;}
 .sider{z-index:9;}
 
 .n-alert{width:0px;height: 0px; padding: 0px;}
-.alert-success,.alert-danger{position:fixed; width:300px;left:50%; margin-left: -150px;top:50%; margin-top:50%;; z-index: 9999; margin-top: -30px; padding: 15px ;
-	height:60px; line-height: 30px;}
-.alert-success,.alert-danger{text-align: center; font-size:18px;}
+.alert-success,.alert-danger{position:fixed; padding:0 20px; z-index: 9999; margin-top: -30px; padding: 15px ;
+	width:auto;height:60px; line-height: 30px;
+	left:50%;
+	top:50%;
+	transform:translate(-50%,-50%);
+	-ms-transform:translate(-50%,-50%);
+	-moz-transform:translate(-50%,-50%);
+	-webkit-transform:translate(-50%,-50%);
+	-o-transform:translate(-50%,-50%);
+	width: auto;
+}
+.alert-success,.alert-danger{text-align: center; font-size:16px;width: auto;}
 
 .browser-password .modal-point{height: 350px;margin-top:-175px;}
 .modal.modal_in{display: block}
@@ -533,3 +542,11 @@ p{padding: 0px; margin: 0;}
 .body_login{ min-height: 100%;display: table}
 .login-page{min-height: 720px;height: 100%; display: table-cell; vertical-align: middle}
 .formbox{position: relative}
+.body{}
+.monitorInfo .col{box-sizing: content-box;-moz-box-sizing: content-box; -webkit-box-sizing: content-box;}
+.mainBox .new_tabBox_summ{min-width:1100px}
+.new_tabBox_summ .dataBox{width:100%}
+.mainBox_en .monitorInfo .pt{ font-size: 16px;height:60px; display: table;width:100%; line-height:normal;white-space: normal}
+.mainBox_en .monitorInfo .dis-table-cell{ display: table-cell; vertical-align: middle;    word-break:break-word;}
+
+label{font-weight: normal;}

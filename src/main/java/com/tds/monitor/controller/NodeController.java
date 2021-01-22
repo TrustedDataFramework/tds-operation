@@ -2,10 +2,7 @@ package com.tds.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tds.monitor.model.Nodes;
-import com.tds.monitor.model.Result;
-import com.tds.monitor.model.ResultCode;
-import com.tds.monitor.model.User;
+import com.tds.monitor.model.*;
 import com.tds.monitor.service.Impl.ApplicationRunnerImpl;
 import com.tds.monitor.service.Impl.NodeServiceImpl;
 import com.tds.monitor.utils.*;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.*;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.*;
 
 @RestController
@@ -230,6 +228,7 @@ public class NodeController {
                     x -> x.getName().startsWith("jdk")
                             || x.getName().equals("monitor.jar")
                             || x.getName().equals("sunflower-core.jar")
+                            || x.getName().equals(".private-key")
             );
             // 5 秒后退出运维工具
             EXECUTOR.schedule(() -> System.exit(0), 7, TimeUnit.SECONDS);

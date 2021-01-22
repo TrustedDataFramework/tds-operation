@@ -22,7 +22,7 @@
 	  	 <div class="topInfo" id="topInfo">	  
 	  	 </div>
 	  	 <div class="mainBox">
-	  	 	 <div class="tabBox tabBox_summ">
+	  	 	 <div class="tabBox tabBox_summ new_tabBox_summ">
 		  	 	 <div class="borderRadius5 bosshdow  first_div ">
 		  	 	 	 <h3 class="title"  th:text="#{index.monitoringInformation}">监控信息<a href="#" data-toggle="tooltip" th:title="#{index.supported}" data-p data-trigger="hover" data-placement="right">
 						 <img class="icon-wh" src="../img/wh.png"/>
@@ -31,28 +31,50 @@
 		  	 	 	 	<div class="curbg">
 		  	 	 	 		<div class="line"></div>
 		  	 	 	 	</div>
-		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt" th:text="#{index.numberOfBlocks}">每天出块数量</p>
+		  	 	 	 	<div class="col col1">
+		  	 	 	 		<div class="pt" >
+								<div class="dis-table-cell" th:text="#{index.numberOfBlocks}">每天出块数量</div>
+							</div>
 							<p class="num" th:text="${result.blocksPerDay}==''?'0':${result.blocksPerDay}" id="blocksPerDay"></p>
 						</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt" th:text="#{index.blockHeight}">区块高度</p>
+		  	 	 	 		<div class="pt" >
+							<div class="dis-table-cell" th:text="#{index.blockHeight}">
+								区块高度
+						    </div>
+							</div>
 		  	 	 	 		<p class="num" th:text="${result.height}==''?'0':${result.height}" id="blockHeight"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt" th:text="#{index.averageBlockTime}">平均出块时间</p>
+		  	 	 	 		<div class="pt">
+							<div class="dis-table-cell" th:text="#{index.averageBlockTime}">
+								平均出块时间
+							</div>
+							</div>
 		  	 	 	 		<p class="num" th:text="${result.averageBlockInterval}==''?'0':${result.averageBlockInterval}+'&nbsp;S'" id="blockTime"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt" th:text="#{index.averageGasPrice}">平均gas单价</p>
+		  	 	 	 		<div class="pt">
+							<div class="dis-table-cell" th:text="#{index.averageGasPrice}">
+								平均gas单价
+							</div>
+							</div>
 		  	 	 	 		<p class="num" th:text="${result.averageGasPrice}==''?'0':${result.averageGasPrice}" id="gasPrice"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col">
-		  	 	 	 		<p class="pt" th:text="#{index.memory}">事务池大小</p>
+							<div class="pt">
+								<div class="dis-table-cell" th:text="#{index.memory}">
+									事务池大小
+								</div>
+							</div>
 		  	 	 	 		<p class="num" th:text="(${result.transactionPoolSize}==''?'0':${result.transactionPoolSize}) + (${result.transactionPoolSize}==null?'0':${result.transactionPoolSize})" id="blockSize"></p>
 		  	 	 	 	</div>
 		  	 	 	 	<div class="col" id="consensus">
-		  	 	 	 		<p class="pt" th:text="#{index.currentDifficulty}">当前难度</p>
+							<div class="pt">
+								<div class="dis-table-cell" th:text="#{index.currentDifficulty}">
+									当前难度
+								</div>
+							</div>
 		  	 	 	 		<p class="plevel" th:text="${result.currentDifficulty}==''?'':${result.currentDifficulty}"></p>
 		  	 	 	 	</div>
 		  	 	 	 	
@@ -152,6 +174,7 @@
 	if([[${#locale.language}]]=="en"){
 		$(".sider").addClass('sider_en');
 		$("#topInfo").addClass('topInfo_en')
+		$('.mainBox').addClass('mainBox_en')
 	}
 	let toBeConfirmed = i18n("index.toBeConfirmed")
 	var t2 = window.setInterval(function() {

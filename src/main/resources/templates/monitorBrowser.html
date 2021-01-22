@@ -287,8 +287,19 @@
 			$.get('webStartOrNot', function (result) {
 				if (result.code == 2000) {
 					$(".trans-modal").removeClass('show-trans-modal');
-					document.getElementById("version").innerHTML = result.data;
-					document.getElementById("status").innerHTML = result.message;
+					if([[${#locale.language}]] == "en"){
+						if(result.message == "成功"){
+							document.getElementById("status").innerHTML = "running";
+						}else{
+							document.getElementById("status").innerHTML = "not running";
+						}
+					}else {
+						if (result.message == "未运行") {
+							document.getElementById("status").innerHTML = "未运行";
+						} else {
+							document.getElementById("status").innerHTML = "运行中";
+						}
+					}
 					type = '';
 					num = '';
 				}

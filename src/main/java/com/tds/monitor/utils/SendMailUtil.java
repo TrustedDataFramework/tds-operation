@@ -1,15 +1,21 @@
 package com.tds.monitor.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.tds.monitor.dao.MailDao;
+import com.tds.monitor.dao.NodeDao;
 import com.tds.monitor.model.Mail;
 import lombok.extern.log4j.Log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.AddressException;
@@ -22,23 +28,23 @@ import javax.mail.internet.MimeMessage;
 public class SendMailUtil {
     private static final Logger logger = LoggerFactory.getLogger(SendMailUtil.class);
 
-    public boolean sendMailOutLook(String title, String body){
-        Mail mail = new Mail();
-//        if (levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).isPresent()){
-//            Object read = JSONObject.parseObject(new String(levelDb.get("mail".getBytes(StandardCharsets.UTF_8)).get(),StandardCharsets.UTF_8), Mail.class);
-//            mail= (Mail) read;
-//            //设置参数
-//            Properties props = new Properties();
-//            props.put("mail.smtp.auth", "true");
-//            props.put("mail.smtp.starttls.enable", "true");
-//            props.put("mail.smtp.host", "smtp.outlook.com");
-//            props.put("mail.smtp.port", "587");
-//            //自定义信息
-//            props.put("username", mail.getSender());//你的邮箱
-//            props.put("password", mail.getPassword());//你的密码
-//            props.put("to", mail.getReceiver());//接收的邮箱
-//            return SendMailUtil.send(props,title,body);
-//        }
+    @Autowired
+    private MailDao mailDao;
+
+    public boolean sendMailOutLook(String title, String body,Mail mail1){
+        if (mail1 != null){
+            //设置参数
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", "smtp.outlook.com");
+            props.put("mail.smtp.port", "587");
+            //自定义信息
+            props.put("username", mail1.getSender());//你的邮箱
+            props.put("password", mail1.getPassword());//你的密码
+            props.put("to", mail1.getReceiver());//接收的邮箱
+            return SendMailUtil.send(props,title,body);
+        }
         return false;
     }
 
@@ -108,9 +114,11 @@ public class SendMailUtil {
         props.put("mail.smtp.host", "smtp.outlook.com");
         props.put("mail.smtp.port", "587");
         //自定义信息
-        props.put("username", "zq18136788784@outlook.com");//你的邮箱
-        props.put("password", "zq960603");//你的密码
-        props.put("to", "zq18136788784@outlook.com");//接收的邮箱
+        props.put("username",
+                "w13376293175@outlook.com");//你的邮箱
+        props.put("password", "w00000000@");//你的密码
+        props.put("to",
+                "w13376293175@outlook.com");//接收的邮箱
         SendMailUtil.send(props,"通知",messageText.toString());
 
     }

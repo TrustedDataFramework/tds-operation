@@ -331,10 +331,9 @@
 				Swal.fire("", inputPort, "error");
 				return;
 			}
-			var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
-					regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
+			var regEn = /^\d+$/;
 
-			if(regEn.test(port)) {
+			if(!regEn.test(port)) {
 				Swal.fire("", incorrectPortAddress, "error");
 				return;
 			}
